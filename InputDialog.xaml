@@ -1,0 +1,61 @@
+<Window x:Class="VoiceBookStudio.Views.InputDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="VoiceBook Studio"
+        Width="420" Height="180"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        AutomationProperties.Name="Input dialog"
+        AutomationProperties.HelpText="Type your response and press Enter or click OK to confirm">
+
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Padding" Value="16,6"/>
+            <Setter Property="MinWidth" Value="80"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="8"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="16"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Prompt label -->
+        <TextBlock x:Name="PromptLabel"
+                   Grid.Row="0"
+                   TextWrapping="Wrap"
+                   FontSize="13"/>
+
+        <!-- Input field — LabeledBy the prompt text above so JAWS reads the label first -->
+        <TextBox x:Name="InputBox"
+                 Grid.Row="2"
+                 FontSize="13"
+                 Padding="4"
+                 TabIndex="1"
+                 AutomationProperties.LabeledBy="{Binding ElementName=PromptLabel}"
+                 AutomationProperties.HelpText="Type your response and press Enter or click OK. Dragon users: dictate directly into this field."
+                 KeyDown="InputBox_KeyDown"/>
+
+        <!-- Buttons -->
+        <StackPanel Grid.Row="4"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right">
+            <Button x:Name="OkButton"
+                    Content="OK"
+                    IsDefault="True"
+                    Margin="0,0,8,0"
+                    TabIndex="2"
+                    AutomationProperties.Name="OK"
+                    Click="OkButton_Click"/>
+            <Button Content="Cancel"
+                    IsCancel="True"
+                    TabIndex="3"
+                    AutomationProperties.Name="Cancel"/>
+        </StackPanel>
+    </Grid>
+</Window>

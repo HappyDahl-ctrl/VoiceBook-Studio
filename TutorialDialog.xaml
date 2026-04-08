@@ -1,0 +1,97 @@
+<Window x:Class="VoiceBookStudio.Views.TutorialDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Tutorial — VoiceBook Studio"
+        WindowStartupLocation="CenterOwner"
+        WindowStyle="ToolWindow"
+        ResizeMode="CanResize"
+        Width="700" Height="500"
+        Loaded="Window_Loaded"
+        AutomationProperties.Name="Tutorial dialog"
+        AutomationProperties.HelpText="Step-by-step tutorial. Use Next and Previous buttons or say Next and Previous to navigate. Say Repeat to hear the current step again.">
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>   <!-- Step counter -->
+            <RowDefinition Height="Auto"/>   <!-- Step title  -->
+            <RowDefinition Height="*"/>      <!-- Step body   -->
+            <RowDefinition Height="Auto"/>   <!-- Buttons     -->
+        </Grid.RowDefinitions>
+
+        <!-- Step counter e.g. "Step 2 of 10" -->
+        <TextBlock Grid.Row="0"
+                   Text="{Binding StepCounterDisplay}"
+                   FontSize="11" Foreground="#666"
+                   Margin="0,0,0,4"
+                   AutomationProperties.Name="{Binding StepCounterDisplay}"
+                   AutomationProperties.LiveSetting="Polite"/>
+
+        <!-- Step title — announced immediately when it changes -->
+        <TextBlock Grid.Row="1"
+                   x:Name="StepHeader"
+                   Text="{Binding CurrentTitle}"
+                   FontSize="16" FontWeight="Bold"
+                   Margin="0,0,0,8"
+                   AutomationProperties.Name="{Binding CurrentTitle}"
+                   AutomationProperties.LiveSetting="Assertive"/>
+
+        <!-- Step instructions — read-only, scrollable -->
+        <TextBox Grid.Row="2"
+                 x:Name="StepContent"
+                 Text="{Binding CurrentContent, Mode=OneWay}"
+                 IsReadOnly="True"
+                 TextWrapping="Wrap"
+                 VerticalScrollBarVisibility="Auto"
+                 FontSize="13"
+                 Padding="8"
+                 Background="#FAFAFA"
+                 TabIndex="1"
+                 AutomationProperties.Name="Step instructions"
+                 AutomationProperties.HelpText="Current tutorial step instructions. Read-only."
+                 AutomationProperties.LiveSetting="Polite"/>
+
+        <!-- Navigation buttons -->
+        <StackPanel Grid.Row="3"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="0,12,0,0">
+
+            <Button x:Name="PreviousButton"
+                    Width="110" Margin="0,0,8,0"
+                    Command="{Binding PreviousCommand}"
+                    TabIndex="2"
+                    AutomationProperties.Name="Previous step"
+                    AutomationProperties.HelpText="Go to the previous tutorial step. Voice command: say Previous">
+                Previous
+            </Button>
+
+            <Button x:Name="RepeatButton"
+                    Width="110" Margin="0,0,8,0"
+                    Command="{Binding RepeatCommand}"
+                    TabIndex="3"
+                    AutomationProperties.Name="Repeat current step"
+                    AutomationProperties.HelpText="Repeat the audio for this step. Voice command: say Repeat">
+                Repeat
+            </Button>
+
+            <Button x:Name="NextButton"
+                    Width="110" Margin="0,0,8,0"
+                    IsDefault="True"
+                    Command="{Binding NextCommand}"
+                    TabIndex="4"
+                    AutomationProperties.Name="Next step"
+                    AutomationProperties.HelpText="Advance to the next tutorial step. Voice command: say Next">
+                Next
+            </Button>
+
+            <Button x:Name="ExitButton"
+                    Width="110"
+                    Command="{Binding ExitCommand}"
+                    TabIndex="5"
+                    AutomationProperties.Name="Exit tutorial"
+                    AutomationProperties.HelpText="Close the tutorial and return to the main window. Voice command: say Exit tutorial">
+                Exit Tutorial
+            </Button>
+        </StackPanel>
+    </Grid>
+</Window>

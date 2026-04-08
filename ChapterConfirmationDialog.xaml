@@ -1,0 +1,67 @@
+<Window x:Class="VoiceBookStudio.Views.ChapterConfirmationDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Confirm Detected Chapters — VoiceBook Studio"
+        SizeToContent="WidthAndHeight"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="CanResize"
+        WindowStyle="ToolWindow"
+        Loaded="Window_Loaded"
+        AutomationProperties.Name="Confirm detected chapters dialog"
+        AutomationProperties.HelpText="Review the chapters Claude detected in your document, then choose how to import them">
+
+    <DockPanel Margin="16">
+
+        <TextBlock DockPanel.Dock="Top"
+                   Text="Chapters detected in your document"
+                   FontSize="16" FontWeight="Bold" Margin="0,0,0,6"
+                   AutomationProperties.Name="Chapters detected in your document heading"/>
+
+        <TextBlock DockPanel.Dock="Top"
+                   TextWrapping="Wrap" Margin="0,0,0,10" FontSize="12" Foreground="#555"
+                   AutomationProperties.Name="Review the list below, then choose Accept All to import each chapter separately, or Import as Single to bring everything in as one section.">
+            Review the list below. Choose Accept All to import each chapter separately,
+            or Import as Single to bring the whole document in as one section.
+        </TextBlock>
+
+        <ListBox x:Name="ChaptersList"
+                 DockPanel.Dock="Top"
+                 DisplayMemberPath="Title"
+                 Width="580" Height="280"
+                 Margin="0,0,0,12"
+                 TabIndex="1"
+                 AutomationProperties.Name="Detected chapters list"
+                 AutomationProperties.HelpText="List of chapters Claude identified. Use arrow keys to review. Press Tab to reach the action buttons."/>
+
+        <StackPanel DockPanel.Dock="Bottom"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right">
+            <Button x:Name="AcceptButton"
+                    Width="130" Margin="0,0,8,0"
+                    IsDefault="True"
+                    TabIndex="2"
+                    Click="AcceptButton_Click"
+                    AutomationProperties.Name="Accept all — import each chapter as a separate section"
+                    AutomationProperties.HelpText="Import all detected chapters as individual sections in your project">
+                Accept All
+            </Button>
+            <Button x:Name="SingleButton"
+                    Width="150" Margin="0,0,8,0"
+                    TabIndex="3"
+                    Click="SingleButton_Click"
+                    AutomationProperties.Name="Import as single — bring the entire document in as one section"
+                    AutomationProperties.HelpText="Import the whole document as a single chapter without splitting">
+                Import as Single
+            </Button>
+            <Button x:Name="CancelButton"
+                    Width="100"
+                    IsCancel="True"
+                    TabIndex="4"
+                    Click="CancelButton_Click"
+                    AutomationProperties.Name="Cancel import"
+                    AutomationProperties.HelpText="Cancel and return to the main window without importing">
+                Cancel
+            </Button>
+        </StackPanel>
+    </DockPanel>
+</Window>

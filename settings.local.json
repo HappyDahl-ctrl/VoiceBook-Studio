@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet build:*)",
+      "Bash(find C:DevVoiceBookVoiceBookStudio -name *.csproj)",
+      "Bash(ls:*)",
+      "Bash(cp \"C:/Dev/VoiceBook/VoiceBookStudio/Services/ApiKeyService.cs\" \"C:/Dev/VoiceBook/VoiceBookStudio/VoiceBookStudio/Services/ApiKeyService.cs\")",
+      "Bash(cp \"C:/Dev/VoiceBook/VoiceBookStudio/Services/AiService.cs\" \"C:/Dev/VoiceBook/VoiceBookStudio/VoiceBookStudio/Services/AiService.cs\")",
+      "Bash(cp \"C:/Dev/VoiceBook/VoiceBookStudio/Views/ApiKeyDialog.xaml\" \"C:/Dev/VoiceBook/VoiceBookStudio/VoiceBookStudio/Views/ApiKeyDialog.xaml\")",
+      "Bash(cp \"C:/Dev/VoiceBook/VoiceBookStudio/Views/ApiKeyDialog.xaml.cs\" \"C:/Dev/VoiceBook/VoiceBookStudio/VoiceBookStudio/Views/ApiKeyDialog.xaml.cs\")",
+      "Bash(cp \"C:/Dev/VoiceBook/VoiceBookStudio/Views/MainWindow.xaml\" \"C:/Dev/VoiceBook/VoiceBookStudio/VoiceBookStudio/Views/MainWindow.xaml\")",
+      "Bash(cp \"C:/Dev/VoiceBook/VoiceBookStudio/Views/MainWindow.xaml.cs\" \"C:/Dev/VoiceBook/VoiceBookStudio/VoiceBookStudio/Views/MainWindow.xaml.cs\")",
+      "Bash(dotnet publish:*)",
+      "Bash(mkdir -p Installer)",
+      "Bash(\"C:/Program Files \\(x86\\)/Inno Setup 6/ISCC.exe\" VoiceBookStudio.iss)",
+      "Bash(C:\\\\Program Files \\(x86\\)\\\\Inno Setup 6\\\\ISCC.exe:*)",
+      "Bash(python3:*)",
+      "Bash(dotnet add:*)",
+      "Bash(./VoiceBookStudio.exe)",
+      "Bash(echo \"Exit: $?\")",
+      "Bash(powershell:*)"
+    ]
+  }
+}

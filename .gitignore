@@ -1,0 +1,22 @@
+# Build output
+bin/
+obj/
+publish/
+
+# NuGet
+*.nuget.dgspec.json
+*.nuget.g.props
+*.nuget.g.targets
+project.assets.json
+project.nuget.cache
+
+# Installer output
+Installer/
+
+# Generated docs (not for repo)
+VoiceBookStudio_User_Guide.docx
+
+# User-specific files
+*.user
+*.suo
+.vs/

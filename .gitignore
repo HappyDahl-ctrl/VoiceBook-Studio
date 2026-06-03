@@ -13,8 +13,6 @@ project.nuget.cache
 # Installer output
 Installer/
 
-# Generated docs (not for repo)
-VoiceBookStudio_User_Guide.docx
 
 # User-specific files
 *.user

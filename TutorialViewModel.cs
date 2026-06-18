@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using VoiceBookStudio.Services;
 using VoiceBookStudio.Utils;
@@ -13,13 +15,25 @@ namespace VoiceBookStudio.ViewModels
         public string Content { get; set; } = string.Empty;
     }
 
-    public class TutorialViewModel
+    public class TutorialViewModel : INotifyPropertyChanged
     {
         private readonly SystemAnnouncementService _announcer;
         private readonly AudioFeedbackService _audio;
 
         private int _currentIndex = 0;
         private readonly List<TutorialStep> _steps = new();
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        private void Notify([CallerMemberName] string? name = null) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
+        private void NotifyStepProperties()
+        {
+            Notify(nameof(CurrentStep));
+            Notify(nameof(StepCounterDisplay));
+            Notify(nameof(CurrentTitle));
+            Notify(nameof(CurrentContent));
+        }
 
         public TutorialViewModel(SystemAnnouncementService announcer, AudioFeedbackService audio)
         {
@@ -58,6 +72,7 @@ namespace VoiceBookStudio.ViewModels
             if (_currentIndex < _steps.Count - 1)
             {
                 _currentIndex++;
+                NotifyStepProperties();
                 AnnounceCurrent();
             }
             else
@@ -73,6 +88,7 @@ namespace VoiceBookStudio.ViewModels
             if (_currentIndex > 0)
             {
                 _currentIndex--;
+                NotifyStepProperties();
                 AnnounceCurrent();
             }
         }
@@ -93,12 +109,21 @@ namespace VoiceBookStudio.ViewModels
 
         private void AnnounceCurrent()
         {
+            // When JAWS is running the live regions (Assertive on title, Polite on content)
+            // already handle announcement in the correct order. Adding TTS on top causes the
+            // instructions to overlap and repeat, leaving the user uncertain when to speak.
+            if (AppSettings.IsJawsDetected) return;
+
             string header = $"Step {CurrentStep} of {TotalSteps}: {CurrentTitle}";
-            // Special handling for the Voice Commands Test step: detect Dragon (natspeak.exe)
-            if (_currentIndex == 3) // zero-based index for step 4
+            // For the Voice Commands Test step also report Dragon status so the user
+            // knows whether Dragon NaturallySpeaking is running before being asked to
+            // say a command.
+            if (_currentIndex == 3)
             {
                 bool dragon = Process.GetProcessesByName("natspeak").Length > 0;
-                string dragonStatus = dragon ? "Dragon detected: Yes." : "Dragon detected: No. Please start Dragon NaturallySpeaking.";
+                string dragonStatus = dragon
+                    ? "Dragon detected: Yes."
+                    : "Dragon not detected. Please start Dragon NaturallySpeaking.";
                 _announcer.Speak(header + ". " + dragonStatus + " " + CurrentContent);
             }
             else
@@ -110,6 +135,7 @@ namespace VoiceBookStudio.ViewModels
         public void Start()
         {
             _currentIndex = 0;
+            NotifyStepProperties();
             AnnounceCurrent();
         }
     }

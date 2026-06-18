@@ -29,11 +29,9 @@ namespace VoiceBookStudio
             var mainVm     = new MainViewModel(projectService, audio, aiService, systemAnnounce);
             var mainWindow = new MainWindow { DataContext = mainVm };
             MainWindow     = mainWindow;
-            mainWindow.Show();
-
-            // InitialiseAsync handles the welcome dialog, tutorial, and startup announcement.
-            // Run it after the window is fully rendered so Owner references work.
+            // Attach before Show() so the handler is guaranteed to fire when the window loads.
             mainWindow.Loaded += async (_, _) => await mainVm.InitialiseAsync();
+            mainWindow.Show();
         }
     }
 }

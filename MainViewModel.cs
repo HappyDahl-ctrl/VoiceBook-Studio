@@ -406,8 +406,13 @@ namespace VoiceBookStudio.ViewModels
             await System.Windows.Application.Current.Dispatcher.InvokeAsync(
                 () => { }, System.Windows.Threading.DispatcherPriority.Background);
 
-            // Show welcome dialog if configured to do so
-            if (VoiceBookStudio.Utils.AppSettings.ShowWelcomeOnStartup && !IsBusy)
+            // Show welcome dialog if the user wants it, OR if they have never completed
+            // the tutorial (catches first-run and cases where ShowWelcomeOnStartup was
+            // accidentally persisted as false before the tutorial was ever finished).
+            bool shouldShow = VoiceBookStudio.Utils.AppSettings.ShowWelcomeOnStartup
+                           || !VoiceBookStudio.Utils.AppSettings.TutorialCompleted;
+
+            if (shouldShow && !IsBusy)
             {
                 var dlg = new Views.WelcomeDialog
                 {

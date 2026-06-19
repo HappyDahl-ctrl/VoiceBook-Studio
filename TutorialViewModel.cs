@@ -20,7 +20,9 @@ namespace VoiceBookStudio.ViewModels
         private readonly SystemAnnouncementService _announcer;
         private readonly AudioFeedbackService _audio;
 
-        private int _currentIndex = 0;
+        // Start at -1 so the first call to Start() always changes the value from
+        // the initial empty-string state, guaranteeing JAWS live regions fire.
+        private int _currentIndex = -1;
         private readonly List<TutorialStep> _steps = new();
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -56,9 +58,12 @@ namespace VoiceBookStudio.ViewModels
         public int CurrentStep => _currentIndex + 1;
         public int TotalSteps => _steps.Count;
 
-        public string StepCounterDisplay => $"Step {CurrentStep} of {TotalSteps}";
-        public string CurrentTitle   => _steps[_currentIndex].Title;
-        public string CurrentContent => _steps[_currentIndex].Content;
+        public string StepCounterDisplay =>
+            _currentIndex < 0 ? string.Empty : $"Step {CurrentStep} of {TotalSteps}";
+        public string CurrentTitle   =>
+            _currentIndex < 0 ? string.Empty : _steps[_currentIndex].Title;
+        public string CurrentContent =>
+            _currentIndex < 0 ? string.Empty : _steps[_currentIndex].Content;
 
         public ICommand NextCommand => new RelayCommand(Next, CanNext);
         public ICommand PreviousCommand => new RelayCommand(Previous, CanPrevious);
@@ -104,7 +109,7 @@ namespace VoiceBookStudio.ViewModels
             TutorialCompleted?.Invoke();
         }
 
-        private bool CanNext() => _currentIndex < _steps.Count - 1;
+        private bool CanNext() => _currentIndex >= 0 && _currentIndex < _steps.Count - 1;
         private bool CanPrevious() => _currentIndex > 0;
 
         private void AnnounceCurrent()

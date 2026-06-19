@@ -17,11 +17,11 @@ namespace VoiceBookStudio.Views
             if (DataContext is TutorialViewModel vm)
                 vm.Start();
 
-            // Focus the Next button so JAWS announces "Next step" after reading the
-            // live-region content, making it clear the app is waiting for user input.
-            // Focusing StepContent would cause JAWS to re-read the instructions a second
-            // time immediately after the live region already played them.
-            NextButton.Focus();
+            // Focus the window rather than any child control. This lets JAWS read
+            // the live regions (title assertive → content polite) without following
+            // up with button text, so the voice cue ("Say 'Yes' to continue" etc.)
+            // is the last thing the user hears — giving a clear silence signal to speak.
+            Focus();
         }
     }
 }

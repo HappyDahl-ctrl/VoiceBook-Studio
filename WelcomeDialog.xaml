@@ -26,9 +26,9 @@
         <CheckBox Name="ShowOnStartupCheckbox"
                   Margin="0,0,0,16"
                   IsChecked="{Binding ShowOnStartup}"
-                  AutomationProperties.Name="Don't show this again on startup"
-                  AutomationProperties.HelpText="Uncheck to prevent this welcome dialog from appearing every time the application starts">
-            Don't show this again on startup
+                  AutomationProperties.Name="Show this dialog on startup"
+                  AutomationProperties.HelpText="Keep checked to see this welcome dialog each time the application starts. Uncheck to skip it in future.">
+            Show this dialog on startup
         </CheckBox>
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">

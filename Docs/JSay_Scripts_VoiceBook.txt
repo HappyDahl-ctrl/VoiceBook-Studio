@@ -1,0 +1,90 @@
+; VoiceBook Studio — JSay 23 Scripts
+; ============================================================
+;
+; HOW TO IMPORT:
+; 1. Right-click JSay in the system tray
+; 2. Select Settings
+; 3. Go to the Scripts tab
+; 4. Use the Import button to load this file,
+;    OR use Add to manually enter each line below
+;
+; Set Target Application = VoiceBook Studio
+; Set Recognition Mode = Continuous
+;
+; FORMAT: "what you say"  {keystroke}
+; ============================================================
+
+; ---- PANEL NAVIGATION ----------------------------------------
+"chapter panel"               {ctrl+1}
+"chapters"                    {ctrl+1}
+"go to chapters"              {ctrl+1}
+"editor panel"                {ctrl+2}
+"writing editor"              {ctrl+2}
+"go to editor"                {ctrl+2}
+"A I panel"                   {ctrl+3}
+"assistant panel"             {ctrl+3}
+"go to assistant"             {ctrl+3}
+
+; ---- FILE OPERATIONS -----------------------------------------
+"save project"                {ctrl+s}
+"save now"                    {ctrl+s}
+"save"                        {ctrl+s}
+"new project"                 {ctrl+n}
+"open project"                {ctrl+o}
+"save as"                     {ctrl+shift+s}
+"import document"             {ctrl+i}
+
+; ---- CHAPTER MANAGEMENT -------------------------------------
+"add chapter"                 {ctrl+a}
+"new chapter"                 {ctrl+a}
+"rename chapter"              {ctrl+d}
+"delete chapter"              {ctrl+del}
+"move chapter up"             {alt+up}
+"move up"                     {alt+up}
+"move chapter down"           {alt+down}
+"move down"                   {alt+down}
+
+; ---- CHAPTER NAVIGATION -------------------------------------
+"next chapter"                {f6}
+"go to next chapter"          {f6}
+"previous chapter"            {f7}
+"go to previous chapter"      {f7}
+
+; ---- READING ------------------------------------------------
+"read paragraph"              {f4}
+"read this paragraph"         {f4}
+"chapter title"               {f5}
+"what chapter"                {f5}
+"read chapter"                {f8}
+"read current chapter"        {f8}
+"app status"                  {f9}
+"application status"          {f9}
+"stop reading"                {ctrl+f4}
+"stop"                        {ctrl+f4}
+"silence"                     {ctrl+f4}
+
+; ---- AI FEEDBACK --------------------------------------------
+"run feedback"                {ctrl+f}
+"get feedback"                {ctrl+f}
+"comprehensive feedback"      {ctrl+f}
+
+; ============================================================
+; END OF SCRIPTS
+; ============================================================
+;
+; NOTE: Commands such as "insert at cursor", "export word",
+; "use prompt F3", and other voice-router commands are not
+; mapped here because they require text to be typed into the
+; chat input box. For those, use one of:
+;
+;  a) VoiceBook's built-in mic (if Dragon/JSay not detected)
+;  b) Type the command directly in the chat input (Panel 3)
+;     and press Enter
+;  c) Add JSay multi-step commands if your JSay version
+;     supports TypeText actions:
+;
+;     "insert at cursor"  {ctrl+3} TypeText "insert at cursor" {enter}
+;     "export manuscript" {ctrl+3} TypeText "export word" {enter}
+;     "save card"         {ctrl+3} TypeText "save card" {enter}
+;
+; ============================================================

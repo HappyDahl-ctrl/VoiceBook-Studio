@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  VoiceBook Studio — Dragon Professional Custom Commands
+
+  HOW TO IMPORT:
+  1. Open Dragon Professional
+  2. DragonBar → Tools → Command Browser
+  3. Click "Manage..." (or "Import...")
+  4. Select this file
+  5. Click Import
+
+  If Import is not available in your Dragon version:
+  Add each command manually using:
+  DragonBar → Tools → Add New Command → MyCommand
+
+  All commands are scoped to VoiceBook Studio only.
+  They will not fire in other applications.
+-->
+
+<CommandSet>
+
+  <AppContext appNames="VoiceBookStudio.exe" />
+
+  <!-- ============================================================ -->
+  <!--  PANEL NAVIGATION                                             -->
+  <!-- ============================================================ -->
+
+  <Command>
+    <name>chapter panel</name>
+    <description>Focus the Chapter list (Panel 1)</description>
+    <steps>
+      <step>PressKey Ctrl+1</step>
+    </steps>
+  </Command>
+
+  <Command>
+    <name>editor panel</name>
+    <description>Focus the Writing editor (Panel 2)</description>
+    <steps>
+      <step>PressKey Ctrl+2</step>
+    </steps>
+  </Command>
+
+  <Command>
+    <name>A I panel</name>
+    <description>Focus the AI Assistant (Panel 3)</description>
+    <steps>
+      <step>PressKey Ctrl+3</step>
+    </steps>
+  </Command>
+
+  <!-- ============================================================ -->
+  <!--  FILE OPERATIONS                                              -->
+  <!-- ============================================================ -->
+
+  <Command>
+    <name>save project</name>
+    <description>Save the current project</description>
+    <steps>
+      <step>PressKey Ctrl+S</step>
+    </steps>
+  </Command>
+
+  <Command>
+    <name>save now</name>
+    <description>Save the current project</description>
+    <steps>
+      <step>PressKey Ctrl+S</step>
+    </steps>
+  </Command>
+
+  <Command>
+    <name>new project</name>
+    <description>Create a new project</description>
+    <steps>
+      <step>PressKey Ctrl+N</step>
+    </steps>
+  </Command>
+
+  <Command>
+    <name>open project</name>
+    <description>Open an existing project</description>
+    <steps>
+      <step>PressKey Ctrl+O</step>
+    </steps>
+  </Command>
+
+  <Command>
+    <name>save as project</name>
+    <description>Save project under a new name</description>
+    <steps>
+      <step>PressKey Ctrl+Shift+S</step>
+    </steps>
+  </Command>
+
+  <Command>
+    <name>import document</name>
+    <description>Import a Word .docx file</description>
+    <steps>
+      <step>PressKey Ctrl+I</step>
+    </steps>
+  </Command>
+
+  <!-- ============================================================ -->
+  <!--  CHAPTER MANAGEMENT                                           -->
+  <!-- ============================================================ -->
+
+  <Command>
+    <name>add chapter</name>
+    <description>Open the Add Chapter dialog</description>
+    <steps>
+      <step>PressKey Ctrl+A</step>
+    </steps>
+  </Command>
+
+  <Command>
+    <name>new chapter</name>
+    <description>Open the Add Chapter dialog</description>
+    <steps>
+      <step>PressKey Ctrl+A</step>
+    </steps>
+  </Command>
+
+  <Command>
+    <name>rename chapter</name>
+    <description>Rename the selected chapter</description>
+    <steps>
+      <step>PressKey Ctrl+D</step>
+    </steps>
+  </Command>
+
+  <Command>
+    <name>delete chapter</name>
+    <description>Delete the selected chapter</description>
+    <steps>
+      <step>PressKey Ctrl+Delete</step>
+    </steps>
+  </Command>
+
+  <Command>
+    <name>move chapter up</name>
+    <description>Move selected chapter up in the list</description>
+    <steps>
+      <step>PressKey Alt+Up</step>
+    </steps>
+  </Command>
+
+  <Command>
+    <name>move chapter down</name>
+    <description>Move selected chapter down in the list</description>
+    <steps>
+      <step>PressKey Alt+Down</step>
+    </steps>
+  </Command>
+
+  <!-- ============================================================ -->
+  <!--  READING AND NAVIGATION                                       -->
+  <!-- ============================================================ -->
+
+  <Command>
+    <name>read paragraph</name>
+    <description>Read the paragraph at the cursor aloud</description>
+    <steps>
+      <step>PressKey F4</step>
+    </steps>
+  </Command>
+
+  <Command>
+    <name>chapter title</name>
+    <description>Announce the current chapter name</description>
+    <steps>
+      <step>PressKey F5</step>
+    </steps>
+  </Command>
+
+  <Command>
+    <name>next chapter</name>
+    <description>Go to the next chapter</description>
+    <steps>
+      <step>PressKey F6</step>
+    </steps>
+  </Command>
+
+  <Command>
+    <name>previous chapter</name>
+    <description>Go to the previous chapter</description>
+    <steps>
+      <step>PressKey F7</step>
+    </steps>
+  </Command>
+
+  <Command>
+    <name>read chapter</name>
+    <description>Read the entire current chapter aloud</description>
+    <steps>
+      <step>PressKey F8</step>
+    </steps>
+  </Command>
+
+  <Command>
+    <name>app status</name>
+    <description>Announce current application status</description>
+    <steps>
+      <step>PressKey F9</step>
+    </steps>
+  </Command>
+
+  <Command>
+    <name>stop reading</name>
+    <description>Stop reading / silence text-to-speech</description>
+    <steps>
+      <step>PressKey Ctrl+F4</step>
+    </steps>
+  </Command>
+
+  <!-- ============================================================ -->
+  <!--  AI FEEDBACK                                                  -->
+  <!-- ============================================================ -->
+
+  <Command>
+    <name>run feedback</name>
+    <description>Run comprehensive AI feedback on current chapter</description>
+    <steps>
+      <step>PressKey Ctrl+F</step>
+    </steps>
+  </Command>
+
+  <Command>
+    <name>comprehensive feedback</name>
+    <description>Run comprehensive AI feedback on current chapter</description>
+    <steps>
+      <step>PressKey Ctrl+F</step>
+    </steps>
+  </Command>
+
+  <!-- ============================================================ -->
+  <!--  CHAT INPUT COMMANDS (Focus Panel 3, type command, Enter)     -->
+  <!-- These send text to VoiceBook's voice command router.          -->
+  <!-- ============================================================ -->
+
+  <Command>
+    <name>insert at cursor</name>
+    <description>Insert AI response at cursor position in the editor</description>
+    <steps>
+      <step>PressKey Ctrl+3</step>
+      <step>TypeKeys insert at cursor{ENTER}</step>
+    </steps>
+  </Command>
+
+  <Command>
+    <name>insert at start</name>
+    <description>Insert AI response at start of chapter</description>
+    <steps>
+      <step>PressKey Ctrl+3</step>
+      <step>TypeKeys insert at start{ENTER}</step>
+    </steps>
+  </Command>
+
+  <Command>
+    <name>insert at end</name>
+    <description>Insert AI response at end of chapter</description>
+    <steps>
+      <step>PressKey Ctrl+3</step>
+      <step>TypeKeys insert at end{ENTER}</step>
+    </steps>
+  </Command>
+
+  <Command>
+    <name>save card</name>
+    <description>Save the current AI response as a Response Card</description>
+    <steps>
+      <step>PressKey Ctrl+3</step>
+      <step>TypeKeys save card{ENTER}</step>
+    </steps>
+  </Command>
+
+  <Command>
+    <name>read response</name>
+    <description>Read the current AI response aloud</description>
+    <steps>
+      <step>PressKey Ctrl+3</step>
+      <step>TypeKeys read response{ENTER}</step>
+    </steps>
+  </Command>
+
+  <Command>
+    <name>export manuscript</name>
+    <description>Export the book as a Word .docx file</description>
+    <steps>
+      <step>PressKey Ctrl+3</step>
+      <step>TypeKeys export word{ENTER}</step>
+    </steps>
+  </Command>
+
+  <Command>
+    <name>export PDF</name>
+    <description>Export the book as a PDF</description>
+    <steps>
+      <step>PressKey Ctrl+3</step>
+      <step>TypeKeys export pdf{ENTER}</step>
+    </steps>
+  </Command>
+
+  <Command>
+    <name>open settings</name>
+    <description>Open the Settings dialog</description>
+    <steps>
+      <step>PressKey Ctrl+3</step>
+      <step>TypeKeys settings{ENTER}</step>
+    </steps>
+  </Command>
+
+  <Command>
+    <name>voice off</name>
+    <description>Turn off VoiceBook text-to-speech</description>
+    <steps>
+      <step>PressKey Ctrl+3</step>
+      <step>TypeKeys voice off{ENTER}</step>
+    </steps>
+  </Command>
+
+  <Command>
+    <name>voice on</name>
+    <description>Turn on VoiceBook text-to-speech</description>
+    <steps>
+      <step>PressKey Ctrl+3</step>
+      <step>TypeKeys voice on{ENTER}</step>
+    </steps>
+  </Command>
+
+  <!-- ============================================================ -->
+  <!--  PACING / DIALOGUE / STYLE / STRUCTURE FEEDBACK              -->
+  <!-- ============================================================ -->
+
+  <Command>
+    <name>pacing feedback</name>
+    <description>Run pacing feedback on current chapter</description>
+    <steps>
+      <step>PressKey Ctrl+3</step>
+      <step>TypeKeys pacing{ENTER}</step>
+    </steps>
+  </Command>
+
+  <Command>
+    <name>dialogue feedback</name>
+    <description>Run dialogue feedback on current chapter</description>
+    <steps>
+      <step>PressKey Ctrl+3</step>
+      <step>TypeKeys dialogue{ENTER}</step>
+    </steps>
+  </Command>
+
+  <Command>
+    <name>style feedback</name>
+    <description>Run style feedback on current chapter</description>
+    <steps>
+      <step>PressKey Ctrl+3</step>
+      <step>TypeKeys style{ENTER}</step>
+    </steps>
+  </Command>
+
+  <Command>
+    <name>structure feedback</name>
+    <description>Run structure feedback on current chapter</description>
+    <steps>
+      <step>PressKey Ctrl+3</step>
+      <step>TypeKeys structure{ENTER}</step>
+    </steps>
+  </Command>
+
+  <Command>
+    <name>book feedback</name>
+    <description>Run full-book AI analysis</description>
+    <steps>
+      <step>PressKey Ctrl+3</step>
+      <step>TypeKeys analyse book{ENTER}</step>
+    </steps>
+  </Command>
+
+  <!-- ============================================================ -->
+  <!--  COMMON PROMPTS BY ID                                         -->
+  <!--  Add more as needed by duplicating the pattern below.         -->
+  <!-- ============================================================ -->
+
+  <Command>
+    <name>use prompt A one</name>
+    <description>Load prompt A1 — Proofread for grammar and spelling</description>
+    <steps>
+      <step>PressKey Ctrl+3</step>
+      <step>TypeKeys use prompt a1{ENTER}</step>
+    </steps>
+  </Command>
+
+  <Command>
+    <name>use prompt A two</name>
+    <description>Load prompt A2 — Tighten prose without losing voice</description>
+    <steps>
+      <step>PressKey Ctrl+3</step>
+      <step>TypeKeys use prompt a2{ENTER}</step>
+    </steps>
+  </Command>
+
+  <Command>
+    <name>use prompt B one</name>
+    <description>Load prompt B1 — Strengthen character voice</description>
+    <steps>
+      <step>PressKey Ctrl+3</step>
+      <step>TypeKeys use prompt b1{ENTER}</step>
+    </steps>
+  </Command>
+
+  <Command>
+    <name>use prompt F three</name>
+    <description>Load prompt F3 — Add metaphors and similes</description>
+    <steps>
+      <step>PressKey Ctrl+3</step>
+      <step>TypeKeys use prompt f3{ENTER}</step>
+    </steps>
+  </Command>
+
+  <Command>
+    <name>use prompt J one</name>
+    <description>Load prompt J1 — Write a compelling opening line</description>
+    <steps>
+      <step>PressKey Ctrl+3</step>
+      <step>TypeKeys use prompt j1{ENTER}</step>
+    </steps>
+  </Command>
+
+  <!-- Add additional "use prompt [letter] [number]" commands here following the same pattern -->
+
+</CommandSet>

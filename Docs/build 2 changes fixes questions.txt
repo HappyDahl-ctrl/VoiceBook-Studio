@@ -1,0 +1,15 @@
+1. In Panel 3 you can ask Claude any question and run AI feedback on the current chapter. Q: Does Claude still retain the memory of the entire book/project (all it's section/chapters etc...) while working in the single chaperts? I want it to be able to understand and know the entire book while in a project while working in single chapters ansering only and working only with that chapter but still having knowledge of the whole thing.
+
+2. Word count is displayed above the editor and announced when it changes. Q: Is this every sinngle character or word thers is an updated word count announcement? 
+
+3. throughout the manual the instructions are to use arrow keys navigate the list, 		"navigate" (I assume means to use the arrow keys here too?) to your .vbk file, press Alt 	to open the menu bar, then use arrow 	keys...etc Q: Besides obviously just using the arrow keys to do these things as described, does Dragon/JSay voice commands for using arrow keys or performing selections and navigating options and lists etc....also work?
+4. when Reordering I would simply say: "Move up" / "Move down" / "Move chapter up" / "Move chapter down". Q: do those specific commands apply only to Reordering (by saying "move....")?
+
+5. Do the prompts and response cards ID's go off of any organizational structure and relational to their ccategories to help remeber them? for example does the prompt cards need an ID named A-Z plus a number and like for example editing prompts would start with an E, writing assitance like finishing paragraphs or sentences or similiar would start with a C for Content, and maybe F plus a number would be for feedback type prompts? I dunno...if it seems to complicated then nevermind.
+
+6. Export: Does export to a word (docx) file also format the entire document in the updated ebook format? Can there be an option to also format it upon export to a word docx file as a manuscript? or screenplay? or what about for the format that is used to create actual hard and soft cover books? 
+
+7. I want the app to have the ability to apply images between pages in the chapters or wherever. Even a section for the author's bio and the profile image of the author. 
+
+8. I want the app to scan the project right after the user initiates the export to wrod docx file and give it's feedback on the readiness of the completetion and/or publication of the book.
+

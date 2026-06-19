@@ -1,0 +1,59 @@
+<Window x:Class="VoiceBookStudio.Views.WelcomeDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Welcome to VoiceBook Studio"
+        SizeToContent="WidthAndHeight"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        WindowStyle="SingleBorderWindow"
+        ContentRendered="Window_ContentRendered"
+        AutomationProperties.Name="Welcome to VoiceBook Studio"
+        AutomationProperties.HelpText="Choose whether to start the guided tour or open the application directly">
+
+    <StackPanel Margin="24" Width="520">
+
+        <!--
+            Live region picked up by JAWS when its Text changes from empty to the
+            welcome message. Height=0 keeps it invisible to sighted users.
+        -->
+        <TextBlock x:Name="AnnouncementText"
+                   AutomationProperties.LiveSetting="Assertive"
+                   Text=""
+                   Height="0"
+                   Focusable="False"/>
+
+        <TextBlock Text="Welcome to VoiceBook Studio"
+                   FontSize="20" FontWeight="Bold"
+                   Margin="0,0,0,12"
+                   AutomationProperties.Name="Welcome to VoiceBook Studio heading"/>
+
+        <TextBlock TextWrapping="Wrap" FontSize="13"
+                   Margin="0,0,0,24"
+                   AutomationProperties.Name="This is a writing application designed for complete voice control. JAWS will read all controls. Dragon commands are active.">
+            This is a writing application designed for complete voice control.
+            JAWS will read all controls. Dragon commands are active.
+        </TextBlock>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+
+            <Button x:Name="StartButton"
+                    Width="180" Margin="0,0,12,0"
+                    IsDefault="True"
+                    Command="{Binding StartTutorialCommand}"
+                    AutomationProperties.Name="Start guided tour"
+                    AutomationProperties.HelpText="Activating this button begins a step-by-step introduction to VoiceBook Studio. Dragon users say click start guided tour.">
+                Start guided tour
+            </Button>
+
+            <Button x:Name="SkipButton"
+                    Width="180"
+                    IsCancel="True"
+                    Command="{Binding SkipTutorialCommand}"
+                    AutomationProperties.Name="Skip tour and open the application"
+                    AutomationProperties.HelpText="Activating this button closes this dialog and opens VoiceBook Studio immediately. Dragon users say click skip tour and open the application.">
+                Skip tour
+            </Button>
+
+        </StackPanel>
+    </StackPanel>
+</Window>

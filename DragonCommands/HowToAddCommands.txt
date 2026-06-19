@@ -1,0 +1,428 @@
+VoiceBook Studio: How to Add Voice Commands in Dragon Professional v16
+======================================================================
+
+This file contains step-by-step instructions for creating every VoiceBook Studio
+voice command inside Dragon's Command Browser. Read each section carefully before
+starting. All steps are written for keyboard navigation with JAWS.
+
+
+WHY YOU MUST ADD COMMANDS MANUALLY
+-----------------------------------
+
+Dragon Professional v16 can only import command files in Dragon's own dot-dat
+format. The XML file included with VoiceBook Studio is for reference only and
+cannot be imported directly. Each command must be entered manually using the
+procedure described below.
+
+Once you have entered all commands, you will not need to repeat this process
+unless you reinstall Dragon or move to a different computer.
+
+
+HOW TO OPEN THE COMMAND BROWSER
+---------------------------------
+
+Say "Open Dragon Command Browser" while Dragon is running. Dragon will open
+the MyCommands Editor. Alternatively, you can say "Open MyCommands" or press
+the DragonBar menu key and navigate to Tools, then MyCommands.
+
+When the MyCommands Editor opens, JAWS will announce the window title. You are
+now in the command list. Press Tab to move between the list and the action buttons.
+
+
+HOW TO CREATE ONE COMMAND (GENERAL PROCEDURE)
+-----------------------------------------------
+
+Use these steps for every command listed in this file. Repeat the procedure
+once for each command.
+
+Step 1. In the MyCommands Editor, press Tab until you reach the New button, then
+press Space to activate it. A new command form will open.
+
+Step 2. JAWS will announce that a new command is being created. The cursor will
+be in the Name field. Type the command name exactly as shown in the listing
+below. Spelling and spacing must match exactly, including any angle brackets
+for variable names.
+
+Step 3. Press Tab to move to the Command Type field. Press the Down arrow key
+until JAWS announces Advanced Scripting. This is the correct type for all
+VoiceBook Studio commands.
+
+Step 4. Press Tab to move to the Availability section. Press the Down arrow key
+until JAWS announces Application-specific. Then Tab to the application name
+field and type:   VoiceBook Studio
+
+Step 5. Press Tab to move to the Script area. Type the script exactly as shown
+in the listing below for that command. The script must begin with the line
+Sub Main and end with the line End Sub.
+
+Step 6. Press Tab until you reach the Save button and press Space, or press
+Enter to save the command.
+
+Step 7. JAWS will return you to the command list. The new command will appear
+in the list. Repeat from Step 1 for the next command.
+
+
+IMPORTANT NOTE ABOUT KEYSTROKE NOTATION IN SCRIPTS
+----------------------------------------------------
+
+In Dragon Basic scripts, the caret character means Control. So the text
+caret s means Control S, and caret 1 means Control 1. Curly braces surround
+special keys: F6 means the F6 function key, DEL means the Delete key,
+F4 means the F4 function key, and ENTER means the Enter key.
+
+When you type the scripts below, type the caret and brace characters exactly
+as shown. Do not substitute any characters or add extra spaces.
+
+
+THE VOICEBOOK STUDIO COMMANDS
+================================
+
+Enter each command below using the procedure described above.
+
+
+NAVIGATION COMMANDS
+--------------------
+
+Command name: go to chapters
+Type: Advanced Scripting
+Availability: Application-specific, application name VoiceBook Studio
+Script:
+Sub Main
+  SendKeys "^1"
+End Sub
+
+
+Command name: go to chapter list
+Type: Advanced Scripting
+Availability: Application-specific, application name VoiceBook Studio
+Script:
+Sub Main
+  SendKeys "^1"
+End Sub
+
+
+Command name: go to editor
+Type: Advanced Scripting
+Availability: Application-specific, application name VoiceBook Studio
+Script:
+Sub Main
+  SendKeys "^2"
+End Sub
+
+
+Command name: open writing editor
+Type: Advanced Scripting
+Availability: Application-specific, application name VoiceBook Studio
+Script:
+Sub Main
+  SendKeys "^2"
+End Sub
+
+
+Command name: go to assistant
+Type: Advanced Scripting
+Availability: Application-specific, application name VoiceBook Studio
+Script:
+Sub Main
+  SendKeys "^3"
+End Sub
+
+
+Command name: open assistant panel
+Type: Advanced Scripting
+Availability: Application-specific, application name VoiceBook Studio
+Script:
+Sub Main
+  SendKeys "^3"
+End Sub
+
+
+CHAPTER COMMANDS
+-----------------
+
+Command name: new chapter
+Type: Advanced Scripting
+Availability: Application-specific, application name VoiceBook Studio
+Script:
+Sub Main
+  SendKeys "^a"
+End Sub
+
+
+Command name: new section
+Type: Advanced Scripting
+Availability: Application-specific, application name VoiceBook Studio
+Script:
+Sub Main
+  SendKeys "^a"
+End Sub
+
+
+Command name: open chapter
+Type: Advanced Scripting
+Availability: Application-specific, application name VoiceBook Studio
+Script:
+Sub Main
+  AppBringUp "VoiceBook Studio"
+  Wait 100
+  SendKeys "^3"
+  Wait 200
+  SendKeys "open chapter{ENTER}"
+End Sub
+
+
+Command name: save chapter
+Type: Advanced Scripting
+Availability: Application-specific, application name VoiceBook Studio
+Script:
+Sub Main
+  SendKeys "^s"
+End Sub
+
+
+Command name: save all
+Type: Advanced Scripting
+Availability: Application-specific, application name VoiceBook Studio
+Script:
+Sub Main
+  SendKeys "^s"
+End Sub
+
+
+Command name: delete chapter
+Type: Advanced Scripting
+Availability: Application-specific, application name VoiceBook Studio
+Script:
+Sub Main
+  SendKeys "^{DEL}"
+End Sub
+
+
+Command name: next chapter
+Type: Advanced Scripting
+Availability: Application-specific, application name VoiceBook Studio
+Script:
+Sub Main
+  SendKeys "{F6}"
+End Sub
+
+
+Command name: previous chapter
+Type: Advanced Scripting
+Availability: Application-specific, application name VoiceBook Studio
+Script:
+Sub Main
+  SendKeys "{F7}"
+End Sub
+
+
+Command name: read chapter title
+Type: Advanced Scripting
+Availability: Application-specific, application name VoiceBook Studio
+Script:
+Sub Main
+  SendKeys "{F5}"
+End Sub
+
+
+EDITOR COMMANDS
+----------------
+
+Note: Dragon Full Text Control handles all dictation, correction, selection,
+and standard editing commands in the writing editor. Do not create Dragon
+commands for dictation or standard editing. Only the application-specific
+reading and navigation commands listed below need to be added.
+
+
+Command name: read paragraph
+Type: Advanced Scripting
+Availability: Application-specific, application name VoiceBook Studio
+Script:
+Sub Main
+  SendKeys "{F4}"
+End Sub
+
+
+Command name: read chapter
+Type: Advanced Scripting
+Availability: Application-specific, application name VoiceBook Studio
+Script:
+Sub Main
+  SendKeys "{F8}"
+End Sub
+
+
+Command name: stop reading
+Type: Advanced Scripting
+Availability: Application-specific, application name VoiceBook Studio
+Script:
+Sub Main
+  SendKeys "^{F4}"
+End Sub
+
+
+AI ASSISTANT COMMANDS
+----------------------
+
+Command name: ask assistant <dictation>
+Type: Advanced Scripting
+Availability: Application-specific, application name VoiceBook Studio
+Script:
+Sub Main
+  Dim sText As String
+  sText = DgnGetVar("dictation")
+  If Len(Trim(sText)) = 0 Then Exit Sub
+  AppBringUp "VoiceBook Studio"
+  Wait 100
+  SendKeys "^3"
+  Wait 200
+  SendKeys sText & "{ENTER}"
+End Sub
+
+Note for the ask assistant command: The command name contains angle brackets
+around the word dictation. Type the name exactly as shown, including the less-than
+sign before the word dictation and the greater-than sign after it. This tells
+Dragon to capture whatever words you say after the phrase ask assistant and pass
+them to the script as a variable. For example, saying ask assistant how do I
+write a strong opening chapter will send that question directly to the AI.
+
+
+Command name: read response
+Type: Advanced Scripting
+Availability: Application-specific, application name VoiceBook Studio
+Script:
+Sub Main
+  AppBringUp "VoiceBook Studio"
+  Wait 100
+  SendKeys "^3"
+  Wait 200
+  SendKeys "read response{ENTER}"
+End Sub
+
+
+Command name: keep response
+Type: Advanced Scripting
+Availability: Application-specific, application name VoiceBook Studio
+Script:
+Sub Main
+  AppBringUp "VoiceBook Studio"
+  Wait 100
+  SendKeys "^3"
+  Wait 200
+  SendKeys "keep response{ENTER}"
+End Sub
+
+
+Command name: discard response
+Type: Advanced Scripting
+Availability: Application-specific, application name VoiceBook Studio
+Script:
+Sub Main
+  AppBringUp "VoiceBook Studio"
+  Wait 100
+  SendKeys "^3"
+  Wait 200
+  SendKeys "discard response{ENTER}"
+End Sub
+
+
+Command name: save as prompt
+Type: Advanced Scripting
+Availability: Application-specific, application name VoiceBook Studio
+Script:
+Sub Main
+  AppBringUp "VoiceBook Studio"
+  Wait 100
+  SendKeys "^3"
+  Wait 200
+  SendKeys "save as prompt{ENTER}"
+End Sub
+
+
+APPLICATION COMMANDS
+---------------------
+
+Command name: list commands
+Type: Advanced Scripting
+Availability: Application-specific, application name VoiceBook Studio
+Script:
+Sub Main
+  AppBringUp "VoiceBook Studio"
+  Wait 100
+  SendKeys "^3"
+  Wait 200
+  SendKeys "list commands{ENTER}"
+End Sub
+
+
+Command name: what can I say
+Type: Advanced Scripting
+Availability: Application-specific, application name VoiceBook Studio
+Script:
+Sub Main
+  AppBringUp "VoiceBook Studio"
+  Wait 100
+  SendKeys "^3"
+  Wait 200
+  SendKeys "what can I say{ENTER}"
+End Sub
+
+
+Command name: application status
+Type: Advanced Scripting
+Availability: Application-specific, application name VoiceBook Studio
+Script:
+Sub Main
+  SendKeys "{F9}"
+End Sub
+
+
+Command name: new project
+Type: Advanced Scripting
+Availability: Application-specific, application name VoiceBook Studio
+Script:
+Sub Main
+  SendKeys "^n"
+End Sub
+
+
+Command name: open project
+Type: Advanced Scripting
+Availability: Application-specific, application name VoiceBook Studio
+Script:
+Sub Main
+  SendKeys "^o"
+End Sub
+
+
+Command name: close application
+Type: Advanced Scripting
+Availability: Application-specific, application name VoiceBook Studio
+Script:
+Sub Main
+  AppBringUp "VoiceBook Studio"
+  Wait 100
+  SendKeys "^3"
+  Wait 200
+  SendKeys "close application{ENTER}"
+End Sub
+
+
+VERIFYING YOUR COMMANDS
+------------------------
+
+After entering all commands, say "list commands" while VoiceBook Studio is open.
+VoiceBook Studio will announce the available commands for the current panel. If
+you hear the announcement, the commands are working correctly.
+
+To test a specific command, say the command name while VoiceBook Studio is the
+active application. If the command does not respond, return to the Dragon Command
+Browser, find the command in the list, press Enter on it to open it, and check
+that the name, type, availability, and script all match what is shown in this file.
+
+If a command fires in the wrong application, check that the Availability field
+is set to Application-specific and that the application name is entered as
+VoiceBook Studio with no extra spaces or characters.
+
+
+END OF FILE

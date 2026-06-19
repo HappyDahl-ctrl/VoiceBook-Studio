@@ -1,0 +1,503 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  VoiceBook Studio — Dragon Professional v16 MyCommands file
+  =============================================================
+  Import via Dragon toolbar > Tools > Manage Vocabularies > MyCommands > Import
+  (or open the MyCommands editor, click Import, select this file)
+
+  All commands are scoped to windows whose title starts with "VoiceBook Studio"
+  so they do not fire in any other application.
+
+  KEYSTROKE NOTATION (Dragon SendKeys)
+    ^    = Ctrl        %  = Alt         +  = Shift
+    ~    = Enter       {ENTER} = Enter  {ESC} = Escape
+    {F1}–{F12} = function keys          {DEL} = Delete
+    {UP} {DOWN} {LEFT} {RIGHT} = arrow keys
+    ^1   = Ctrl+1      ^s = Ctrl+S      %{F4} = Alt+F4
+    ^+s  = Ctrl+Shift+S
+
+  ROUTING NOTE
+    Commands marked "VoiceCommandRouter" work by scripting Dragon to press
+    Ctrl+3 (which focuses the AI assistant panel and its chat input box),
+    type the command text, then press Enter.  VoiceBookStudio intercepts the
+    text in ChatInputBox_KeyDown and routes it through VoiceCommandRouter.
+-->
+<NaturallySpeaking>
+  <CommandSet name="VoiceBook Studio"
+              global="0"
+              enabled="1">
+
+    <AppContext>
+      <AppTitle>VoiceBook Studio</AppTitle>
+      <AppTitleMatch>startswith</AppTitleMatch>
+    </AppContext>
+
+    <Commands>
+
+      <!-- ==============================================================
+           NAVIGATION COMMANDS
+           ============================================================== -->
+
+      <!--
+        "go to chapters" / "go to chapter list"
+        Focuses the chapter list panel (left panel, F1 / Ctrl+1).
+        Ctrl+1 is handled by MainWindow PreviewKeyDown → ViewModel.FocusPanel1().
+      -->
+      <Command>
+        <CmdName>go to chapters</CmdName>
+        <CmdType>keystroke</CmdType>
+        <KeyString>^1</KeyString>
+        <Enabled>1</Enabled>
+        <Description>Focus the chapter list panel (Ctrl+1)</Description>
+      </Command>
+
+      <Command>
+        <CmdName>go to chapter list</CmdName>
+        <CmdType>keystroke</CmdType>
+        <KeyString>^1</KeyString>
+        <Enabled>1</Enabled>
+        <Description>Focus the chapter list panel (Ctrl+1)</Description>
+      </Command>
+
+      <!--
+        "go to editor" / "open writing editor"
+        Focuses the writing editor panel (centre, F2 / Ctrl+2).
+      -->
+      <Command>
+        <CmdName>go to editor</CmdName>
+        <CmdType>keystroke</CmdType>
+        <KeyString>^2</KeyString>
+        <Enabled>1</Enabled>
+        <Description>Focus the writing editor panel (Ctrl+2)</Description>
+      </Command>
+
+      <Command>
+        <CmdName>open writing editor</CmdName>
+        <CmdType>keystroke</CmdType>
+        <KeyString>^2</KeyString>
+        <Enabled>1</Enabled>
+        <Description>Focus the writing editor panel (Ctrl+2)</Description>
+      </Command>
+
+      <!--
+        "go to assistant" / "open assistant panel"
+        Focuses the AI assistant panel (right panel, F3 / Ctrl+3).
+        Also moves focus to the chat input box so text commands can be typed.
+      -->
+      <Command>
+        <CmdName>go to assistant</CmdName>
+        <CmdType>keystroke</CmdType>
+        <KeyString>^3</KeyString>
+        <Enabled>1</Enabled>
+        <Description>Focus the AI assistant panel (Ctrl+3)</Description>
+      </Command>
+
+      <Command>
+        <CmdName>open assistant panel</CmdName>
+        <CmdType>keystroke</CmdType>
+        <KeyString>^3</KeyString>
+        <Enabled>1</Enabled>
+        <Description>Focus the AI assistant panel (Ctrl+3)</Description>
+      </Command>
+
+      <!-- ==============================================================
+           CHAPTER COMMANDS
+           ============================================================== -->
+
+      <!--
+        "new chapter"
+        Opens the Add Chapter dialog (Ctrl+A).
+        Dragon Full Text Control in the editor does not intercept Ctrl+A here —
+        the WPF KeyBinding fires before the editor because it is on the main window.
+      -->
+      <Command>
+        <CmdName>new chapter</CmdName>
+        <CmdType>keystroke</CmdType>
+        <KeyString>^a</KeyString>
+        <Enabled>1</Enabled>
+        <Description>Open the Add Chapter dialog (Ctrl+A)</Description>
+      </Command>
+
+      <!--
+        "open chapter"
+        Focuses the chapter list panel.  JAWS will announce the list.
+        Use "click [chapter name]" via Dragon to select the desired chapter,
+        or navigate with arrow keys and press Enter.
+        Routes via VoiceCommandRouter → TryOpenChapter().
+      -->
+      <Command>
+        <CmdName>open chapter</CmdName>
+        <CmdType>script</CmdType>
+        <Script><![CDATA[
+Sub Main
+  AppBringUp "VoiceBook Studio"
+  Wait 100
+  SendKeys "^3"
+  Wait 200
+  SendKeys "open chapter{ENTER}"
+End Sub
+        ]]></Script>
+        <Enabled>1</Enabled>
+        <Description>Announce available chapters and focus the chapter list. VoiceCommandRouter → TryOpenChapter()</Description>
+      </Command>
+
+      <!--
+        "save chapter"
+        Saves the current project (Ctrl+S).  Because only one project is open at
+        a time, "save chapter" and "save all" both map to Ctrl+S.
+      -->
+      <Command>
+        <CmdName>save chapter</CmdName>
+        <CmdType>keystroke</CmdType>
+        <KeyString>^s</KeyString>
+        <Enabled>1</Enabled>
+        <Description>Save the current project (Ctrl+S)</Description>
+      </Command>
+
+      <!--
+        "delete chapter"
+        Deletes the selected chapter after confirmation (Ctrl+Delete).
+      -->
+      <Command>
+        <CmdName>delete chapter</CmdName>
+        <CmdType>keystroke</CmdType>
+        <KeyString>^{DEL}</KeyString>
+        <Enabled>1</Enabled>
+        <Description>Delete the selected chapter (Ctrl+Delete) — confirmation dialog appears</Description>
+      </Command>
+
+      <!--
+        "next chapter" / "previous chapter"
+        Navigate to the next or previous chapter in the list.
+        F6 / F7 are application-level shortcuts handled by PreviewKeyDown and
+        EditorRtb_KeyDown, so they fire regardless of which panel has focus.
+        Also registered as text commands in VoiceCommandRouter for the chat path.
+      -->
+      <Command>
+        <CmdName>next chapter</CmdName>
+        <CmdType>keystroke</CmdType>
+        <KeyString>{F6}</KeyString>
+        <Enabled>1</Enabled>
+        <Description>Select the next chapter in the list (F6) → VoiceCommandRouter → TrySelectNextChapter()</Description>
+      </Command>
+
+      <Command>
+        <CmdName>previous chapter</CmdName>
+        <CmdType>keystroke</CmdType>
+        <KeyString>{F7}</KeyString>
+        <Enabled>1</Enabled>
+        <Description>Select the previous chapter in the list (F7) → VoiceCommandRouter → TrySelectPreviousChapter()</Description>
+      </Command>
+
+      <!--
+        "read chapter title"
+        Speaks the name of the currently open chapter.
+        F5 fires from any focus position.
+      -->
+      <Command>
+        <CmdName>read chapter title</CmdName>
+        <CmdType>keystroke</CmdType>
+        <KeyString>{F5}</KeyString>
+        <Enabled>1</Enabled>
+        <Description>Announce the current chapter title (F5) → VoiceCommandRouter → TryAnnounceChapterTitle()</Description>
+      </Command>
+
+      <!-- ==============================================================
+           EDITOR COMMANDS
+           Note: Dragon Full Text Control is active in the WinForms RichTextBox.
+           Selection, cursor movement, dictation, correction, and standard
+           editing commands are handled natively by Dragon — do NOT redefine
+           them here.  Only app-specific reading/navigation commands are listed.
+           "new paragraph" is Dragon-native (says "Enter") — not redefined.
+           ============================================================== -->
+
+      <!--
+        "read paragraph"
+        Reads the paragraph at the current cursor position using the app's TTS.
+        F4 fires from any focus position (works in editor and all panels).
+        ALSO routed via chat text path for flexibility.
+        NOTE: Does not conflict with J-Say's "read line" (different phrase).
+      -->
+      <Command>
+        <CmdName>read paragraph</CmdName>
+        <CmdType>keystroke</CmdType>
+        <KeyString>{F4}</KeyString>
+        <Enabled>1</Enabled>
+        <Description>Read the paragraph at the cursor (F4) → VoiceCommandRouter → TryReadParagraph()</Description>
+      </Command>
+
+      <!--
+        "read chapter"
+        Reads the entire chapter text aloud via the app's TTS reading queue.
+        F8 fires from any focus position.
+        NOTE: Does not conflict with J-Say's "read document" (different phrase).
+      -->
+      <Command>
+        <CmdName>read chapter</CmdName>
+        <CmdType>keystroke</CmdType>
+        <KeyString>{F8}</KeyString>
+        <Enabled>1</Enabled>
+        <Description>Read the entire current chapter aloud (F8) → VoiceCommandRouter → TryReadChapter()</Description>
+      </Command>
+
+      <!--
+        "stop reading"
+        Stops any active TTS reading immediately.
+        Uses a dedicated keystroke (Ctrl+F4) so it works regardless of focus.
+        NOTE: Dragon's own "stop" command stops Dragon's playback, not this app's TTS.
+        "stop reading" (two words) does not conflict with Dragon's "stop" command.
+      -->
+      <Command>
+        <CmdName>stop reading</CmdName>
+        <CmdType>keystroke</CmdType>
+        <KeyString>^{F4}</KeyString>
+        <Enabled>1</Enabled>
+        <Description>Stop active TTS reading (Ctrl+F4) → VoiceCommandRouter → TryStopReading()</Description>
+      </Command>
+
+      <!--
+        "new section"
+        Opens the Add Section dialog (same as Ctrl+A for new chapter).
+        VoiceCommandRouter maps "new section" to TryAddChapter().
+      -->
+      <Command>
+        <CmdName>new section</CmdName>
+        <CmdType>keystroke</CmdType>
+        <KeyString>^a</KeyString>
+        <Enabled>1</Enabled>
+        <Description>Open the Add Section dialog (Ctrl+A) — same as new chapter</Description>
+      </Command>
+
+      <!-- ==============================================================
+           ASSISTANT COMMANDS
+           ============================================================== -->
+
+      <!--
+        "ask assistant <dictation>"
+        Sends dictated text directly to the AI assistant.
+        Dragon captures the words after "ask assistant" as the <dictation> variable.
+        The script focuses the chat box (Ctrl+3), types the dictated text, and presses Enter.
+        Example: say "ask assistant how do I write a strong opening chapter"
+      -->
+      <Command>
+        <CmdName>ask assistant &lt;dictation&gt;</CmdName>
+        <CmdType>script</CmdType>
+        <Script><![CDATA[
+Sub Main
+  Dim sText As String
+  sText = DgnGetVar("dictation")
+  If Len(Trim(sText)) = 0 Then Exit Sub
+  AppBringUp "VoiceBook Studio"
+  Wait 100
+  SendKeys "^3"
+  Wait 200
+  SendKeys sText & "{ENTER}"
+End Sub
+        ]]></Script>
+        <Enabled>1</Enabled>
+        <Description>Send dictated question to the AI assistant. Example: ask assistant what is the theme of my book</Description>
+      </Command>
+
+      <!--
+        "read response"
+        Reads the last AI response aloud using the app's TTS reading queue.
+        Routes via VoiceCommandRouter → TryReadAiResponse().
+      -->
+      <Command>
+        <CmdName>read response</CmdName>
+        <CmdType>script</CmdType>
+        <Script><![CDATA[
+Sub Main
+  AppBringUp "VoiceBook Studio"
+  Wait 100
+  SendKeys "^3"
+  Wait 200
+  SendKeys "read response{ENTER}"
+End Sub
+        ]]></Script>
+        <Enabled>1</Enabled>
+        <Description>Read the last AI response aloud. VoiceCommandRouter → TryReadAiResponse()</Description>
+      </Command>
+
+      <!--
+        "keep response"
+        Saves the current AI response as a response card.
+        Routes via VoiceCommandRouter → TrySaveResponseCard() → opens Save Card dialog.
+      -->
+      <Command>
+        <CmdName>keep response</CmdName>
+        <CmdType>script</CmdType>
+        <Script><![CDATA[
+Sub Main
+  AppBringUp "VoiceBook Studio"
+  Wait 100
+  SendKeys "^3"
+  Wait 200
+  SendKeys "keep response{ENTER}"
+End Sub
+        ]]></Script>
+        <Enabled>1</Enabled>
+        <Description>Save the AI response as a response card. VoiceCommandRouter → TrySaveResponseCard()</Description>
+      </Command>
+
+      <!--
+        "discard response"
+        Clears the current AI response from the display.
+        Routes via VoiceCommandRouter → TryDiscardResponse().
+      -->
+      <Command>
+        <CmdName>discard response</CmdName>
+        <CmdType>script</CmdType>
+        <Script><![CDATA[
+Sub Main
+  AppBringUp "VoiceBook Studio"
+  Wait 100
+  SendKeys "^3"
+  Wait 200
+  SendKeys "discard response{ENTER}"
+End Sub
+        ]]></Script>
+        <Enabled>1</Enabled>
+        <Description>Clear the current AI response. VoiceCommandRouter → TryDiscardResponse()</Description>
+      </Command>
+
+      <!--
+        "save as prompt"
+        Opens the Add Prompt dialog to save the current question as a reusable prompt.
+        Routes via VoiceCommandRouter → TryAddPrompt().
+      -->
+      <Command>
+        <CmdName>save as prompt</CmdName>
+        <CmdType>script</CmdType>
+        <Script><![CDATA[
+Sub Main
+  AppBringUp "VoiceBook Studio"
+  Wait 100
+  SendKeys "^3"
+  Wait 200
+  SendKeys "save as prompt{ENTER}"
+End Sub
+        ]]></Script>
+        <Enabled>1</Enabled>
+        <Description>Save current text as a reusable prompt. VoiceCommandRouter → TryAddPrompt()</Description>
+      </Command>
+
+      <!-- ==============================================================
+           APPLICATION COMMANDS
+           ============================================================== -->
+
+      <!--
+        "list commands" / "what can I say"
+        Announces all available voice commands for the current panel context.
+        Routes via VoiceCommandRouter → AnnounceContextualHelp().
+      -->
+      <Command>
+        <CmdName>list commands</CmdName>
+        <CmdType>script</CmdType>
+        <Script><![CDATA[
+Sub Main
+  AppBringUp "VoiceBook Studio"
+  Wait 100
+  SendKeys "^3"
+  Wait 200
+  SendKeys "list commands{ENTER}"
+End Sub
+        ]]></Script>
+        <Enabled>1</Enabled>
+        <Description>Announce all available commands for the current panel. VoiceCommandRouter → AnnounceContextualHelp()</Description>
+      </Command>
+
+      <Command>
+        <CmdName>what can I say</CmdName>
+        <CmdType>script</CmdType>
+        <Script><![CDATA[
+Sub Main
+  AppBringUp "VoiceBook Studio"
+  Wait 100
+  SendKeys "^3"
+  Wait 200
+  SendKeys "what can I say{ENTER}"
+End Sub
+        ]]></Script>
+        <Enabled>1</Enabled>
+        <Description>Announce all available commands. VoiceCommandRouter → AnnounceContextualHelp()</Description>
+      </Command>
+
+      <!--
+        "application status"
+        Speaks a summary of the current application state: project name,
+        chapter count, selected chapter, save state, AI status, and AT status.
+        F9 fires from any focus position.
+      -->
+      <Command>
+        <CmdName>application status</CmdName>
+        <CmdType>keystroke</CmdType>
+        <KeyString>{F9}</KeyString>
+        <Enabled>1</Enabled>
+        <Description>Announce current application state summary (F9) → VoiceCommandRouter → TryAnnounceApplicationStatus()</Description>
+      </Command>
+
+      <!--
+        "save all"
+        Saves the current project. Because only one project can be open at a time
+        in VoiceBook Studio, "save all" is equivalent to "save chapter" (Ctrl+S).
+      -->
+      <Command>
+        <CmdName>save all</CmdName>
+        <CmdType>keystroke</CmdType>
+        <KeyString>^s</KeyString>
+        <Enabled>1</Enabled>
+        <Description>Save the current project (Ctrl+S)</Description>
+      </Command>
+
+      <!--
+        "open project"
+        Opens the project file picker (Ctrl+O).
+      -->
+      <Command>
+        <CmdName>open project</CmdName>
+        <CmdType>keystroke</CmdType>
+        <KeyString>^o</KeyString>
+        <Enabled>1</Enabled>
+        <Description>Open a project file (Ctrl+O)</Description>
+      </Command>
+
+      <!--
+        "new project"
+        Opens the New Project flow (Ctrl+N).
+      -->
+      <Command>
+        <CmdName>new project</CmdName>
+        <CmdType>keystroke</CmdType>
+        <KeyString>^n</KeyString>
+        <Enabled>1</Enabled>
+        <Description>Create a new project (Ctrl+N)</Description>
+      </Command>
+
+      <!--
+        "close application"
+        Closes VoiceBook Studio.  The app will prompt to save unsaved changes
+        via its normal close dialog.  Alt+F4 is the standard Windows close shortcut.
+        NOTE: A spoken warning is read by JAWS from the close confirmation dialog
+        that Windows/WPF shows if there are unsaved changes; Dragon's "close that"
+        is a different (UI Automation) command and does not conflict.
+      -->
+      <Command>
+        <CmdName>close application</CmdName>
+        <CmdType>script</CmdType>
+        <Script><![CDATA[
+Sub Main
+  AppBringUp "VoiceBook Studio"
+  Wait 100
+  SendKeys "^3"
+  Wait 200
+  SendKeys "close application{ENTER}"
+End Sub
+        ]]></Script>
+        <Enabled>1</Enabled>
+        <Description>Close VoiceBook Studio. VoiceCommandRouter → TryCloseApplication() which raises CloseApplicationRequested. Unsaved-changes dialog appears if needed.</Description>
+      </Command>
+
+    </Commands>
+  </CommandSet>
+</NaturallySpeaking>

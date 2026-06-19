@@ -1,0 +1,170 @@
+VoiceBook Studio — Setup Guide
+================================
+Version 1.0.0
+For use with JAWS, Dragon NaturallySpeaking, or Windows Speech Recognition
+
+
+WHAT YOU NEED BEFORE YOU START
+-------------------------------
+- Windows 10 or Windows 11 (64-bit)
+- JAWS screen reader (any recent version) — optional but recommended
+- An Anthropic API key — needed for the AI writing assistant features
+  Get one at: console.anthropic.com (sign in, then go to API Keys)
+- Internet connection for AI features
+
+
+STEP 1 — INSTALL THE APPLICATION
+----------------------------------
+1. Run VoiceBookStudio_Setup_v1.0.0.exe
+2. Windows may show a security warning ("Unknown publisher") — click
+   "More info" then "Run anyway" to continue
+3. Follow the installer wizard using Tab and Enter
+4. When asked, leave the install location as the default
+5. Choose whether to add a desktop shortcut (optional)
+6. Click Install, then Finish
+
+
+STEP 2 — FIRST LAUNCH
+-----------------------
+When you open VoiceBook Studio for the first time:
+
+- The app will speak "VoiceBook Studio ready" to confirm audio is working
+- If JAWS is running, JAWS will take over all speech — the app silences
+  itself automatically so the two do not conflict
+- A Welcome dialog will appear offering a guided tutorial
+  Press Enter on "Start Tutorial" to go through it, or Tab to "Skip Tutorial"
+
+
+STEP 3 — ADD YOUR ANTHROPIC API KEY
+-------------------------------------
+Without an API key the app works as a writing tool, but all AI features
+(feedback, chat, chapter detection) are disabled.
+
+To add your key:
+1. Open the app
+2. Tab to the toolbar and find the button labelled "AI Not Set" (marked with
+   a warning symbol)
+3. Press Enter on that button
+4. Paste your API key into the field and press Enter or click Save
+5. The button label changes to "AI Active" to confirm success
+
+Your key is stored securely in the Windows registry on your PC.
+It is never sent anywhere except directly to Anthropic's servers.
+
+
+STEP 4 — CREATE YOUR FIRST PROJECT
+------------------------------------
+1. Press Alt to open the menu, then File > New Project
+   (or say "New project" if Dragon or the microphone is active)
+2. Type a title for your book and press Enter
+3. A first chapter is created automatically
+4. Start typing or dictating in the writing area (Panel 2)
+
+To save: press Ctrl+S, or say "Save project"
+
+
+THE THREE PANELS
+-----------------
+The main window has three panels. Use F1, F2, F3 to jump between them,
+or say "Panel 1", "Panel 2", "Panel 3".
+
+  F1 — Chapter Manager
+       Lists all your chapters and sections.
+       Use the buttons to add, rename, delete, or reorder chapters.
+
+  F2 — Writing Editor
+       Where you type or dictate your book text.
+       Word count is shown at the bottom.
+
+  F3 — AI Assistant
+       Three tabs: Chat, Prompts, Cards
+       - Chat: ask Claude anything about your writing
+       - Prompts: 75 ready-made writing prompts, organized by category
+       - Cards: save and reuse Claude's best responses
+
+
+USEFUL VOICE COMMANDS
+----------------------
+Say these aloud when Dragon or the built-in microphone is active:
+
+  Navigation
+    "Panel 1" / "Panel 2" / "Panel 3"
+    "Go to chat"  /  "Open prompt library"  /  "Open response cards"
+
+  Project
+    "New project"  /  "Save project"  /  "Browse for project"
+
+  Chapters
+    "Add chapter"  /  "Rename chapter"  /  "Delete chapter"
+    "Move up"  /  "Move down"  /  "Change type"
+
+  AI
+    "Get feedback"  /  "Pacing feedback"  /  "Dialogue feedback"
+    "Style feedback"  /  "Structure feedback"
+    "Send" (sends the chat message you have typed)
+
+  Inserting AI responses
+    "Insert at cursor"  /  "Insert at start"  /  "Insert at end"
+
+  Export
+    "Export Word"  /  "Export PDF"
+
+  Response cards
+    "Save response card"  /  "Insert card one" (or two, three...)
+    "Show fiction cards"  /  "Delete card two"
+
+  Settings
+    "Toggle voice"  /  "Set API key"
+
+
+WHERE YOUR FILES ARE SAVED
+----------------------------
+Projects (.vbk files):   My Documents\VoiceBook Projects\
+Response cards:           C:\Users\[you]\AppData\Roaming\VoiceBookStudio\ResponseCards\
+App settings:             Windows Registry (HKEY_CURRENT_USER\SOFTWARE\VoiceBookStudio)
+
+The app auto-saves your current project every 30 seconds.
+You can also press Ctrl+S or say "Save project" at any time.
+
+
+EXPORTING YOUR BOOK
+--------------------
+File > Export > Word Document (.docx)
+File > Export > PDF Document (.pdf)
+
+Both exports include all chapters in the correct order
+(front matter, body chapters, back matter).
+
+
+TROUBLESHOOTING
+---------------
+"AI Not Set" button stays after I entered my key
+  - Check that you pasted the full key (it starts with "sk-ant-")
+  - Make sure you clicked Save or pressed Enter in the API key dialog
+
+No speech on startup
+  - Check your speaker/headphone volume
+  - If JAWS is running, JAWS handles all speech — the app is silent by design
+  - Go to Settings > Configure Voice to check the voice setting
+
+App voice and JAWS both speak at the same time
+  - The app should detect JAWS automatically on startup
+  - If it does not, go to Settings and choose "Toggle voice" to mute the app
+
+The microphone button does not work
+  - Windows Speech Recognition must be set up first
+  - Go to Windows Settings > Time & Language > Speech and follow the setup
+  - Dragon NaturallySpeaking and JSay work independently and do not need
+    the microphone button — they send text directly to whatever is in focus
+
+
+GETTING HELP
+-------------
+If something is not working, note down exactly what happened and contact
+the person who gave you this software.
+
+
+================================
+VoiceBook Studio v1.0.0
+Built with care for writers who use assistive technology
+================================

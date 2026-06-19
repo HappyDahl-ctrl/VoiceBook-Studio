@@ -1,0 +1,263 @@
+COMMAND CONFLICT AUDIT
+VoiceBook Studio — Dragon Professional v16 MyCommands
+Generated: 2026-06-08
+
+════════════════════════════════════════════════════════════════════════════════
+METHODOLOGY
+════════════════════════════════════════════════════════════════════════════════
+
+Dragon MyCommands scoped to AppTitle "VoiceBook Studio" (startswith match)
+override Dragon global built-in commands when VoiceBook Studio is the
+foreground window.  Dragon priority order: App-specific > User global >
+Dragon built-in global.
+
+J-Say 24 commands are JAWS-side voice commands.  They are active only when
+J-Say is enabled AND JAWS is running.  J-Say commands use a "j-say" spoken
+prefix (e.g. "j-say help") and therefore do not conflict with Dragon commands
+that lack that prefix.
+
+CONFLICT RATINGS USED IN THIS TABLE
+    NONE     — No conflict identified.
+    LOW      — Phrase overlaps in some Dragon modes but app-scope takes
+               priority or the phrase is contextually distinct.
+    MODERATE — Dragon or J-Say has a near-identical built-in; the app-scope
+               command will win but users should be aware of the override.
+    HIGH     — Phrase is reserved in Dragon dictation mode; must not be used
+               as a stand-alone voice command while the editor has focus.
+
+════════════════════════════════════════════════════════════════════════════════
+PANEL NAVIGATION
+════════════════════════════════════════════════════════════════════════════════
+
+Command phrase         Dragon Global       J-Say 24        Rating  Notes
+─────────────────────  ──────────────────  ──────────────  ──────  ─────────────
+panel one              None                None            NONE
+go to panel one        None                None            NONE
+panel two              None                None            NONE
+go to panel two        None                None            NONE
+panel three            None                None            NONE
+go to panel three      None                None            NONE
+go to chapters         None                None            NONE
+go to chapter list     None                None            NONE
+go to editor           None                None            NONE
+open writing editor    None                None            NONE
+go to assistant        None                None            NONE
+open assistant panel   None                None            NONE
+
+════════════════════════════════════════════════════════════════════════════════
+CHAPTER MANAGEMENT
+════════════════════════════════════════════════════════════════════════════════
+
+Command phrase         Dragon Global       J-Say 24        Rating  Notes
+─────────────────────  ──────────────────  ──────────────  ──────  ─────────────
+new chapter            "New Line" exists;  None            LOW     "new chapter"
+                       "New Paragraph"                             is distinct
+                       exists — neither                            from "new line"
+                       matches "chapter"                            / "paragraph"
+delete chapter         None                None            NONE
+rename chapter         None                None            NONE
+move chapter up        None                None            NONE
+move chapter down      None                None            NONE
+next chapter           None                None            NONE    Dragon has no
+                                                                   "next chapter"
+previous chapter       None                None            NONE
+
+════════════════════════════════════════════════════════════════════════════════
+FILE OPERATIONS
+════════════════════════════════════════════════════════════════════════════════
+
+Command phrase         Dragon Global       J-Say 24        Rating  Notes
+─────────────────────  ──────────────────  ──────────────  ──────  ─────────────
+save project           None                None            NONE    Dragon's "save
+                                                                   that" differs
+save chapter           None                None            NONE
+save all               None                None            NONE    Dragon has no
+                                                                   "save all"
+export word document   None                None            NONE
+export PDF             None                None            NONE
+
+════════════════════════════════════════════════════════════════════════════════
+READING COMMANDS
+════════════════════════════════════════════════════════════════════════════════
+
+Command phrase         Dragon Global       J-Say 24        Rating  Notes
+─────────────────────  ──────────────────  ──────────────  ──────  ─────────────
+read chapter title     None                None            NONE
+read paragraph         None                None            NONE    JAWS "read
+                                                                   paragraph"
+                                                                   uses Insert+P;
+                                                                   not a J-Say
+                                                                   voice command
+read chapter           None                None            NONE
+stop reading           "Stop" (mic icon    None            LOW     "stop reading"
+                       tap) is Dragon's                            is specific
+                       mic-pause, not a                            enough to avoid
+                       recognised command                          Dragon's bare
+                       phrase                                      "stop"
+stop                   Dragon command      J-Say "stop"    HIGH    Do NOT map bare
+                       mode: "Stop" (mic)  listening may   HIGH    "stop" to stop-
+                       Dictation mode:     intercept              reading alone.
+                       can end sentence                            Use "stop
+                                                                   reading"
+                                                                   instead.
+                                                                   (XML uses
+                                                                   "stop reading"
+                                                                   — bare "stop"
+                                                                   excluded from
+                                                                   XML for this
+                                                                   reason.)
+quiet                  None                None            NONE    Alias for stop
+silence                None                None            NONE    Alias for stop
+
+════════════════════════════════════════════════════════════════════════════════
+AI ASSISTANT
+════════════════════════════════════════════════════════════════════════════════
+
+Command phrase         Dragon Global       J-Say 24        Rating  Notes
+─────────────────────  ──────────────────  ──────────────  ──────  ─────────────
+ask assistant <text>   None                None            NONE    Dragon template
+                                                                   with DgnGetVar
+                                                                   — unambiguous
+send                   None                None            LOW     Dragon may
+                                                                   interpret "send"
+                                                                   in email contexts
+                                                                   but not in
+                                                                   VoiceBook Studio.
+                                                                   App-scope wins.
+send message           None                None            NONE
+comprehensive          None                None            NONE
+feedback
+pacing feedback        None                None            NONE
+dialogue feedback      None                None            NONE
+style feedback         None                None            NONE
+structure feedback     None                None            NONE
+book analysis          None                None            NONE
+read response          None                None            NONE
+keep response          None                None            NONE
+discard response       None                None            NONE
+save as prompt         None                None            NONE
+insert at cursor       None                None            NONE
+insert at start        None                None            NONE
+insert at end          None                None            NONE
+open prompt library    None                None            NONE
+open response cards    None                None            NONE
+
+════════════════════════════════════════════════════════════════════════════════
+API KEY / SETTINGS
+════════════════════════════════════════════════════════════════════════════════
+
+Command phrase         Dragon Global       J-Say 24        Rating  Notes
+─────────────────────  ──────────────────  ──────────────  ──────  ─────────────
+set API key            None                None            NONE
+open settings          None                None            NONE
+toggle app voice       None                None            NONE
+
+════════════════════════════════════════════════════════════════════════════════
+HELP AND STATUS
+════════════════════════════════════════════════════════════════════════════════
+
+Command phrase         Dragon Global       J-Say 24        Rating  Notes
+─────────────────────  ──────────────────  ──────────────  ──────  ─────────────
+what can I say here    None                None            NONE
+list commands          None                None            NONE
+application status     None                None            NONE
+start guided tour      None                None            NONE
+start tutorial         None                None            NONE
+
+════════════════════════════════════════════════════════════════════════════════
+APPLICATION LIFECYCLE
+════════════════════════════════════════════════════════════════════════════════
+
+Command phrase         Dragon Global       J-Say 24        Rating  Notes
+─────────────────────  ──────────────────  ──────────────  ──────  ─────────────
+close application      Dragon has          None            LOW     Dragon's "close
+                       "Close Window"                              window" is
+                       (menu navigation)                           distinct. User
+                                                                   must say "close
+                                                                   application"
+                                                                   (not "close
+                                                                   window") to
+                                                                   avoid Dragon
+                                                                   menu action.
+open chapter           None                None            NONE    Routes through
+                                                                   script (Ctrl+3
+                                                                   path), not
+                                                                   direct keystroke
+
+════════════════════════════════════════════════════════════════════════════════
+SUMMARY — COMMANDS REQUIRING USER AWARENESS
+════════════════════════════════════════════════════════════════════════════════
+
+1.  "stop" (bare)
+    Never registered in VoiceBookStudio_Commands.xml.
+    Dragon uses "stop" to pause the microphone.  J-Say may intercept it.
+    All stop-reading voice commands use "stop reading", "quiet", or "silence".
+    ACTION: No XML change needed.  Document in user guide.
+
+2.  "send"
+    App-scoped command wins over Dragon's contextual "send" (email apps only).
+    No action needed.  Low risk in this application context.
+
+3.  "close application" vs Dragon "close window"
+    These are different phrases.  "Close window" still routes to Dragon and
+    triggers the standard Win32 close-window menu action.  "Close application"
+    routes to VoiceBook Studio's graceful-close handler.
+    ACTION: User guide should note both phrases and their different effects.
+
+4.  "new chapter" vs Dragon "new line" / "new paragraph"
+    These are phonetically distinct.  "New line" and "new paragraph" remain
+    available for dictation inside the editor without conflict.
+    No action needed.
+
+5.  "read paragraph" vs JAWS Insert+P
+    JAWS Insert+P reads the focused paragraph using screen-reader APIs.
+    The Dragon voice command "read paragraph" routes to the application's
+    paragraph-at-cursor reader (SAPI TTS).  These are independent mechanisms.
+    When JAWS is detected, AudioFeedbackService.Speak() is suppressed so JAWS
+    handles all audio — but the voice command still sets the status live region
+    which JAWS announces.
+    ACTION: When JAWS is running, advise user to prefer Insert+P over the
+    Dragon voice command to avoid double-reading.
+
+════════════════════════════════════════════════════════════════════════════════
+F-KEY KEYBOARD BINDING CONFLICTS
+════════════════════════════════════════════════════════════════════════════════
+
+The following F-keys are registered in MainWindow as keyboard shortcuts.
+They do NOT appear as Dragon voice commands (Dragon uses script keystrokes
+instead).  Checked against known JAWS and J-Say default bindings.
+
+Key          App action                JAWS default        J-Say 24
+──────────── ─────────────────────── ─────────────────── ──────────────────
+F4           Read paragraph at cursor  None (JAWS uses     None
+                                       Insert+Down for
+                                       say line)
+F5           Announce chapter title    None                None
+F6           Next chapter              JAWS uses F6 for    None (J-Say does
+                                       Next Heading        not remap F6)
+F7           Previous chapter          JAWS uses F7 for    None
+                                       Previous Heading
+F8           Read full chapter         None                None
+F9           Application status        None                None
+Ctrl+F4      Stop reading              Windows MDI:        None
+                                       close child window.
+                                       VoiceBook Studio
+                                       is SDI — no child
+                                       windows — so this
+                                       key is safe to
+                                       claim.
+
+JAWS F6/F7 CONFLICT NOTE:
+JAWS uses F6 (Next Heading) and F7 (Previous Heading) for document navigation.
+These bindings are active when JAWS virtual-cursor mode is on (browse mode in
+web browsers, etc.).  In VoiceBook Studio, JAWS should be in application/forms
+mode because the window contains interactive controls.  In forms/application
+mode, JAWS passes F6 and F7 through to the application rather than consuming
+them for heading navigation.
+VERIFICATION: Confirm with Kelly that F6/F7 chapter navigation works correctly
+under JAWS in application mode.  If JAWS intercepts them, remap to Ctrl+F6 and
+Ctrl+F7 in both MainWindow.xaml.cs and the Dragon XML script keystrokes.
+
+════════════════════════════════════════════════════════════════════════════════
+END OF AUDIT
+════════════════════════════════════════════════════════════════════════════════

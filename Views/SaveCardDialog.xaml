@@ -1,0 +1,94 @@
+<Window x:Class="VoiceBookStudio.Views.SaveCardDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Save as Card"
+        Width="420" SizeToContent="Height"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        AutomationProperties.Name="Save response as card dialog">
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Live region — code-behind sets Text in Window_Loaded to announce the dialog to JAWS. -->
+        <TextBlock x:Name="AnnouncementRegion"
+                   AutomationProperties.LiveSetting="Assertive"
+                   Text="" Height="0" Focusable="False"
+                   Grid.RowSpan="7"/>
+
+        <!-- Label TextBlocks are visual companions to named fields; excluded from UIA. -->
+        <TextBlock Grid.Row="0" Text="Card title:"
+                   Margin="0,0,0,4" FontWeight="SemiBold"
+                   />
+        <TextBox Grid.Row="1" x:Name="TitleBox"
+                 Margin="0,0,0,12" Padding="4"
+                 AutomationProperties.Name="Card title"
+                 AutomationProperties.HelpText="Enter a short descriptive title for this card"/>
+
+        <TextBlock Grid.Row="2" Text="Category:"
+                   Margin="0,0,0,4" FontWeight="SemiBold"
+                   />
+
+        <Grid Grid.Row="3" Margin="0,0,0,8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="8"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <ComboBox Grid.Column="0" x:Name="CategoryCombo"
+                      AutomationProperties.Name="Select card category"
+                      AutomationProperties.HelpText="Choose an existing category or check New Category"/>
+            <CheckBox Grid.Column="2" x:Name="NewCategoryCheck"
+                      Content="New category"
+                      VerticalAlignment="Center"
+                      Checked="NewCategoryCheck_Changed"
+                      Unchecked="NewCategoryCheck_Changed"
+                      AutomationProperties.Name="Create a new category"/>
+        </Grid>
+
+        <Border Grid.Row="4" x:Name="NewCategoryPanel"
+                Visibility="Collapsed" Margin="0,0,0,12">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Text="New category name:"
+                           Margin="0,0,0,4"
+                           />
+                <TextBox Grid.Row="1" x:Name="NewCategoryNameBox"
+                         Margin="0,0,0,0" Padding="4"
+                         AutomationProperties.Name="New category name"/>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="6" Margin="0,8,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="8"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0"
+                    Content="Save Card"
+                    IsDefault="True"
+                    Click="OkButton_Click"
+                    Padding="10,5"
+                    AutomationProperties.Name="Save card"
+                    AutomationProperties.HelpText="Save the response card to the library. Press Enter to confirm. Voice command: say Save card."/>
+            <Button Grid.Column="2"
+                    Content="Cancel"
+                    IsCancel="True"
+                    Padding="10,5"
+                    AutomationProperties.Name="Cancel"
+                    AutomationProperties.HelpText="Close without saving. Press Escape to cancel."/>
+        </Grid>
+    </Grid>
+</Window>

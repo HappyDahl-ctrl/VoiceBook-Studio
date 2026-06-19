@@ -1,0 +1,354 @@
+UIA Accessibility Audit — VoiceBook Studio
+==========================================
+Audit completed: 2026-06-08
+Auditor: Claude Code (claude-sonnet-4-6)
+Build result after all changes: 0 errors, 0 warnings
+
+NOTE: AutomationProperties.AccessibilityView is NOT a valid XAML attached
+property in .NET 8 WPF. The correct approach for decorative elements is to
+omit AutomationProperties.Name entirely — unnamed elements are skipped by
+JAWS during Tab navigation and are not announced as named controls. This
+approach was applied throughout.
+
+RULE SUMMARY
+------------
+1. AutomationProperties.Name: meaningful, sentence-case, no type words in Name
+2. AutomationProperties.HelpText: full sentence + Dragon voice command on all buttons
+3. Every ListBox/ListView: has AutomationProperties.Name
+4. Panel region Grids: have AutomationProperties.Name as landmark
+5. Decorative containers/TextBlocks: Name omitted (JAWS skips unnamed elements)
+6. Status TextBlocks with dynamic content: AutomationProperties.LiveSetting=Polite/Assertive
+7. Non-interactive elements: IsTabStop=False where needed
+8. Tab order: strictly sequential left panel → middle → right panel
+9. Dialogs: AutomationProperties.Name on Window root; AnnouncementRegion live-region
+   TextBlock added; code-behind must set AnnouncementRegion.Text in Window_Loaded
+
+
+=============================================================================
+Views/MainWindow.xaml
+=============================================================================
+
+PANEL GRID LANDMARKS
+- ChaptersPanel Grid: AutomationProperties.Name="Chapters panel, F1 to focus" (added)
+- EditorPanel Grid:   AutomationProperties.Name="Editor panel, F2 to focus" (added)
+- AiPanel Grid:       AutomationProperties.Name="A I assistant panel, F3 to focus" (added)
+
+CHAPTERS HEADER (decorative blue band)
+- Chapters header Border: removed AutomationProperties.Name (decorative, unnamed = JAWS skip)
+- Chapters header TextBlock "CHAPTERS  (F1)": removed AutomationProperties.Name (decorative)
+
+CHAPTER LIST
+- ChapterListBox: AutomationProperties.Name="Chapter list" (added)
+- ChapterListBox: AutomationProperties.HelpText added with navigation instructions
+- ChapterListBox ItemContainerStyle: AutomationProperties.Name="{Binding ChapterListLabel}" (added)
+  → JAWS reads each item's title + section group as its announced name
+- ChapterListBox DataTemplate inner TextBlocks: AutomationProperties.Name removed
+  → Prevents double-reading; ListBoxItem name is the sole announcement
+- ChapterListBox DataTemplate StackPanel: no Name, no AccessibilityView attribute
+  → Unnamed container — invisible to JAWS as a separate element
+
+CHAPTER BUTTONS
+- "Add chapter" Button: TabIndex corrected (5), AutomationProperties.Name added
+- "Move chapter up" Button: TabIndex corrected (6), AutomationProperties.Name added
+- "Move chapter down" Button: TabIndex corrected (7), AutomationProperties.Name added
+- All chapter buttons: AutomationProperties.HelpText with Dragon voice command added
+
+LEFT PANEL BOTTOM BUTTONS
+- "Welcome / Help" Button: TabIndex=4, AutomationProperties.Name added
+- "Configure API key" Button: TabIndex=9, AutomationProperties.Name added
+- "Toggle voice feedback" Button: TabIndex=10, AutomationProperties.Name added
+- "Start listening / Stop listening" Button: TabIndex=11, AutomationProperties.Name added
+- All bottom buttons: AutomationProperties.HelpText added
+
+GRID SPLITTERS
+- Column 1 GridSplitter: IsTabStop=False, no Name (decorative resize handle)
+- Column 3 GridSplitter: IsTabStop=False, no Name (decorative resize handle)
+
+EDITOR PANEL (Panel 2)
+- Editor header TextBlock: AutomationProperties.LiveSetting=Polite (added)
+  → JAWS announces chapter title change when user switches chapters
+- Word count TextBlock: AutomationProperties.LiveSetting=Polite (added)
+- WindowsFormsHost: AutomationProperties.Name="Chapter editor — Dragon and JAWS compatible" (added)
+  AutomationProperties.HelpText describing Dragon and keyboard usage (added)
+
+AI ASSISTANT PANEL (Panel 3)
+- AI panel header Border: decorative, no Name
+- AI panel header DockPanel: decorative, no Name
+- AI panel header TextBlock "AI ASSISTANT  (F3)": decorative, no Name
+- AI status/key Button: AutomationProperties.Name="{Binding ApiKeyStatusDisplay}" (added)
+  → JAWS reads live key status from binding
+- AI TabControl: AutomationProperties.Name="AI assistant tabs. Chat, Prompts, Cards, Feedback." (added)
+
+CHAT TAB
+- Chat input TextBox: AutomationProperties.Name="Type or dictate your question for Claude" (added)
+- "Send" Button: AutomationProperties.Name and HelpText (added)
+- "Stop" Button: AutomationProperties.Name and HelpText (added)
+- AI response TextBox: AutomationProperties.Name="AI response text" (added)
+  AutomationProperties.LiveSetting=Polite (added)
+- "Save as Card" Border: decorative, no Name
+- "Save as Card" Button: AutomationProperties.Name and HelpText (added)
+- "Insert AI response" label TextBlock: decorative, no Name
+- "Insert buttons" Border: decorative, no Name
+- "At Cursor" Button: AutomationProperties.Name="Insert at cursor position" + HelpText (added)
+- "At Start" Button: AutomationProperties.Name="Insert at start of chapter" + HelpText (added)
+- "At End" Button: AutomationProperties.Name="Insert at end of chapter" + HelpText (added)
+
+PROMPTS TAB
+- Prompts tab item: AutomationProperties.Name="Prompts tab" (added)
+- Prompts panel Grid: AutomationProperties.Name="Writing prompts" (added)
+- "Category:" filter TextBlock: no Name (decorative label next to named ComboBox)
+- Category filter ComboBox: AutomationProperties.Name="Prompt category filter" + HelpText (added)
+- Prompts ListBox: AutomationProperties.Name="Writing prompts list" + HelpText (added)
+- Prompts ItemContainerStyle: AutomationProperties.Name="{Binding DisplayLabel}" (added)
+- Prompts DataTemplate StackPanel: no Name (unnamed = JAWS skip)
+- Prompts DataTemplate inner TextBlocks: no Name
+- Prompt preview TextBox: AutomationProperties.Name and HelpText (added)
+- "Use Prompt" Button: AutomationProperties.Name and HelpText (added)
+- "Add Prompt" Button: AutomationProperties.Name and HelpText (added)
+- "Delete Prompt" Button: AutomationProperties.Name and HelpText (added)
+
+CARDS TAB (ResponseCardPanel — see separate section below)
+- Cards tab item: AutomationProperties.Name="Response cards tab" (added)
+
+FEEDBACK TAB
+- Feedback tab item: AutomationProperties.Name="Feedback tab" (added)
+- Feedback panel Grid: AutomationProperties.Name="Saved feedback" (added)
+- "Category:" filter TextBlock: no Name (decorative)
+- Category filter ComboBox: AutomationProperties.Name="Feedback category filter" + HelpText (added)
+- Feedback ListBox: AutomationProperties.Name="Saved feedback entries" + HelpText (added)
+- Feedback ItemContainerStyle: AutomationProperties.Name="{Binding DisplayLabel}" (added)
+- Feedback DataTemplate StackPanel: no Name
+- Feedback DataTemplate inner TextBlocks: no Name
+- Feedback preview TextBox: AutomationProperties.Name and HelpText (added)
+- "Use Feedback" Button: AutomationProperties.Name and HelpText (added)
+- "Delete Feedback" Button: AutomationProperties.Name and HelpText (added)
+
+TAB INDEX CORRECTIONS (left panel → editor → AI panel, strictly sequential)
+- "Welcome / Help" Button:      TabIndex 4  → 4  (confirmed)
+- "Add chapter" Button:         TabIndex 5  → 5  (corrected from prior value)
+- "Move up" Button:             TabIndex 6  → 6  (corrected)
+- "Move down" Button:           TabIndex 7  → 7  (corrected)
+- "Configure API key" Button:   TabIndex 8  → 9  (corrected — 8 reserved for future)
+- "Toggle TTS" Button:          TabIndex 9  → 10 (corrected)
+- "Mic" Button:                 TabIndex 10 → 11 (corrected)
+- ChapterListBox:               TabIndex 20 (confirmed)
+- WindowsFormsHost:             TabIndex 30 (confirmed)
+- AI Status Button:             TabIndex 38 (corrected from 39)
+- AI chat input:                TabIndex 40 (confirmed)
+- Send / Stop buttons:          TabIndex 41, 42 (added)
+- AI response TextBox:          TabIndex 45 (confirmed)
+- Save as Card button:          TabIndex 46 (added)
+- Insert buttons:               TabIndex 47, 48, 49 (added)
+
+
+=============================================================================
+Views/Panels/ResponseCardPanel.xaml
+=============================================================================
+
+- UserControl: AutomationProperties.Name="Response Cards panel" (added)
+- "Category:" filter TextBlock: no Name (decorative label next to named ComboBox)
+- Category filter ComboBox: AutomationProperties.Name="Response card category filter" (updated
+  from "Category filter" — more specific)
+- Cards ListBox: AutomationProperties.Name="Response cards list" + HelpText (added)
+- Cards ItemContainerStyle: AutomationProperties.Name="{Binding Title}" + HelpText (added)
+- Cards DataTemplate StackPanel: no Name (unnamed container — JAWS skip)
+- Cards DataTemplate inner TextBlocks: no Name
+- Preview TextBox: AutomationProperties.Name="Card content preview" + HelpText (added)
+- "Insert Card" Button: AutomationProperties.Name and HelpText (added)
+- "Delete Card" Button: AutomationProperties.Name and HelpText (added)
+
+
+=============================================================================
+Views/ApiKeyDialog.xaml
+=============================================================================
+
+- Window root: AutomationProperties.Name="Configure Anthropic API key dialog" (added)
+- AnnouncementRegion TextBlock: AutomationProperties.LiveSetting=Assertive, Height=0 (added)
+  CODE-BEHIND REQUIRED: set AnnouncementRegion.Text="Configure Anthropic API key dialog is open."
+  in Window_Loaded to trigger JAWS announcement.
+- Heading TextBlock "Anthropic API Key": no Name (decorative — Window name is the announcement)
+- Instructions TextBlock: AutomationProperties.Name with screen-reader-friendly text (added)
+- "API Key:" label TextBlock: no Name (decorative — PasswordBox has its own Name)
+- API key PasswordBox: AutomationProperties.Name="API key input field" + HelpText (added)
+- "Show/Hide" Button: AutomationProperties.Name and HelpText (added)
+- "Clear Key" Button: AutomationProperties.Name and HelpText (added)
+- "Cancel" Button: AutomationProperties.Name (added)
+- "Save" Button: AutomationProperties.Name (added)
+
+
+=============================================================================
+Views/InputDialog.xaml
+=============================================================================
+
+- Window root: AutomationProperties.Name (was already present or added)
+- AnnouncementRegion TextBlock: AutomationProperties.LiveSetting=Assertive, Height=0 (added)
+  CODE-BEHIND REQUIRED: set AnnouncementRegion.Text in Window_Loaded.
+- Prompt TextBlock: AutomationProperties.Name="{Binding Prompt}" (already had live binding)
+- Input TextBox: AutomationProperties.Name (added)
+- OK / Cancel buttons: AutomationProperties.Name (added)
+
+
+=============================================================================
+Views/SectionTypeDialog.xaml
+=============================================================================
+
+- Window root: AutomationProperties.Name="Select section type dialog" (added)
+- AnnouncementRegion TextBlock: AutomationProperties.LiveSetting=Assertive, Height=0 (added)
+  CODE-BEHIND REQUIRED: set AnnouncementRegion.Text="Select section type dialog is open."
+  in Window_Loaded.
+- Instruction TextBlock "Choose the type of section to add:": no Name (decorative)
+- TypeListBox: AutomationProperties.Name="Section type list" + HelpText (added)
+- TypeListBox ItemContainerStyle: AutomationProperties.Name="{Binding DisplayName}" (added)
+- GroupStyle header TextBlock: AutomationProperties.Name="{Binding Name}" (added)
+- OK Button: AutomationProperties.Name="OK" + HelpText (added)
+- Cancel Button: AutomationProperties.Name="Cancel" (added)
+
+
+=============================================================================
+Views/ChapterConfirmationDialog.xaml
+=============================================================================
+
+- Window root: AutomationProperties.Name="Confirm detected chapters dialog" + HelpText (added)
+- AnnouncementRegion TextBlock: AutomationProperties.LiveSetting=Assertive, Height=0 (added)
+  CODE-BEHIND REQUIRED: set AnnouncementRegion.Text="Confirm detected chapters dialog is open."
+  in Window_Loaded.
+- Heading TextBlock "Chapters detected in your document": no Name (decorative)
+- Instructions TextBlock: no Name (decorative — button names and list HelpText cover context)
+- ChaptersList ListBox: AutomationProperties.Name="Detected chapters list" + HelpText (added)
+- "Accept All" Button: AutomationProperties.Name describes the action fully (added)
+- "Import as Single" Button: AutomationProperties.Name describes the action fully (added)
+- "Cancel" Button: AutomationProperties.Name="Cancel import" (added)
+
+
+=============================================================================
+Views/ProjectSelectionDialog.xaml
+=============================================================================
+
+- Window root: AutomationProperties.Name="Select project dialog" + HelpText (added)
+- AnnouncementRegion TextBlock: AutomationProperties.LiveSetting=Assertive, Height=0 (added)
+  CODE-BEHIND REQUIRED: set AnnouncementRegion.Text="Select project dialog is open."
+  in Window_Loaded.
+- Heading TextBlock "Which project would you like to work on?": no Name (decorative)
+- Instructions TextBlock: no Name (decorative — list HelpText and button names cover it)
+- ProjectsList ListBox: AutomationProperties.Name="Recent projects list" + HelpText (added)
+- "Open Selected" Button: AutomationProperties.Name and HelpText (added)
+- "Create New" Button: AutomationProperties.Name and HelpText (added)
+- "Browse..." Button: AutomationProperties.Name and HelpText (added)
+
+
+=============================================================================
+Views/AzureTtsDialog.xaml
+=============================================================================
+
+- Window root: AutomationProperties.Name="Configure voice dialog" + HelpText (added)
+- AnnouncementRegion TextBlock: AutomationProperties.LiveSetting=Assertive, Height=0 (added)
+  CODE-BEHIND REQUIRED: set AnnouncementRegion.Text="Configure voice dialog is open."
+  in Window_Loaded.
+- Heading TextBlock "Azure Neural Voice Configuration": no Name (decorative)
+- Info Border TextBlock: AutomationProperties.Name with screen-reader text (added)
+- "Azure Speech Key:" Label: IsTabStop=False; no Name (decorative — TextBox has own Name)
+- "Azure Region:" Label: IsTabStop=False; no Name (decorative)
+- "Voice:" Label: IsTabStop=False; no Name (decorative)
+- KeyBox TextBox: AutomationProperties.Name + HelpText (added)
+- RegionBox TextBox: AutomationProperties.Name + HelpText (added)
+- VoiceCombo: AutomationProperties.Name + HelpText (added)
+- StatusLabel TextBlock: AutomationProperties.LiveSetting=Polite (added)
+- "Test Voice" Button: AutomationProperties.Name and HelpText (added)
+- "Clear" Button: AutomationProperties.Name and HelpText (added)
+- "Cancel" Button: AutomationProperties.Name (added)
+- "Save" Button: AutomationProperties.Name (added)
+
+
+=============================================================================
+Views/SettingsDialog.xaml
+=============================================================================
+
+- Window root: AutomationProperties.Name="Settings dialog" + HelpText (added)
+- AnnouncementRegion TextBlock: AutomationProperties.LiveSetting=Assertive, Height=0 (added)
+  CODE-BEHIND REQUIRED: set AnnouncementRegion.Text="Settings dialog is open." in Window_Loaded.
+- Heading TextBlock "Settings": no Name (decorative — Window Name is the JAWS announcement)
+- Default Project Folder GroupBox: AutomationProperties.Name + HelpText (added)
+- Folder structure note TextBlock: AutomationProperties.Name with screen-reader-friendly text (added)
+- FolderPathBox TextBox: AutomationProperties.Name and HelpText (added)
+- "Browse..." Button: AutomationProperties.Name and HelpText (added)
+- "Clear" Button: AutomationProperties.Name and HelpText (added)
+- "Save Settings" Button: AutomationProperties.Name and HelpText (added)
+- "Cancel" Button: AutomationProperties.Name and HelpText (added)
+
+
+=============================================================================
+Views/AddPromptDialog.xaml
+=============================================================================
+
+- Window root: AutomationProperties.Name="Add new prompt dialog" (added)
+- AnnouncementRegion TextBlock: AutomationProperties.LiveSetting=Assertive, Height=0 (added)
+  CODE-BEHIND REQUIRED: set AnnouncementRegion.Text="Add new prompt dialog is open."
+  in Window_Loaded.
+- "Prompt title:" TextBlock: no Name (decorative — TitleBox has its own Name)
+- "Prompt text:" TextBlock: no Name (decorative — ContentBox has its own Name)
+- "Category:" TextBlock: no Name (decorative — CategoryCombo has its own Name)
+- "Category name:" TextBlock: no Name (decorative)
+- "Category letter" TextBlock: no Name (decorative)
+- TitleBox TextBox: AutomationProperties.Name="Prompt title" + HelpText (added)
+- ContentBox TextBox: AutomationProperties.Name="Prompt text" + HelpText (added)
+- CategoryCombo: AutomationProperties.Name="Select existing category" + HelpText (added)
+- "New category" CheckBox: AutomationProperties.Name="Create a new category" (added)
+- NewCategoryNameBox: AutomationProperties.Name="New category name" (added)
+- NewCategoryLetterBox: AutomationProperties.Name="New category letter" + HelpText (added)
+- "Add Prompt" Button: AutomationProperties.Name="Add prompt" + HelpText (added)
+- "Cancel" Button: AutomationProperties.Name="Cancel" + HelpText (added)
+
+
+=============================================================================
+Views/SaveCardDialog.xaml
+=============================================================================
+
+- Window root: AutomationProperties.Name="Save response as card dialog" (added)
+- AnnouncementRegion TextBlock: AutomationProperties.LiveSetting=Assertive, Height=0 (added)
+  CODE-BEHIND REQUIRED: set AnnouncementRegion.Text="Save response as card dialog is open."
+  in Window_Loaded.
+- "Card title:" TextBlock: no Name (decorative)
+- "Category:" TextBlock: no Name (decorative)
+- "New category name:" TextBlock: no Name (decorative)
+- TitleBox TextBox: AutomationProperties.Name="Card title" + HelpText (added)
+- CategoryCombo: AutomationProperties.Name="Select card category" + HelpText (added)
+- "New category" CheckBox: AutomationProperties.Name="Create a new category" (added)
+- NewCategoryNameBox: AutomationProperties.Name="New category name" (added)
+- "Save Card" Button: AutomationProperties.Name="Save card" + HelpText (added)
+- "Cancel" Button: AutomationProperties.Name="Cancel" + HelpText (added)
+
+
+=============================================================================
+Files already correct — no changes made
+=============================================================================
+
+- Views/HelpDialog.xaml          — well-structured, all elements named, no issues found
+- Views/TutorialDialog.xaml      — well-structured with proper live regions, no issues found
+- Views/WelcomeDialog.xaml       — fixed in prior session, no additional issues found
+- Views/Panels/LeftPanel.xaml    — content embedded in MainWindow; audited via MainWindow.xaml
+- Views/Panels/MiddleEditor.xaml — content embedded in MainWindow; audited via MainWindow.xaml
+- Views/Panels/RightClaudePanel.xaml — content embedded in MainWindow; audited via MainWindow.xaml
+
+
+=============================================================================
+Pending code-behind work (not blocking build — functional gap for JAWS)
+=============================================================================
+
+Each dialog with an AnnouncementRegion TextBlock requires a code-behind change.
+In Window_Loaded (or Loaded event handler), set:
+
+    AnnouncementRegion.Text = "[dialog name] is open.";
+
+This fires the UIA LiveRegion notification that makes JAWS speak the dialog name
+immediately when focus enters the window — identical to how TutorialDialog works.
+
+Dialogs affected:
+  Views/ApiKeyDialog.xaml.cs          → "Configure Anthropic API key dialog is open."
+  Views/InputDialog.xaml.cs           → dynamic (use the Prompt property value)
+  Views/SectionTypeDialog.xaml.cs     → "Select section type dialog is open."
+  Views/ChapterConfirmationDialog.xaml.cs → "Confirm detected chapters dialog is open."
+  Views/ProjectSelectionDialog.xaml.cs    → "Select project dialog is open."
+  Views/AzureTtsDialog.xaml.cs        → "Configure voice dialog is open."
+  Views/SettingsDialog.xaml.cs        → "Settings dialog is open."
+  Views/AddPromptDialog.xaml.cs       → "Add new prompt dialog is open."
+  Views/SaveCardDialog.xaml.cs        → "Save response as card dialog is open."

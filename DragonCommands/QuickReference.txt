@@ -1,0 +1,170 @@
+VoiceBook Studio Voice Command Quick Reference
+================================================
+
+This card lists every voice command and what it does. All commands are spoken
+while VoiceBook Studio is the active application. JAWS will confirm each action.
+
+
+GETTING HELP
+
+Say what can I say to hear all commands available in the current panel.
+Say what can I say here to hear the same list.
+Say list commands to hear the same list.
+Say application status to hear a spoken summary of the open project, current chapter, save state, and which assistive technologies are running.
+
+
+PANEL NAVIGATION
+
+Say go to chapters to move focus to the chapter list on the left.
+Say go to chapter list to move focus to the chapter list.
+Say panel one to move focus to the chapter list.
+Say go to editor to move focus to the writing editor in the centre.
+Say open writing editor to move focus to the writing editor.
+Say panel two to move focus to the writing editor.
+Say go to assistant to move focus to the AI assistant panel on the right.
+Say open assistant panel to move focus to the AI assistant panel.
+Say panel three to move focus to the AI assistant panel.
+
+
+PROJECT COMMANDS
+
+Say new project to start creating a new project.
+Say open project to open an existing project file.
+Say save to save the current project.
+Say save project to save the current project.
+Say save chapter to save the current project.
+Say save all to save the current project.
+Say save as to save the project under a new name.
+Say import document to import a Word document into the current project.
+Say export word to export the full manuscript as a Word document.
+Say export PDF to export the full manuscript as a PDF file.
+Say set project folder to choose the default folder where new projects are saved.
+Say close application to close VoiceBook Studio.
+
+
+CHAPTER COMMANDS
+
+Say new chapter to add a new chapter or section.
+Say new section to add a new chapter or section.
+Say open chapter to hear the list of available chapters and focus the chapter list.
+Say next chapter to move to the next chapter in the list.
+Say previous chapter to move to the previous chapter in the list.
+Say rename chapter to give the selected chapter a new title.
+Say delete chapter to delete the selected chapter after confirmation.
+Say move up to move the selected chapter earlier in the list.
+Say move down to move the selected chapter later in the list.
+Say change type to change the section type of the selected chapter.
+Say read chapter title to hear the name of the currently open chapter.
+
+
+WRITING EDITOR
+
+Say read paragraph to hear the paragraph at the current cursor position read aloud.
+Say read chapter to hear the entire chapter read aloud from beginning to end.
+Say stop reading to stop the current reading immediately.
+Say resume reading to continue reading from where it stopped.
+
+Note: All Dragon dictation and correction commands work normally in the editor,
+the same as in Microsoft Word. Dragon Full Text Control is active.
+
+
+AI ASSISTANT
+
+Say ask assistant followed by your question to send a question directly to the AI.
+For example, say ask assistant how do I write a strong opening chapter.
+Say send to send whatever text is in the chat box to the AI.
+Say send message to send whatever text is in the chat box.
+Say read response to hear the most recent AI response read aloud.
+Say keep response to save the AI response as a response card.
+Say save response to save the AI response as a response card.
+Say discard response to clear the AI response from the panel.
+
+
+AI FEEDBACK
+
+Say feedback to run a comprehensive analysis of the current chapter.
+Say comprehensive feedback to run a comprehensive analysis of the current chapter.
+Say pacing to analyse the pacing of the current chapter.
+Say pacing feedback to analyse the pacing of the current chapter.
+Say dialogue to analyse the dialogue in the current chapter.
+Say dialogue feedback to analyse the dialogue in the current chapter.
+Say style to analyse the writing style of the current chapter.
+Say style feedback to analyse the writing style of the current chapter.
+Say structure to analyse the structure of the current chapter.
+Say structure feedback to analyse the structure of the current chapter.
+Say book analysis to run a comprehensive analysis of the entire manuscript.
+Say analyse book to run a comprehensive analysis of the entire manuscript.
+
+
+INSERTING AI RESPONSES INTO YOUR CHAPTER
+
+Say insert at cursor to insert the AI response at the cursor position in the editor.
+Say insert here to insert the AI response at the cursor position in the editor.
+Say insert at start to insert the AI response at the beginning of the chapter.
+Say insert at beginning to insert the AI response at the beginning of the chapter.
+Say insert at end to insert the AI response at the end of the chapter.
+Say append response to insert the AI response at the end of the chapter.
+
+
+PROMPT LIBRARY
+
+Say open prompt library to open the prompt library tab.
+Say show prompts to open the prompt library tab.
+Say prompt categories to hear a list of prompt categories and how many prompts each contains.
+Say read prompt categories to hear a list of prompt categories.
+Say read prompt A to hear all prompts in a category, where A is the category letter.
+Say add prompt to create a new reusable prompt.
+Say save as prompt to save the current text as a reusable prompt.
+Say prompt A1 to load a specific prompt into the chat box, where A is the category letter and 1 is the prompt number.
+Say use prompt A1 to load a specific prompt into the chat box.
+
+
+RESPONSE CARDS
+
+Say open response cards to open the response cards tab.
+Say show response cards to open the response cards tab.
+Say card categories to hear a list of card categories and how many cards each contains.
+Say read card categories to hear a list of card categories.
+Say read cards A to hear all cards in a category, where A is the category letter.
+Say save card to save the current AI response as a response card.
+Say save response card to save the current AI response as a response card.
+Say insert card A1 to insert a specific card into the editor at the cursor, where A is the category letter and 1 is the card number.
+Say use card A1 to insert a specific card into the editor at the cursor.
+Say delete card 1 to delete a specific card by its position number in the current view.
+Say show Editing cards to filter the card list to a specific category by name.
+
+
+FEEDBACK LIBRARY
+
+Say open feedback library to open the feedback library tab.
+Say feedback library to open the feedback library tab.
+Say feedback categories to hear a list of feedback categories and how many entries each contains.
+Say read feedback categories to hear a list of feedback categories.
+Say read feedback A to hear all feedback entries in a category, where A is the category letter.
+Say read my pacing feedback to hear all pacing feedback entries.
+Say read my dialogue feedback to hear all dialogue feedback entries.
+Say read my style feedback to hear all style feedback entries.
+Say read my structure feedback to hear all structure feedback entries.
+Say read A1 to hear the full text of a specific feedback entry, where A is the category letter and 1 is the entry number.
+
+
+SETTINGS AND CONFIGURATION
+
+Say set API key to open the dialog where you enter your Anthropic API key.
+Say configure API to open the API key dialog.
+Say open settings to open the application settings dialog.
+Say settings to open the application settings dialog.
+Say toggle voice to turn the application text-to-speech voice on or off.
+Say voice off to turn the application text-to-speech voice off.
+Say voice on to turn the application text-to-speech voice back on.
+
+
+GUIDED TOUR
+
+Say start tutorial to begin the guided tour of VoiceBook Studio.
+Say next step to advance to the next step of the guided tour.
+Say repeat step to hear the current tour step again.
+Say end tour to exit the guided tour at any time.
+
+
+END OF QUICK REFERENCE

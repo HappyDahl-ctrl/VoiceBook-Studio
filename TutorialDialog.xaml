@@ -7,8 +7,7 @@
         ResizeMode="CanResize"
         Width="700" Height="500"
         Loaded="Window_Loaded"
-        AutomationProperties.Name="Tutorial dialog"
-        AutomationProperties.HelpText="Step-by-step tutorial. Use Next and Previous buttons or say Next and Previous to navigate. Say Repeat to hear the current step again.">
+        AutomationProperties.Name="Tutorial dialog">
 
     <Grid Margin="16">
         <Grid.RowDefinitions>
@@ -60,8 +59,7 @@
                     Width="110" Margin="0,0,8,0"
                     Command="{Binding PreviousCommand}"
                     TabIndex="2"
-                    AutomationProperties.Name="Previous step"
-                    AutomationProperties.HelpText="Go to the previous tutorial step. Voice command: say Previous">
+                    AutomationProperties.Name="Previous step">
                 Previous
             </Button>
 
@@ -69,8 +67,7 @@
                     Width="110" Margin="0,0,8,0"
                     Command="{Binding RepeatCommand}"
                     TabIndex="3"
-                    AutomationProperties.Name="Repeat current step"
-                    AutomationProperties.HelpText="Repeat the audio for this step. Voice command: say Repeat">
+                    AutomationProperties.Name="Repeat current step">
                 Repeat
             </Button>
 
@@ -79,8 +76,7 @@
                     IsDefault="True"
                     Command="{Binding NextCommand}"
                     TabIndex="4"
-                    AutomationProperties.Name="Next step"
-                    AutomationProperties.HelpText="Advance to the next tutorial step. Voice command: say Next">
+                    AutomationProperties.Name="Next step">
                 Next
             </Button>
 
@@ -88,8 +84,7 @@
                     Width="110"
                     Command="{Binding ExitCommand}"
                     TabIndex="5"
-                    AutomationProperties.Name="Exit tutorial"
-                    AutomationProperties.HelpText="Close the tutorial and return to the main window. Voice command: say Exit tutorial">
+                    AutomationProperties.Name="Exit tutorial">
                 Exit Tutorial
             </Button>
         </StackPanel>

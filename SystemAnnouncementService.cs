@@ -37,9 +37,15 @@ namespace VoiceBookStudio.Services
             if (_disposed || string.IsNullOrWhiteSpace(text)) return;
 
             if (_azure.IsConfigured)
-                _azure.Speak(text);
+            {
+                _azure.StopSpeaking();   // cut any in-progress speech so the new step
+                _azure.Speak(text);      // starts immediately, not after the old one ends
+            }
             else
+            {
+                _sapi.SpeakAsyncCancelAll();
                 _sapi.SpeakAsync(text);
+            }
         }
 
         public async Task SpeakAndWaitAsync(string text)

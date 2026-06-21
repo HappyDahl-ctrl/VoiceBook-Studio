@@ -574,7 +574,10 @@ namespace VoiceBookStudio.ViewModels
 
         public void TryCreateNewProject()
         {
-            // Invoke new project flow
+            // Signal tutorial that the user chose the new-project path (step 13 detection).
+            // TryImportDocument does the same for the import path; voice "new project"
+            // routes here and must fire the same code so step 13 can advance.
+            _tutorialActionSink?.Invoke("newproject_or_import");
             _ = NewProjectAsync();
         }
 
@@ -792,9 +795,6 @@ namespace VoiceBookStudio.ViewModels
         private async Task NewProjectAsync()
         {
             if (!await ConfirmDiscardChangesAsync()) return;
-
-            // Notify tutorial that new-project flow is starting (step 4.1 detection).
-            _tutorialActionSink?.Invoke("newproject_started");
 
             string? title = PromptText("New Project", "Enter project title:", "Untitled Project");
             if (title == null) return;

@@ -48,8 +48,10 @@ namespace VoiceBookStudio.Views
                 };
             }
 
-            // Keep focus on the step content area — JAWS reads it via live region.
-            StepContent.Focus();
+            // Focus the Next button so the primary action is immediately reachable.
+            // StepContent's Polite live region already announced the step to JAWS;
+            // focusing StepContent here would cause a second JAWS reading of the same content.
+            NextButton.Focus();
         }
 
         // ----------------------------------------------------------------

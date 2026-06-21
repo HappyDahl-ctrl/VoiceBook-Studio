@@ -179,6 +179,8 @@ namespace VoiceBookStudio.ViewModels
 
         /// <summary>True while the "Whole Book" entry is the active selection.</summary>
         [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(RunAiFeedbackCommand))]
+        [NotifyCanExecuteChangedFor(nameof(SendChatCommand))]
         private bool _isWholeBookSelected;
 
         /// <summary>
@@ -1512,7 +1514,7 @@ namespace VoiceBookStudio.ViewModels
         [RelayCommand(CanExecute = nameof(CanRunAi))]
         private async Task RunAiFeedbackAsync(string feedbackType)
         {
-            if (SelectedChapter == null) return;
+            if (SelectedChapter == null && !IsWholeBookSelected) return;
 
             if (!_aiService.IsAvailable)
             {
@@ -1529,14 +1531,29 @@ namespace VoiceBookStudio.ViewModels
                 SetStatus($"Running {feedbackType} analysis…");
                 _audio.Speak($"Running {feedbackType} analysis. Please wait.");
 
-                var feedback = await _aiService.GetFeedbackAsync(
-                    SelectedChapter.Content, feedbackType, BuildBookContext());
+                string chapterForFeedback;
+                AiFeedback feedback;
+
+                if (IsWholeBookSelected)
+                {
+                    // Whole Book selected — use the full concatenated manuscript as context.
+                    // Refresh first in case chapters were edited since the selection was made.
+                    WholeBook.Refresh(Chapters);
+                    feedback = await _aiService.GetFeedbackAsync(
+                        WholeBook.Content, feedbackType, bookContext: null);
+                    chapterForFeedback = "Whole Book";
+                }
+                else
+                {
+                    feedback = await _aiService.GetFeedbackAsync(
+                        SelectedChapter!.Content, feedbackType, BuildBookContext());
+                    chapterForFeedback = SelectedChapter.Title;
+                }
 
                 _sounds.Play(AppSound.AiResponded);
                 AiFeedbackText = feedback.RawText;
 
                 // Auto-save to feedback library (silent, no user action required)
-                string chapterForFeedback = SelectedChapter?.Title ?? "Unknown chapter";
                 FeedbackLibVM.AddEntry(feedbackType, chapterForFeedback, feedback.RawText);
 
                 SetStatus("AI analysis complete. Feedback saved to library. Use the Insert buttons to add it to your chapter.");
@@ -1556,7 +1573,7 @@ namespace VoiceBookStudio.ViewModels
             }
         }
 
-        private bool CanRunAi() => SelectedChapter != null;
+        private bool CanRunAi() => SelectedChapter != null || IsWholeBookSelected;
 
         // ----------------------------------------------------------------
         // Book-wide feedback (all chapters as primary content)
@@ -1674,8 +1691,10 @@ namespace VoiceBookStudio.ViewModels
                 SetStatus("Asking Claude…");
                 _audio.Speak("Sending your question to Claude. Please wait.");
 
+                if (IsWholeBookSelected) WholeBook.Refresh(Chapters);
+                string? chatContext = IsWholeBookSelected ? WholeBook.Content : SelectedChapter?.Content;
                 string response = await _aiService.ChatAsync(
-                    msg, SelectedChapter?.Content, BuildBookContext());
+                    msg, chatContext, IsWholeBookSelected ? null : BuildBookContext());
 
                 _sounds.Play(AppSound.AiResponded);
                 AiFeedbackText = response;

@@ -120,6 +120,19 @@ namespace VoiceBookStudio.ViewModels
             _autoSaveTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(30) };
             _autoSaveTimer.Tick += AutoSave_Tick;
             _autoSaveTimer.Start();
+
+            // Keep DisplayItems in sync whenever the Chapters collection changes.
+            Chapters.CollectionChanged += (_, _) => RebuildDisplayItems();
+            RebuildDisplayItems();
+        }
+
+        // When SelectedChapter is set directly (e.g. voice-nav), mirror it into
+        // SelectedDisplayItem so the ListBox highlights the correct row.
+        // Skip the sync when WholeBook is active (SelectedChapter is null there).
+        partial void OnSelectedChapterChanged(ChapterViewModel? value)
+        {
+            if (value != null || !IsWholeBookSelected)
+                SelectedDisplayItem = value;
         }
 
         public void SetProjectSelection(ProjectSelectionViewModel proj)
@@ -153,6 +166,27 @@ namespace VoiceBookStudio.ViewModels
 
         [ObservableProperty]
         private ObservableCollection<ChapterViewModel> _chapters = new();
+
+        /// <summary>
+        /// The list displayed in ChapterListBox — always starts with the pinned WholeBook entry
+        /// followed by real chapter view-models in sorted order.
+        /// </summary>
+        [ObservableProperty]
+        private ObservableCollection<object> _displayItems = new();
+
+        /// <summary>The pinned "Whole Book" sentinel, always at DisplayItems[0].</summary>
+        public WholeBookViewModel WholeBook { get; } = new WholeBookViewModel();
+
+        /// <summary>True while the "Whole Book" entry is the active selection.</summary>
+        [ObservableProperty]
+        private bool _isWholeBookSelected;
+
+        /// <summary>
+        /// Drives ChapterListBox.SelectedItem (TwoWay). Mirrors SelectedChapter for real
+        /// chapters; points to WholeBook when the whole-book entry is active.
+        /// </summary>
+        [ObservableProperty]
+        private object? _selectedDisplayItem;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(HasSelectedChapter))]
@@ -1424,6 +1458,7 @@ namespace VoiceBookStudio.ViewModels
         public void OnChapterSelected(ChapterViewModel? chapter)
         {
             FlushEditorToChapter();
+            IsWholeBookSelected = false;
             SelectedChapter = chapter;
 
             if (chapter != null)
@@ -1431,6 +1466,20 @@ namespace VoiceBookStudio.ViewModels
                 SetStatus($"Editing: {chapter.Title}  |  {chapter.WordCount:N0} words");
                 _audio.Speak($"Chapter loaded: {chapter.Title}. {chapter.WordCount} words.");
             }
+        }
+
+        /// <summary>
+        /// Called by the view when the user selects the "Whole Book" list entry.
+        /// Refreshes the concatenated manuscript and puts the editor in read-only mode.
+        /// </summary>
+        public void SelectWholeBook()
+        {
+            FlushEditorToChapter();
+            IsWholeBookSelected = true;
+            WholeBook.Refresh(Chapters);
+            SelectedChapter = null;
+            SetStatus("Whole Book — read-only view of all chapters in order.");
+            _audio.Speak("Whole Book. Read only.");
         }
 
         public void OnEditorTextChanged(string newText)
@@ -1918,9 +1967,22 @@ namespace VoiceBookStudio.ViewModels
 
         private void SelectFirstChapter()
         {
+            IsWholeBookSelected = false;
             SelectedChapter = Chapters.FirstOrDefault();
             if (SelectedChapter != null)
                 _audio.Speak($"First chapter: {SelectedChapter.Title}.");
+        }
+
+        /// <summary>
+        /// Rebuilds DisplayItems from scratch: WholeBook sentinel first, then all
+        /// real chapters in their current sorted order.
+        /// </summary>
+        private void RebuildDisplayItems()
+        {
+            DisplayItems.Clear();
+            DisplayItems.Add(WholeBook);
+            foreach (var c in Chapters)
+                DisplayItems.Add(c);
         }
 
         private void FlushEditorToChapter() => SelectedChapter?.FlushToModel();

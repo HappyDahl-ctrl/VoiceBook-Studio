@@ -247,15 +247,25 @@ namespace VoiceBookStudio.Views
         private void ChapterListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (e.AddedItems.Count == 0) return;
-            var selected = e.AddedItems[0] as ChapterViewModel;
 
-            _suppressEditorSync     = true;
-            ViewModel.OnChapterSelected(selected);
-            _editorRtb.ReadOnly     = selected == null;
-            _editorRtb.Text         = selected?.Content ?? string.Empty;
-            _suppressEditorSync     = false;
+            _suppressEditorSync = true;
 
-            _lastEditorCaretIndex   = 0;
+            if (e.AddedItems[0] is WholeBookViewModel)
+            {
+                ViewModel.SelectWholeBook();
+                _editorRtb.ReadOnly = true;
+                _editorRtb.Text     = ViewModel.WholeBook.Content;
+            }
+            else
+            {
+                var selected = e.AddedItems[0] as ChapterViewModel;
+                ViewModel.OnChapterSelected(selected);
+                _editorRtb.ReadOnly = selected == null;
+                _editorRtb.Text     = selected?.Content ?? string.Empty;
+            }
+
+            _suppressEditorSync   = false;
+            _lastEditorCaretIndex = 0;
         }
 
         // ----------------------------------------------------------------

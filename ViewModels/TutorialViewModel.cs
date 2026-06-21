@@ -161,7 +161,7 @@ namespace VoiceBookStudio.ViewModels
 
             // Delay so JAWS finishes announcing the new window before the app speaks.
             _ = Task.Delay(900).ContinueWith(
-                _ => System.Windows.Application.Current?.Dispatcher.Invoke(EnterCurrentStep));
+                _ => System.Windows.Application.Current?.Dispatcher.InvokeAsync(EnterCurrentStep));
         }
 
         public void Next()
@@ -242,7 +242,7 @@ namespace VoiceBookStudio.ViewModels
 
             _ = Task.Delay(1200).ContinueWith(_ =>
             {
-                System.Windows.Application.Current?.Dispatcher.Invoke(Next);
+                System.Windows.Application.Current?.Dispatcher.InvokeAsync(Next);
             });
         }
 
@@ -334,7 +334,7 @@ namespace VoiceBookStudio.ViewModels
                         ? $"Still waiting. {step.ActionPrompt}. Or say Skip step to move on."
                         : $"Still waiting. {step.ActionPrompt}.";
 
-                    System.Windows.Application.Current?.Dispatcher.Invoke(() =>
+                    System.Windows.Application.Current?.Dispatcher.InvokeAsync(() =>
                         _announcer.Speak(reminder));
                 }
                 catch (OperationCanceledException) { }

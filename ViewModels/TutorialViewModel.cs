@@ -238,12 +238,30 @@ namespace VoiceBookStudio.ViewModels
 
             _sounds?.Play(AppSound.TutorialStep);
             string confirmation = step.SuccessMessage ?? "Got it. Moving to the next step.";
-            _announcer.Speak(confirmation);
 
-            _ = Task.Delay(1200).ContinueWith(_ =>
+            // Wait for any in-flight AudioFeedbackService announcement (e.g. "Editor panel.")
+            // to finish before speaking the tutorial confirmation, then advance immediately
+            // after the confirmation completes rather than using a fixed timer.
+            _ = HandleActionAsync(confirmation);
+        }
+
+        private async Task HandleActionAsync(string confirmation)
+        {
+            try
             {
-                System.Windows.Application.Current?.Dispatcher.InvokeAsync(Next);
-            });
+                // Let the app's own focus-change announcement finish before we speak over it.
+                await _audio.WaitForCurrentSpeechAsync().ConfigureAwait(false);
+                // Speak the success message and wait for it to complete before advancing.
+                await _announcer.SpeakAndWaitAsync(confirmation).ConfigureAwait(false);
+            }
+            catch
+            {
+                // TTS failure — fall through and still advance the tutorial.
+            }
+            // Marshal Next() to the UI thread regardless of TTS success.
+            var app = System.Windows.Application.Current;
+            if (app != null)
+                await app.Dispatcher.InvokeAsync(Next);
         }
 
         // ----------------------------------------------------------------

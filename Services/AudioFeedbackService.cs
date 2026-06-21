@@ -31,6 +31,11 @@ namespace VoiceBookStudio.Services
         private SpeechSynthesizer? _sapi;
         private readonly object    _sapiLock = new();
 
+        // Tracks the most-recently-started SAPI Prompt so WaitForCurrentSpeechAsync()
+        // can filter SpeakCompleted events by identity and avoid acting on stale events
+        // from previously-cancelled utterances.
+        private volatile Prompt? _currentPrompt;
+
         private readonly AzureTtsService _azure;
         private bool _disposed;
 
@@ -123,7 +128,72 @@ namespace VoiceBookStudio.Services
             {
                 var sapi = EnsureSapi();
                 sapi.SpeakAsyncCancelAll(); // interrupt current + discard queue
-                sapi.SpeakAsync(text);
+                _currentPrompt = sapi.SpeakAsync(text);
+            }
+        }
+
+        /// <summary>
+        /// Awaits completion of the most-recently-started fire-and-forget Speak() call.
+        /// Returns immediately when nothing is speaking, when JAWS is detected, or when
+        /// the synthesizer has not yet been used. Any exception degrades to an immediate
+        /// return so a TTS failure never blocks tutorial progression.
+        ///
+        /// SAPI safeguards:
+        ///   - Subscribes to SpeakCompleted BEFORE checking synthesizer state to close the
+        ///     race window where speech ends between the check and the subscription.
+        ///   - Filters events by Prompt identity so stale SpeakCompleted events from
+        ///     previously-cancelled utterances do not trigger a premature return.
+        ///   - SpeakCompleted fires for both natural completion and cancellation
+        ///     (SpeakAsyncCancelAll), so interruption is handled correctly.
+        ///   - Falls back to a 10-second timeout to prevent freezing on any SAPI edge case.
+        /// </summary>
+        public async Task WaitForCurrentSpeechAsync()
+        {
+            if (AppSettings.IsJawsDetected) return;
+            if (!IsEnabled || _disposed) return;
+
+            if (_azure.IsConfigured)
+            {
+                await _azure.WaitForCurrentSpeechAsync().ConfigureAwait(false);
+                return;
+            }
+
+            var sapi   = _sapi;
+            var prompt = _currentPrompt;
+            if (sapi == null || prompt == null) return;
+
+            var tcs = new TaskCompletionSource<bool>(
+                TaskCreationOptions.RunContinuationsAsynchronously);
+
+            void OnCompleted(object? s, SpeakCompletedEventArgs e)
+            {
+                // Ignore events for previously-cancelled utterances; only act on ours.
+                if (!ReferenceEquals(e.Prompt, prompt)) return;
+                sapi.SpeakCompleted -= OnCompleted;
+                // Fires for both natural completion and SpeakAsyncCancelAll interruption.
+                tcs.TrySetResult(true);
+            }
+
+            // Subscribe FIRST, then check state, so we cannot miss the completion event
+            // if speech finishes in the gap between the two operations.
+            sapi.SpeakCompleted += OnCompleted;
+
+            // If speech already ended before we subscribed, Prompt.IsCompleted is true.
+            // Complete the TCS immediately rather than waiting for an event that won't fire.
+            if (prompt.IsCompleted)
+            {
+                sapi.SpeakCompleted -= OnCompleted;
+                return;
+            }
+
+            try
+            {
+                await tcs.Task.WaitAsync(TimeSpan.FromSeconds(10)).ConfigureAwait(false);
+            }
+            catch (TimeoutException)
+            {
+                // Edge-case fallback: advance slightly early rather than freezing.
+                sapi.SpeakCompleted -= OnCompleted;
             }
         }
 

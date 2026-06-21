@@ -319,11 +319,11 @@ namespace VoiceBookStudio.ViewModels
                 // For interactive steps, speak only the title and the short action prompt.
                 // step.Content is already displayed on screen and contains the same instruction —
                 // reading the full content aloud then repeating ActionPrompt caused confusing duplication.
-                // A clear "your turn" cue at the end signals when to act.
+                // The command instruction must be the last thing spoken so Dragon picks it up cleanly.
                 string prompt = step.ActionPrompt ?? "Complete the action to continue.";
                 _announcer.Speak(
                     $"Step {_currentIndex + 1} of {_steps.Length}. {step.Title}. " +
-                    $"{prompt}. I am listening. It is your turn.");
+                    $"{prompt}.");
             }
             else
             {

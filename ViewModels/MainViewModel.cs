@@ -2108,9 +2108,11 @@ namespace VoiceBookStudio.ViewModels
             string help = _currentPanel switch
             {
                 1 => "Chapter Manager commands. " +
-                     "Add chapter. Rename chapter. Delete chapter. Move up. Move down. Change type. " +
+                     "Add chapter. Rename chapter. Delete chapter. Change type. " +
+                     "To navigate the list: Next chapter. Previous chapter. " +
+                     "To reorder: Move up. Move down. " +
                      "Keyboard shortcuts: Control A to add. Control D to rename. Control Delete to delete. " +
-                     "Alt Up or Alt Down to reorder. " +
+                     "Alt Up or Alt Down to reorder. F6 or F7 to move selection. " +
                      "Global commands: Save. New project. Export Word. Export PDF. " +
                      "Panel one, two, or three to switch panels.",
 

@@ -866,6 +866,7 @@ namespace VoiceBookStudio.ViewModels
                 SelectFirstChapter();
                 string? openRootDir = System.IO.Path.GetDirectoryName(dialog.FileName);
                 if (openRootDir != null) ProjectService.EnsureProjectFolderStructure(openRootDir);
+                OnProjectFolderChanged(openRootDir ?? string.Empty);
 
                 _sounds.Play(AppSound.ProjectOpened);
                 string msg = $"Opened: {Project.Title}. {Project.Chapters.Count} chapters.";
@@ -927,6 +928,7 @@ namespace VoiceBookStudio.ViewModels
                 await _projectService.SaveAsync(Project!, path);
                 _currentFilePath = path;
                 IsModified       = false;
+                OnProjectFolderChanged(System.IO.Path.GetDirectoryName(path) ?? string.Empty);
 
                 _sounds.Play(AppSound.ProjectSaved);
                 SetStatus($"Saved: {System.IO.Path.GetFileName(path)}");

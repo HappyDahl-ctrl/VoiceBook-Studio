@@ -709,18 +709,19 @@ namespace VoiceBookStudio.ViewModels
                     dlg.Show();
                     await dlgClosed.Task;
 
-                    // Mark complete after the dialog closes so a crash mid-dialog
-                    // does not permanently skip the welcome flow.
-                    VoiceBookStudio.Utils.AppSettings.FirstLaunchComplete = true;
-                    VoiceBookStudio.Utils.AppSettings.SaveJsonSettings();
-
                     if (welcomeVm.StartRequested)
                     {
                         // Launch the full interactive tutorial (17-step TutorialDialog).
+                        // FirstLaunchComplete is set only when the user finishes or
+                        // explicitly skips within the tutorial (TutorialViewModel.TutorialCompleted).
                         StartTutorial();
                     }
                     else
                     {
+                        // User dismissed the WelcomeDialog without starting the tutorial
+                        // (Skip Tour button, X button, Alt+F4, or owner-window-close cascade).
+                        // Leave FirstLaunchComplete = false so the dialog auto-starts again
+                        // on the next launch, giving them another chance to engage.
                         FocusPanelRequested?.Invoke(this, 1);
                         _currentPanel = 1;
                         string skipMsg = "VoiceBook Studio ready. Panel 1 focused.";
@@ -755,8 +756,10 @@ namespace VoiceBookStudio.ViewModels
                 _tutorialActionSink = null;
                 _tutorial           = null;
 
-                VoiceBookStudio.Utils.AppSettings.TutorialCompleted = true;
-                VoiceBookStudio.Utils.AppSettings.Save();
+                // Mark both FirstLaunchComplete (JSON) and TutorialCompleted (Registry)
+                // through the shared service so the auto-start gate is only cleared
+                // when the user explicitly finishes or skips within the tutorial.
+                new FirstLaunchService().MarkTutorialComplete();
                 _sounds.Play(AppSound.TutorialComplete);
 
                 // Announce completion and focus Panel 1.

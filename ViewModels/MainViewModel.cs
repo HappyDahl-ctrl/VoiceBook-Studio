@@ -1095,6 +1095,10 @@ namespace VoiceBookStudio.ViewModels
                 {
                     ImportAsSingleChapter(fullText, suggestedName);
                 }
+
+                // Notify the tutorial that a project is now open so step 14
+                // ("Complete the Dialog", RequiredAction = "projectopened") can advance.
+                _tutorialActionSink?.Invoke("projectopened");
             }
             catch (Exception ex)
             {

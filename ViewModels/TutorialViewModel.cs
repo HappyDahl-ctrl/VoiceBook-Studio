@@ -443,13 +443,15 @@ namespace VoiceBookStudio.ViewModels
                             ? "Dragon NaturallySpeaking is running. Type the word Hello into the " +
                               "Command box below and press Enter. This confirms Dragon is connected " +
                               "and command routing is working."
-                            : "The built-in microphone is listening. Say the word Hello out loud now.\n\n" +
-                              "If the microphone hears you, the step will pass automatically.\n\n" +
-                              "You can also type Hello into the Command box below and press Enter."),
+                            : "If the microphone hears you, the step will pass automatically.\n\n" +
+                              "You can type Hello into the Command box below and press Enter, " +
+                              "or say hello out loud right now."),
                     RequiredAction = "continue",
                     ActionPrompt   = dragonDetected
                         ? "Type Hello in the Command box and press Enter"
-                        : "Say Hello out loud, or type Hello in the Command box and press Enter",
+                        : "If the microphone hears you, the step will pass automatically. " +
+                          "You can type Hello into the Command box below and press Enter, " +
+                          "or say hello out loud right now",
                     SuccessMessage = "Audio and microphone confirmed. Everything is working.",
                     IsSkippable    = true
                 },

@@ -17,9 +17,10 @@ Version: Current Release · June 2026
 9. The Feedback Library
 10. Exporting Your Book
 11. Settings
-12. All Voice Commands
-13. All Keyboard Shortcuts
-14. Sounds Reference
+12. Voice Control with Dragon — Two Scenarios
+13. All Voice Commands
+14. All Keyboard Shortcuts
+15. Sounds Reference
 
 ---
 
@@ -337,7 +338,186 @@ Say "toggle voice" to turn the app's text-to-speech on or off. When off, JAWS or
 
 ---
 
-## 12. All Voice Commands
+## 12. Voice Control with Dragon — Two Scenarios
+
+When Dragon NaturallySpeaking is running, it owns the microphone. VoiceBook Studio's built-in voice recogniser is automatically disabled. There are two ways to control the app by voice with Dragon, depending on whether you have set up Dragon MyCommands.
+
+---
+
+### Scenario A — Dragon Without MyCommands (Works Immediately)
+
+No setup required. Use the Command Bar shortcut to send any command.
+
+**How it works:**
+
+1. Say "press Control Shift Space" — the chat input box clears and gets focus
+2. Dictate the command you want (see the command list below)
+3. Say "press Enter" — the command runs
+
+**Example — saving your project:**
+
+> "Press Control Shift Space" ... "save" ... "press Enter"
+
+**Example — getting AI feedback:**
+
+> "Press Control Shift Space" ... "pacing feedback" ... "press Enter"
+
+**Example — switching panels:**
+
+> "Press Control Shift Space" ... "panel two" ... "press Enter"
+
+This two-step approach works for every command in the list below. It is slower than Scenario B but requires no Dragon configuration at all.
+
+**Writing in the editor** always works immediately with Dragon — no command bar needed. Just dictate normally, use "Correct that," "Scratch that," and all standard Dragon editing commands exactly as you would in Microsoft Word.
+
+---
+
+### Scenario B — Dragon With MyCommands (Full Hands-Free Control)
+
+After completing the one-time MyCommands setup (see the Installation and Configuration Guide), every command below becomes a single spoken phrase. Dragon sends the right keystroke or command bar sequence automatically — no "press Control Shift Space" step needed.
+
+**Example — saving your project:**
+
+> "Save VoiceBook"
+
+**Example — getting AI feedback:**
+
+> "Pacing feedback"
+
+**Example — switching panels:**
+
+> "Panel two"
+
+For setup instructions covering all 205 Dragon MyCommands, see:
+`Docs/Installation-and-Configuration-Guide.md` — Section 7.
+
+---
+
+### Master Command List (Both Scenarios)
+
+The commands below work in both scenarios. In Scenario A, each one is the text you dictate into the command bar. In Scenario B, each one is the phrase you say directly to Dragon after MyCommands are set up.
+
+#### Navigation
+
+| Command | What it does |
+|---|---|
+| panel one | Focus Panel 1 — Chapters |
+| panel two | Focus Panel 2 — Writing Editor |
+| panel three | Focus Panel 3 — AI Assistant |
+| go to chapters | Focus Panel 1 |
+| go to editor | Focus Panel 2 |
+| go to assistant | Focus Panel 3 |
+| go to chat | Switch to Chat tab |
+| open prompt library | Switch to Prompts tab |
+| open response cards | Switch to Cards tab |
+| open feedback library | Switch to Feedback tab |
+| what can I say here | Hear available commands for current panel |
+| status | Announce current app state |
+
+#### Project
+
+| Command | What it does |
+|---|---|
+| new project | Create a new project |
+| open project | Browse for a project file |
+| save | Save current project |
+| save now | Same |
+| save as | Save to a new file |
+| import document | Import a Word .docx file |
+
+#### Chapters
+
+| Command | What it does |
+|---|---|
+| add chapter | Add a new chapter |
+| rename chapter | Rename selected chapter |
+| delete chapter | Delete selected chapter |
+| move up | Move chapter up in list |
+| move down | Move chapter down in list |
+| change type | Change section type |
+| next chapter | Select the next chapter |
+| previous chapter | Select the previous chapter |
+
+#### Reading Aloud
+
+| Command | What it does |
+|---|---|
+| read chapter | Read the full chapter aloud |
+| read paragraph | Read paragraph at cursor |
+| read chapter title | Announce the chapter name |
+| stop | Stop speech |
+| stop reading | Same |
+| silence | Same |
+
+#### AI Feedback
+
+| Command | What it does |
+|---|---|
+| feedback | Comprehensive chapter feedback |
+| pacing | Pacing analysis |
+| dialogue | Dialogue analysis |
+| style | Style analysis |
+| structure | Structure analysis |
+| book analysis | Full manuscript analysis — select Whole Book first |
+| send | Send chat input to Claude |
+| read response | Read Claude's response aloud |
+| insert at cursor | Insert response at cursor position |
+| insert at start | Insert at chapter beginning |
+| insert at end | Insert at chapter end |
+| save card | Save response as a card |
+| discard response | Remove the response |
+
+#### Prompt Library
+
+| Command | What it does |
+|---|---|
+| open prompt library | Open Prompts tab |
+| what prompts do I have | Hear the category list |
+| read prompt a | Hear all prompts in category A (A through J) |
+| use prompt a one | Load prompt A1 (letter A–K, number one–ten) |
+| add new prompt | Add a prompt to the library |
+
+#### Response Cards
+
+| Command | What it does |
+|---|---|
+| open response cards | Open Cards tab |
+| what cards do I have | Hear card categories |
+| insert card one | Insert card 1 (one through twenty) |
+| delete card one | Delete card 1 (one through five) |
+
+#### Feedback Library
+
+| Command | What it does |
+|---|---|
+| open feedback library | Open Feedback tab |
+| feedback categories | Hear saved feedback categories |
+| read my pacing feedback | Read all saved pacing entries |
+| read my dialogue feedback | Read saved dialogue entries |
+| read my style feedback | Read saved style entries |
+| read my structure feedback | Read saved structure entries |
+| read my comprehensive feedback | Read comprehensive entries |
+| resume reading | Continue reading where you left off |
+
+#### Settings
+
+| Command | What it does |
+|---|---|
+| set api key | Enter Anthropic API key |
+| open settings | Open settings dialog |
+| set project folder | Choose default save folder |
+| toggle voice | Turn app speech on or off |
+| start tutorial | Open the 17-step tutorial |
+
+#### App
+
+| Command | What it does |
+|---|---|
+| close voicebook | Close the application |
+
+---
+
+## 13. All Voice Commands
 
 ### Navigation
 
@@ -467,7 +647,7 @@ Say "toggle voice" to turn the app's text-to-speech on or off. When off, JAWS or
 
 ---
 
-## 13. All Keyboard Shortcuts
+## 14. All Keyboard Shortcuts
 
 | Keys | Action |
 |---|---|
@@ -491,7 +671,7 @@ Say "toggle voice" to turn the app's text-to-speech on or off. When off, JAWS or
 
 ---
 
-## 14. Sounds Reference
+## 15. Sounds Reference
 
 | Sound | Meaning |
 |---|---|

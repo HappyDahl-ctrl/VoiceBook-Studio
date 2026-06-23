@@ -35,7 +35,7 @@ namespace VoiceBookStudio.Views
             InitializeComponent();
 
             Loaded += Window_Loaded;
-            Closing += (_, _) => _sounds.Play(AppSound.AppClosing);
+            Closing += MainWindow_Closing;
             Closed  += (_, _) => _speechListener?.Dispose();
 
             PreviewKeyDown += MainWindow_PreviewKeyDown;
@@ -517,6 +517,18 @@ namespace VoiceBookStudio.Views
             }
 
             return text[start..end].Trim();
+        }
+
+        // ----------------------------------------------------------------
+        // App close — play chime then speak a synchronous goodbye so the
+        // message completes before the process exits. Synchronous SAPI Speak()
+        // is used deliberately: async speech would be cut off on process exit.
+        // ----------------------------------------------------------------
+
+        private void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
+        {
+            _sounds.Play(AppSound.AppClosing);
+            ViewModel.SpeakGoodbye();
         }
     }
 }

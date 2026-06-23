@@ -2510,6 +2510,14 @@ namespace VoiceBookStudio.ViewModels
         public void SpeakViaAnnouncer(string text) => _systemAnnouncements.Speak(text);
 
         /// <summary>
+        /// Speaks a synchronous goodbye message when the app is closing.
+        /// Called from MainWindow.Closing — blocks until the utterance is done
+        /// so the user hears the full message before the process exits.
+        /// </summary>
+        public void SpeakGoodbye() =>
+            _systemAnnouncements.SpeakSync("VoiceBook Studio closing. Goodbye.");
+
+        /// <summary>
         /// Called by VoiceCommandRouter when a spoken phrase doesn't match any command.
         /// Provides audio feedback so the user knows the command wasn't understood.
         /// </summary>

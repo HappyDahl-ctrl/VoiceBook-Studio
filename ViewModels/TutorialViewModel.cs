@@ -338,10 +338,14 @@ namespace VoiceBookStudio.ViewModels
             }
             else
             {
+                bool isLast = _currentIndex == _steps.Length - 1;
+                string closing = isLast
+                    ? "Say Exit tutorial to close this window."
+                    : "Say Next to continue.";
                 _announcer.Speak(
                     $"Step {_currentIndex + 1} of {_steps.Length}. " +
                     $"{step.Title}. {step.Content} " +
-                    $"Press N or Next to continue, or say Next.");
+                    $"{closing}");
             }
         }
 
@@ -424,12 +428,10 @@ namespace VoiceBookStudio.ViewModels
                         "Welcome to VoiceBook Studio. Before anything else, let us confirm " +
                         "your audio is working.\n\n" +
                         "You should be hearing these words spoken aloud right now.\n\n" +
-                        "If you can hear me clearly, press N or say Next to confirm.\n\n" +
                         "If you cannot hear anything:\n" +
                         "  - Check that your speakers or headphones are connected and turned up\n" +
                         "  - Check the Windows volume mixer is not muted for VoiceBook Studio\n" +
-                        "  - Press R to repeat this step's announcement\n\n" +
-                        "Press N or say Next when you can hear audio correctly."
+                        "  - Press R to repeat this step's announcement"
                 },
 
                 new TutorialStep
@@ -462,7 +464,7 @@ namespace VoiceBookStudio.ViewModels
                     Content =
                         "Great — audio is confirmed. Here is how the rest of the tutorial works.\n\n" +
                         "HOW THE TUTORIAL WORKS\n" +
-                        "Most steps ask you to listen, then press Next or say Next to continue.\n" +
+                        "Most steps ask you to listen, then press Next to continue.\n" +
                         "Some steps ask you to perform an action — the tutorial waits and " +
                         "detects when you have done it before moving on.\n\n" +
                         "KEYBOARD SHORTCUTS IN THIS WINDOW\n" +
@@ -470,8 +472,7 @@ namespace VoiceBookStudio.ViewModels
                         "  P         — Previous step\n" +
                         "  R         — Repeat current step\n" +
                         "  S         — Skip an action step\n" +
-                        "  Escape    — Exit tutorial\n\n" +
-                        "Press N or say Next when you are ready."
+                        "  Escape    — Exit tutorial"
                 },
 
                 new TutorialStep
@@ -479,8 +480,7 @@ namespace VoiceBookStudio.ViewModels
                     Title   = "Your Setup",
                     Content =
                         jawsInfo + "\n\n" + micInfo + "\n\n" +
-                        voiceCommandRoute + "\n\n" +
-                        "Press N or say Next to continue."
+                        voiceCommandRoute
                 },
 
                 new TutorialStep
@@ -497,8 +497,7 @@ namespace VoiceBookStudio.ViewModels
                         "PANEL 3 — AI Assistant (right side)\n" +
                         "Chat with Claude for feedback, browse 75 writing prompts, and save " +
                         "useful responses as cards.\n\n" +
-                        "Switch panels by pressing F1, F2, or F3. Or say Panel 1, Panel 2, or Panel 3.\n\n" +
-                        "Press N or say Next to continue."
+                        "Switch panels by pressing F1, F2, or F3. Or say Panel 1, Panel 2, or Panel 3."
                 },
 
                 // ════════════════════════════════════════════════════════
@@ -519,8 +518,7 @@ namespace VoiceBookStudio.ViewModels
                         "  Panel 2    /    Go to panel 2    /    Panel two\n" +
                         "  Panel 3    /    Go to panel 3    /    Panel three\n\n" +
                         "The next three steps ask you to switch to each panel so you can " +
-                        "confirm the commands work on your machine.\n\n" +
-                        "Press N or say Next to start the panel tests."
+                        "confirm the commands work on your machine."
                 },
 
                 new TutorialStep
@@ -581,8 +579,7 @@ namespace VoiceBookStudio.ViewModels
                         "  Comprehensive feedback — AI analysis of the current chapter\n" +
                         "  What can I say here — hear commands for the current panel\n\n" +
                         "In the Writing Editor, give commands by going to Panel 3 and " +
-                        "typing or dictating in the Chat box, then pressing Enter.\n\n" +
-                        "Press N or say Next to continue."
+                        "typing or dictating in the Chat box, then pressing Enter."
                 },
 
                 new TutorialStep
@@ -594,8 +591,7 @@ namespace VoiceBookStudio.ViewModels
                         "The app will speak a list of the commands available in whichever " +
                         "panel you are currently using.\n\n" +
                         "This is the fastest way to discover commands without looking " +
-                        "anything up in the manual.\n\n" +
-                        "Press N or say Next to continue."
+                        "anything up in the manual."
                 },
 
                 // ════════════════════════════════════════════════════════
@@ -613,8 +609,7 @@ namespace VoiceBookStudio.ViewModels
                         "OPTION B — IMPORT AN EXISTING DOCUMENT\n" +
                         "If you already have writing in a Word document, import it. " +
                         "VoiceBook will detect your chapter breaks and bring your text in.\n\n" +
-                        "The next step will ask which option you want.\n\n" +
-                        "Press N or say Next to continue."
+                        "The next step will ask which option you want."
                 },
 
                 new TutorialStep
@@ -704,9 +699,7 @@ namespace VoiceBookStudio.ViewModels
                         "  Ctrl+I           — Import Word document\n" +
                         "  Ctrl+F           — Run comprehensive AI feedback\n\n" +
                         "Say What can I say here at any time to hear context-sensitive commands.\n\n" +
-                        "Say Start tutorial at any time to run this tutorial again.\n\n" +
-                        "Press Exit Tutorial or say Exit tutorial to close this window " +
-                        "and go to the Chapter Manager."
+                        "Say Start tutorial at any time to run this tutorial again."
                 }
             };
         }

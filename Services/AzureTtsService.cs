@@ -24,7 +24,7 @@ namespace VoiceBookStudio.Services
 
         // Tracks the Task for the most-recently-started fire-and-forget Speak() call so
         // WaitForCurrentSpeechAsync() can await it without starting a new utterance.
-        private volatile Task<SynthesisResult>? _currentSpeechTask;
+        private volatile Task<SpeechSynthesisResult>? _currentSpeechTask;
 
         public bool IsConfigured => AppSettings.IsAzureTtsConfigured && _synth != null;
 

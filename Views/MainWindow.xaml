@@ -22,6 +22,7 @@
         <KeyBinding Key="Up"     Modifiers="Alt"        Command="{Binding MoveChapterUpCommand}"/>
         <KeyBinding Key="Down"   Modifiers="Alt"        Command="{Binding MoveChapterDownCommand}"/>
         <KeyBinding Key="F"      Modifiers="Ctrl"       Command="{Binding RunAiFeedbackCommand}" CommandParameter="comprehensive"/>
+        <KeyBinding Key="Space"  Modifiers="Ctrl+Shift" Command="{Binding ActivateCommandBarCommand}"/>
     </Window.InputBindings>
 
     <Grid>

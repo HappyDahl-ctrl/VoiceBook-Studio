@@ -316,6 +316,14 @@ namespace VoiceBookStudio.ViewModels
         public event EventHandler? FocusChatInputRequested;
 
         /// <summary>
+        /// Raised by FocusCommandInput() so the view can clear and focus the chat
+        /// input box. This is the dedicated Dragon entry point — Ctrl+Shift+Space
+        /// triggers it so Dragon Step-by-Step commands can type and submit any app
+        /// command without the user having to navigate there manually.
+        /// </summary>
+        public event EventHandler? FocusAndClearChatInputRequested;
+
+        /// <summary>
         /// Raised when the five-step guided tour starts.
         /// The payload is the new TutorialService so MainWindow can register it
         /// with the voice router.
@@ -432,6 +440,17 @@ namespace VoiceBookStudio.ViewModels
             SetStatus("AI Assistant panel focused.");
             _audio.Speak("AI Assistant panel.");
             _tutorialActionSink?.Invoke("panel3");
+        }
+
+        /// <summary>
+        /// Clears and focuses the chat command input box from any panel.
+        /// Bound to Ctrl+Shift+Space — the single Dragon entry point for all
+        /// Step-by-Step commands that type and submit a command via the chat box.
+        /// </summary>
+        public void FocusCommandInput()
+        {
+            _currentPanel = 3;
+            FocusAndClearChatInputRequested?.Invoke(this, EventArgs.Empty);
         }
 
         // Methods invoked by VoiceCommandRouter for tutorial navigation.
@@ -809,6 +828,14 @@ namespace VoiceBookStudio.ViewModels
             FocusPanelRequested?.Invoke(this, 1);
             _currentPanel = 1;
         }
+
+        /// <summary>
+        /// Ctrl+Shift+Space — Dragon entry point. Clears and focuses the chat
+        /// input box from anywhere in the app so Dragon Step-by-Step commands
+        /// can type and submit a command without manual navigation.
+        /// </summary>
+        [RelayCommand]
+        private void ActivateCommandBar() => FocusCommandInput();
 
         // Exposed command to explicitly open the welcome dialog / tutorial
         [RelayCommand]

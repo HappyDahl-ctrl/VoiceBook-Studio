@@ -122,6 +122,34 @@ namespace VoiceBookStudio.Services
                 ActuallySpeak(message);
         }
 
+        /// <summary>
+        /// Speaks text synchronously (blocks until the utterance is complete).
+        /// Used only for the app-closing goodbye so the message finishes before
+        /// the process exits. Do not use this for anything else — it blocks the
+        /// UI thread. No JAWS delay is applied since we are already shutting down.
+        /// </summary>
+        public void SpeakSync(string text)
+        {
+            if (_disposed || string.IsNullOrWhiteSpace(text)) return;
+            text = SanitizeForSpeech(text);
+            if (_azure.IsConfigured)
+            {
+                // Azure is async-only; fall back to SAPI for the goodbye so
+                // we can guarantee the utterance completes before exit.
+                using var sapi = new SpeechSynthesizer();
+                try
+                {
+                    sapi.SetOutputToDefaultAudioDevice();
+                    SelectBestSapiVoice(sapi);
+                    sapi.Speak(text);
+                }
+                catch { /* non-fatal — process is exiting */ }
+                return;
+            }
+            try { _sapi.Speak(text); }
+            catch { /* non-fatal */ }
+        }
+
         public void StopSpeaking()
         {
             if (_disposed) return;
@@ -215,9 +243,11 @@ namespace VoiceBookStudio.Services
             return input.Trim();
         }
 
-        private void SelectBestSapiVoice()
+        private void SelectBestSapiVoice() => SelectBestSapiVoice(_sapi);
+
+        private static void SelectBestSapiVoice(SpeechSynthesizer synth)
         {
-            var voices = _sapi.GetInstalledVoices()
+            var voices = synth.GetInstalledVoices()
                               .Where(v => v.Enabled)
                               .Select(v => v.VoiceInfo.Name)
                               .ToList();
@@ -233,7 +263,7 @@ namespace VoiceBookStudio.Services
             {
                 var match = voices.FirstOrDefault(
                     v => v.Contains(pref, StringComparison.OrdinalIgnoreCase));
-                if (match != null) { _sapi.SelectVoice(match); return; }
+                if (match != null) { synth.SelectVoice(match); return; }
             }
         }
 

@@ -161,7 +161,7 @@ namespace VoiceBookStudio.ViewModels
 
             // Delay so JAWS finishes announcing the new window before the app speaks.
             _ = Task.Delay(900).ContinueWith(
-                _ => System.Windows.Application.Current?.Dispatcher.Invoke(EnterCurrentStep));
+                _ => System.Windows.Application.Current?.Dispatcher.InvokeAsync(EnterCurrentStep));
         }
 
         public void Next()
@@ -238,12 +238,30 @@ namespace VoiceBookStudio.ViewModels
 
             _sounds?.Play(AppSound.TutorialStep);
             string confirmation = step.SuccessMessage ?? "Got it. Moving to the next step.";
-            _announcer.Speak(confirmation);
 
-            _ = Task.Delay(1200).ContinueWith(_ =>
+            // Wait for any in-flight AudioFeedbackService announcement (e.g. "Editor panel.")
+            // to finish before speaking the tutorial confirmation, then advance immediately
+            // after the confirmation completes rather than using a fixed timer.
+            _ = HandleActionAsync(confirmation);
+        }
+
+        private async Task HandleActionAsync(string confirmation)
+        {
+            try
             {
-                System.Windows.Application.Current?.Dispatcher.Invoke(Next);
-            });
+                // Let the app's own focus-change announcement finish before we speak over it.
+                await _audio.WaitForCurrentSpeechAsync().ConfigureAwait(false);
+                // Speak the success message and wait for it to complete before advancing.
+                await _announcer.SpeakAndWaitAsync(confirmation).ConfigureAwait(false);
+            }
+            catch
+            {
+                // TTS failure — fall through and still advance the tutorial.
+            }
+            // Marshal Next() to the UI thread regardless of TTS success.
+            var app = System.Windows.Application.Current;
+            if (app != null)
+                await app.Dispatcher.InvokeAsync(Next);
         }
 
         // ----------------------------------------------------------------
@@ -301,11 +319,11 @@ namespace VoiceBookStudio.ViewModels
                 // For interactive steps, speak only the title and the short action prompt.
                 // step.Content is already displayed on screen and contains the same instruction —
                 // reading the full content aloud then repeating ActionPrompt caused confusing duplication.
-                // A clear "your turn" cue at the end signals when to act.
+                // The command instruction must be the last thing spoken so Dragon picks it up cleanly.
                 string prompt = step.ActionPrompt ?? "Complete the action to continue.";
                 _announcer.Speak(
                     $"Step {_currentIndex + 1} of {_steps.Length}. {step.Title}. " +
-                    $"{prompt}. I am listening. It is your turn.");
+                    $"{prompt}.");
             }
             else
             {
@@ -334,7 +352,7 @@ namespace VoiceBookStudio.ViewModels
                         ? $"Still waiting. {step.ActionPrompt}. Or say Skip step to move on."
                         : $"Still waiting. {step.ActionPrompt}.";
 
-                    System.Windows.Application.Current?.Dispatcher.Invoke(() =>
+                    System.Windows.Application.Current?.Dispatcher.InvokeAsync(() =>
                         _announcer.Speak(reminder));
                 }
                 catch (OperationCanceledException) { }

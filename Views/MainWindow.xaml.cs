@@ -35,7 +35,7 @@ namespace VoiceBookStudio.Views
             InitializeComponent();
 
             Loaded += Window_Loaded;
-            Closing += (_, _) => _sounds.Play(AppSound.AppClosing);
+            Closing += MainWindow_Closing;
             Closed  += (_, _) => _speechListener?.Dispose();
 
             PreviewKeyDown += MainWindow_PreviewKeyDown;
@@ -247,15 +247,25 @@ namespace VoiceBookStudio.Views
         private void ChapterListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (e.AddedItems.Count == 0) return;
-            var selected = e.AddedItems[0] as ChapterViewModel;
 
-            _suppressEditorSync     = true;
-            ViewModel.OnChapterSelected(selected);
-            _editorRtb.ReadOnly     = selected == null;
-            _editorRtb.Text         = selected?.Content ?? string.Empty;
-            _suppressEditorSync     = false;
+            _suppressEditorSync = true;
 
-            _lastEditorCaretIndex   = 0;
+            if (e.AddedItems[0] is WholeBookViewModel)
+            {
+                ViewModel.SelectWholeBook();
+                _editorRtb.ReadOnly = true;
+                _editorRtb.Text     = ViewModel.WholeBook.Content;
+            }
+            else
+            {
+                var selected = e.AddedItems[0] as ChapterViewModel;
+                ViewModel.OnChapterSelected(selected);
+                _editorRtb.ReadOnly = selected == null;
+                _editorRtb.Text     = selected?.Content ?? string.Empty;
+            }
+
+            _suppressEditorSync   = false;
+            _lastEditorCaretIndex = 0;
         }
 
         // ----------------------------------------------------------------
@@ -507,6 +517,18 @@ namespace VoiceBookStudio.Views
             }
 
             return text[start..end].Trim();
+        }
+
+        // ----------------------------------------------------------------
+        // App close — play chime then speak a synchronous goodbye so the
+        // message completes before the process exits. Synchronous SAPI Speak()
+        // is used deliberately: async speech would be cut off on process exit.
+        // ----------------------------------------------------------------
+
+        private void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
+        {
+            _sounds.Play(AppSound.AppClosing);
+            ViewModel.SpeakGoodbye();
         }
     }
 }

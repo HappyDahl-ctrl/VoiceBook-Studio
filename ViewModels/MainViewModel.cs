@@ -120,6 +120,19 @@ namespace VoiceBookStudio.ViewModels
             _autoSaveTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(30) };
             _autoSaveTimer.Tick += AutoSave_Tick;
             _autoSaveTimer.Start();
+
+            // Keep DisplayItems in sync whenever the Chapters collection changes.
+            Chapters.CollectionChanged += (_, _) => RebuildDisplayItems();
+            RebuildDisplayItems();
+        }
+
+        // When SelectedChapter is set directly (e.g. voice-nav), mirror it into
+        // SelectedDisplayItem so the ListBox highlights the correct row.
+        // Skip the sync when WholeBook is active (SelectedChapter is null there).
+        partial void OnSelectedChapterChanged(ChapterViewModel? value)
+        {
+            if (value != null || !IsWholeBookSelected)
+                SelectedDisplayItem = value;
         }
 
         public void SetProjectSelection(ProjectSelectionViewModel proj)
@@ -153,6 +166,29 @@ namespace VoiceBookStudio.ViewModels
 
         [ObservableProperty]
         private ObservableCollection<ChapterViewModel> _chapters = new();
+
+        /// <summary>
+        /// The list displayed in ChapterListBox — always starts with the pinned WholeBook entry
+        /// followed by real chapter view-models in sorted order.
+        /// </summary>
+        [ObservableProperty]
+        private ObservableCollection<object> _displayItems = new();
+
+        /// <summary>The pinned "Whole Book" sentinel, always at DisplayItems[0].</summary>
+        public WholeBookViewModel WholeBook { get; } = new WholeBookViewModel();
+
+        /// <summary>True while the "Whole Book" entry is the active selection.</summary>
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(RunAiFeedbackCommand))]
+        [NotifyCanExecuteChangedFor(nameof(SendChatCommand))]
+        private bool _isWholeBookSelected;
+
+        /// <summary>
+        /// Drives ChapterListBox.SelectedItem (TwoWay). Mirrors SelectedChapter for real
+        /// chapters; points to WholeBook when the whole-book entry is active.
+        /// </summary>
+        [ObservableProperty]
+        private object? _selectedDisplayItem;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(HasSelectedChapter))]
@@ -574,7 +610,10 @@ namespace VoiceBookStudio.ViewModels
 
         public void TryCreateNewProject()
         {
-            // Invoke new project flow
+            // Signal tutorial that the user chose the new-project path (step 13 detection).
+            // TryImportDocument does the same for the import path; voice "new project"
+            // routes here and must fire the same code so step 13 can advance.
+            _tutorialActionSink?.Invoke("newproject_or_import");
             _ = NewProjectAsync();
         }
 
@@ -672,18 +711,19 @@ namespace VoiceBookStudio.ViewModels
                     dlg.Show();
                     await dlgClosed.Task;
 
-                    // Mark complete after the dialog closes so a crash mid-dialog
-                    // does not permanently skip the welcome flow.
-                    VoiceBookStudio.Utils.AppSettings.FirstLaunchComplete = true;
-                    VoiceBookStudio.Utils.AppSettings.SaveJsonSettings();
-
                     if (welcomeVm.StartRequested)
                     {
                         // Launch the full interactive tutorial (17-step TutorialDialog).
+                        // FirstLaunchComplete is set only when the user finishes or
+                        // explicitly skips within the tutorial (TutorialViewModel.TutorialCompleted).
                         StartTutorial();
                     }
                     else
                     {
+                        // User dismissed the WelcomeDialog without starting the tutorial
+                        // (Skip Tour button, X button, Alt+F4, or owner-window-close cascade).
+                        // Leave FirstLaunchComplete = false so the dialog auto-starts again
+                        // on the next launch, giving them another chance to engage.
                         FocusPanelRequested?.Invoke(this, 1);
                         _currentPanel = 1;
                         string skipMsg = "VoiceBook Studio ready. Panel 1 focused.";
@@ -718,8 +758,10 @@ namespace VoiceBookStudio.ViewModels
                 _tutorialActionSink = null;
                 _tutorial           = null;
 
-                VoiceBookStudio.Utils.AppSettings.TutorialCompleted = true;
-                VoiceBookStudio.Utils.AppSettings.Save();
+                // Mark both FirstLaunchComplete (JSON) and TutorialCompleted (Registry)
+                // through the shared service so the auto-start gate is only cleared
+                // when the user explicitly finishes or skips within the tutorial.
+                new FirstLaunchService().MarkTutorialComplete();
                 _sounds.Play(AppSound.TutorialComplete);
 
                 // Announce completion and focus Panel 1.
@@ -793,9 +835,6 @@ namespace VoiceBookStudio.ViewModels
         {
             if (!await ConfirmDiscardChangesAsync()) return;
 
-            // Notify tutorial that new-project flow is starting (step 4.1 detection).
-            _tutorialActionSink?.Invoke("newproject_started");
-
             string? title = PromptText("New Project", "Enter project title:", "Untitled Project");
             if (title == null) return;
 
@@ -866,6 +905,7 @@ namespace VoiceBookStudio.ViewModels
                 SelectFirstChapter();
                 string? openRootDir = System.IO.Path.GetDirectoryName(dialog.FileName);
                 if (openRootDir != null) ProjectService.EnsureProjectFolderStructure(openRootDir);
+                OnProjectFolderChanged(openRootDir ?? string.Empty);
 
                 _sounds.Play(AppSound.ProjectOpened);
                 string msg = $"Opened: {Project.Title}. {Project.Chapters.Count} chapters.";
@@ -927,6 +967,7 @@ namespace VoiceBookStudio.ViewModels
                 await _projectService.SaveAsync(Project!, path);
                 _currentFilePath = path;
                 IsModified       = false;
+                OnProjectFolderChanged(System.IO.Path.GetDirectoryName(path) ?? string.Empty);
 
                 _sounds.Play(AppSound.ProjectSaved);
                 SetStatus($"Saved: {System.IO.Path.GetFileName(path)}");
@@ -1056,6 +1097,10 @@ namespace VoiceBookStudio.ViewModels
                 {
                     ImportAsSingleChapter(fullText, suggestedName);
                 }
+
+                // Notify the tutorial that a project is now open so step 14
+                // ("Complete the Dialog", RequiredAction = "projectopened") can advance.
+                _tutorialActionSink?.Invoke("projectopened");
             }
             catch (Exception ex)
             {
@@ -1422,6 +1467,7 @@ namespace VoiceBookStudio.ViewModels
         public void OnChapterSelected(ChapterViewModel? chapter)
         {
             FlushEditorToChapter();
+            IsWholeBookSelected = false;
             SelectedChapter = chapter;
 
             if (chapter != null)
@@ -1429,6 +1475,20 @@ namespace VoiceBookStudio.ViewModels
                 SetStatus($"Editing: {chapter.Title}  |  {chapter.WordCount:N0} words");
                 _audio.Speak($"Chapter loaded: {chapter.Title}. {chapter.WordCount} words.");
             }
+        }
+
+        /// <summary>
+        /// Called by the view when the user selects the "Whole Book" list entry.
+        /// Refreshes the concatenated manuscript and puts the editor in read-only mode.
+        /// </summary>
+        public void SelectWholeBook()
+        {
+            FlushEditorToChapter();
+            IsWholeBookSelected = true;
+            WholeBook.Refresh(Chapters);
+            SelectedChapter = null;
+            SetStatus("Whole Book — read-only view of all chapters in order.");
+            _audio.Speak("Whole Book. Read only.");
         }
 
         public void OnEditorTextChanged(string newText)
@@ -1454,7 +1514,7 @@ namespace VoiceBookStudio.ViewModels
         [RelayCommand(CanExecute = nameof(CanRunAi))]
         private async Task RunAiFeedbackAsync(string feedbackType)
         {
-            if (SelectedChapter == null) return;
+            if (SelectedChapter == null && !IsWholeBookSelected) return;
 
             if (!_aiService.IsAvailable)
             {
@@ -1471,14 +1531,29 @@ namespace VoiceBookStudio.ViewModels
                 SetStatus($"Running {feedbackType} analysis…");
                 _audio.Speak($"Running {feedbackType} analysis. Please wait.");
 
-                var feedback = await _aiService.GetFeedbackAsync(
-                    SelectedChapter.Content, feedbackType, BuildBookContext());
+                string chapterForFeedback;
+                AiFeedback feedback;
+
+                if (IsWholeBookSelected)
+                {
+                    // Whole Book selected — use the full concatenated manuscript as context.
+                    // Refresh first in case chapters were edited since the selection was made.
+                    WholeBook.Refresh(Chapters);
+                    feedback = await _aiService.GetFeedbackAsync(
+                        WholeBook.Content, feedbackType, bookContext: null);
+                    chapterForFeedback = "Whole Book";
+                }
+                else
+                {
+                    feedback = await _aiService.GetFeedbackAsync(
+                        SelectedChapter!.Content, feedbackType, BuildBookContext());
+                    chapterForFeedback = SelectedChapter.Title;
+                }
 
                 _sounds.Play(AppSound.AiResponded);
                 AiFeedbackText = feedback.RawText;
 
                 // Auto-save to feedback library (silent, no user action required)
-                string chapterForFeedback = SelectedChapter?.Title ?? "Unknown chapter";
                 FeedbackLibVM.AddEntry(feedbackType, chapterForFeedback, feedback.RawText);
 
                 SetStatus("AI analysis complete. Feedback saved to library. Use the Insert buttons to add it to your chapter.");
@@ -1498,7 +1573,7 @@ namespace VoiceBookStudio.ViewModels
             }
         }
 
-        private bool CanRunAi() => SelectedChapter != null;
+        private bool CanRunAi() => SelectedChapter != null || IsWholeBookSelected;
 
         // ----------------------------------------------------------------
         // Book-wide feedback (all chapters as primary content)
@@ -1616,8 +1691,10 @@ namespace VoiceBookStudio.ViewModels
                 SetStatus("Asking Claude…");
                 _audio.Speak("Sending your question to Claude. Please wait.");
 
+                if (IsWholeBookSelected) WholeBook.Refresh(Chapters);
+                string? chatContext = IsWholeBookSelected ? WholeBook.Content : SelectedChapter?.Content;
                 string response = await _aiService.ChatAsync(
-                    msg, SelectedChapter?.Content, BuildBookContext());
+                    msg, chatContext, IsWholeBookSelected ? null : BuildBookContext());
 
                 _sounds.Play(AppSound.AiResponded);
                 AiFeedbackText = response;
@@ -1916,9 +1993,22 @@ namespace VoiceBookStudio.ViewModels
 
         private void SelectFirstChapter()
         {
+            IsWholeBookSelected = false;
             SelectedChapter = Chapters.FirstOrDefault();
             if (SelectedChapter != null)
                 _audio.Speak($"First chapter: {SelectedChapter.Title}.");
+        }
+
+        /// <summary>
+        /// Rebuilds DisplayItems from scratch: WholeBook sentinel first, then all
+        /// real chapters in their current sorted order.
+        /// </summary>
+        private void RebuildDisplayItems()
+        {
+            DisplayItems.Clear();
+            DisplayItems.Add(WholeBook);
+            foreach (var c in Chapters)
+                DisplayItems.Add(c);
         }
 
         private void FlushEditorToChapter() => SelectedChapter?.FlushToModel();
@@ -2106,9 +2196,11 @@ namespace VoiceBookStudio.ViewModels
             string help = _currentPanel switch
             {
                 1 => "Chapter Manager commands. " +
-                     "Add chapter. Rename chapter. Delete chapter. Move up. Move down. Change type. " +
+                     "Add chapter. Rename chapter. Delete chapter. Change type. " +
+                     "To navigate the list: Next chapter. Previous chapter. " +
+                     "To reorder: Move up. Move down. " +
                      "Keyboard shortcuts: Control A to add. Control D to rename. Control Delete to delete. " +
-                     "Alt Up or Alt Down to reorder. " +
+                     "Alt Up or Alt Down to reorder. F6 or F7 to move selection. " +
                      "Global commands: Save. New project. Export Word. Export PDF. " +
                      "Panel one, two, or three to switch panels.",
 
@@ -2416,6 +2508,14 @@ namespace VoiceBookStudio.ViewModels
 
         /// <summary>Speaks text through SystemAnnouncementService (for MainWindow event handlers).</summary>
         public void SpeakViaAnnouncer(string text) => _systemAnnouncements.Speak(text);
+
+        /// <summary>
+        /// Speaks a synchronous goodbye message when the app is closing.
+        /// Called from MainWindow.Closing — blocks until the utterance is done
+        /// so the user hears the full message before the process exits.
+        /// </summary>
+        public void SpeakGoodbye() =>
+            _systemAnnouncements.SpeakSync("VoiceBook Studio closing. Goodbye.");
 
         /// <summary>
         /// Called by VoiceCommandRouter when a spoken phrase doesn't match any command.

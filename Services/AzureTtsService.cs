@@ -22,6 +22,10 @@ namespace VoiceBookStudio.Services
         private SpeechSynthesizer? _synth;
         private bool _disposed;
 
+        // Tracks the Task for the most-recently-started fire-and-forget Speak() call so
+        // WaitForCurrentSpeechAsync() can await it without starting a new utterance.
+        private volatile Task<SynthesisResult>? _currentSpeechTask;
+
         public bool IsConfigured => AppSettings.IsAzureTtsConfigured && _synth != null;
 
         /// <summary>
@@ -56,8 +60,8 @@ namespace VoiceBookStudio.Services
         public void Speak(string text)
         {
             if (_synth == null || _disposed || string.IsNullOrWhiteSpace(text)) return;
-            // Fire and forget — Azure SDK manages the audio queue
-            _ = _synth.SpeakTextAsync(text);
+            // Store the task so WaitForCurrentSpeechAsync() can await it.
+            _currentSpeechTask = _synth.SpeakTextAsync(text);
         }
 
         /// <summary>Speak and wait for completion — used for critical startup/tutorial announcements.</summary>
@@ -65,6 +69,23 @@ namespace VoiceBookStudio.Services
         {
             if (_synth == null || _disposed || string.IsNullOrWhiteSpace(text)) return;
             await _synth.SpeakTextAsync(text);
+        }
+
+        /// <summary>
+        /// Awaits the completion of the most-recently-started fire-and-forget Speak() call.
+        /// Returns immediately if nothing is speaking. Any Azure SDK exception is swallowed
+        /// so a TTS failure never blocks tutorial progression.
+        /// </summary>
+        public async Task WaitForCurrentSpeechAsync()
+        {
+            // Capture local reference — a concurrent Speak() call may overwrite the field,
+            // but we keep awaiting the task we started with, which is correct: if new speech
+            // started, the previous utterance was either cancelled or completed, so this
+            // Task will settle promptly either way.
+            var task = _currentSpeechTask;
+            if (task == null) return;
+            try { await task.ConfigureAwait(false); }
+            catch { /* Azure SDK exception or cancellation — treat as "speech ended" */ }
         }
 
         /// <summary>Cancel any in-progress or queued speech.</summary>

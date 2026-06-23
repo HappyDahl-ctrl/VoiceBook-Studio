@@ -347,8 +347,8 @@
 
                 <ListBox Grid.Row="1"
                          x:Name="ChapterListBox"
-                         ItemsSource="{Binding Chapters}"
-                         SelectedItem="{Binding SelectedChapter}"
+                         ItemsSource="{Binding DisplayItems}"
+                         SelectedItem="{Binding SelectedDisplayItem}"
                          SelectionChanged="ChapterListBox_SelectionChanged"
                          Margin="4"
                          TabIndex="20"

@@ -76,7 +76,15 @@ namespace VoiceBookStudio.Views
             ViewModel.InsertTextRequested     += OnInsertTextRequested;
             ViewModel.FocusPanelRequested     += OnFocusPanelRequested;
             ViewModel.SwitchAiTabRequested    += OnSwitchAiTabRequested;
-            ViewModel.FocusChatInputRequested += (_, _) => ChatInputBox.Focus();
+            ViewModel.FocusChatInputRequested        += (_, _) => ChatInputBox.Focus();
+            ViewModel.FocusAndClearChatInputRequested += (_, _) =>
+            {
+                // Switch to the Chat tab so the input box is visible, clear any
+                // previous text, then focus — ready for Dragon to type a command.
+                AiTabControl.SelectedIndex = 0;
+                ChatInputBox.Clear();
+                ChatInputBox.Focus();
+            };
 
             // Register / deregister TutorialService with the voice router when
             // the guided tour starts and ends.

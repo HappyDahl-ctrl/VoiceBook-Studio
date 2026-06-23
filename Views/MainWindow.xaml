@@ -166,6 +166,9 @@
                 <MenuItem Header="Welcome / Tutorial..."
                           Command="{Binding ShowWelcomeCommand}"
                           AutomationProperties.Name="Open welcome dialog and tutorial" />
+                <MenuItem Header="Reset Tutorial (runs again on next launch)"
+                          Click="ResetTutorial_Click"
+                          AutomationProperties.Name="Reset tutorial so it auto-starts on next launch"/>
                 <MenuItem Header="_About"
                           Click="ShowAbout_Click"
                           AutomationProperties.Name="About VoiceBook Studio"/>

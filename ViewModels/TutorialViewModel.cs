@@ -166,6 +166,7 @@ namespace VoiceBookStudio.ViewModels
 
         public void Next()
         {
+            _announcer.StopSpeaking();
             if (!CanNext()) return;
 
             CancelTimeout();
@@ -185,6 +186,7 @@ namespace VoiceBookStudio.ViewModels
 
         public void Previous()
         {
+            _announcer.StopSpeaking();
             if (!CanPrevious()) return;
 
             CancelTimeout();
@@ -194,12 +196,21 @@ namespace VoiceBookStudio.ViewModels
             EnterCurrentStep();
         }
 
-        public void Repeat() => AnnounceCurrentStep();
+        public void Repeat()
+        {
+            _announcer.StopSpeaking();
+            AnnounceCurrentStep();
+        }
 
-        public void Exit() => TutorialCompleted?.Invoke();
+        public void Exit()
+        {
+            _announcer.StopSpeaking();
+            TutorialCompleted?.Invoke();
+        }
 
         public void SkipStep()
         {
+            _announcer.StopSpeaking();
             if (!CanSkip()) return;
             _announcer.Speak("Step skipped.");
             CancelTimeout();

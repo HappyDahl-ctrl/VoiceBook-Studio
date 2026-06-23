@@ -471,6 +471,15 @@ namespace VoiceBookStudio.Views
             dlg.Show();
         }
 
+        private void ResetTutorial_Click(object sender, RoutedEventArgs e)
+        {
+            new Services.FirstLaunchService().ResetTutorial();
+            MessageBox.Show(
+                "Tutorial reset. The Welcome dialog will auto-start the next time you launch VoiceBook Studio.",
+                "Tutorial Reset",
+                MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
         private void ShowAbout_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show(

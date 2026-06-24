@@ -44,8 +44,9 @@ Source: "publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs creat
 ; Prompt library data (shipped read-only with the app)
 Source: "Data\PromptLibrary\prompts.json"; DestDir: "{app}\Data\PromptLibrary"; Flags: ignoreversion
 
-; User manual
-Source: "VoiceBookStudio_User_Manual.md"; DestDir: "{app}"; Flags: ignoreversion
+; User manual and installation guide
+Source: "Docs\User-Manual.md"; DestDir: "{app}\Docs"; Flags: ignoreversion
+Source: "Docs\Installation-and-Configuration-Guide.md"; DestDir: "{app}\Docs"; Flags: ignoreversion
 
 [Icons]
 ; Start Menu

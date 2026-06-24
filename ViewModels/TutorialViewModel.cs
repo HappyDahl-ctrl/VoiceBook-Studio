@@ -584,28 +584,13 @@ namespace VoiceBookStudio.ViewModels
                         "  Export PDF       — export as a PDF\n" +
                         "  Comprehensive feedback — AI analysis of the current chapter\n" +
                         "  What can I say here — hear commands for the current panel\n\n" +
-                        "Say any of these commands out loud, or type them into the Command box and press Enter."
-                },
-
-                new TutorialStep
-                {
-                    Title   = "ScrollLock — Microphone Toggle",
-                    Content =
-                        "The ScrollLock key gives you a single-key microphone toggle you can press " +
-                        "with a thumb, mouth stick, or tongue switch.\n\n" +
-                        "HOW IT WORKS\n" +
-                        "Press ScrollLock once:\n" +
-                        "  The app microphone turns on.\n" +
-                        "  If Dragon is running, Dragon's mic is muted so there is no conflict.\n" +
-                        "  The app says: App microphone on. Dragon muted. Say a command.\n\n" +
-                        "Say your command out loud — the app hears it directly.\n\n" +
-                        "Press ScrollLock again:\n" +
-                        "  The app microphone turns off.\n" +
-                        "  Dragon's mic is restored automatically.\n" +
-                        "  The app says: App microphone off. Dragon listening.\n\n" +
-                        "The ScrollLock LED on your keyboard shows which mode you are in — " +
-                        "lit means the app mic is on.\n\n" +
-                        "This works from anywhere in the app: chapter list, editor, or any panel."
+                        (dragonDetected
+                            ? "GIVING COMMANDS WITH DRAGON\n" +
+                              "Press ScrollLock — Dragon mutes, app mic activates. Say a command. " +
+                              "Press ScrollLock again to restore Dragon. " +
+                              "Or press Ctrl+Shift+Space, dictate a command, then press Enter."
+                            : "Say any of these commands out loud while the app microphone is on. " +
+                              "Or type them into the Command box and press Enter.")
                 },
 
                 new TutorialStep

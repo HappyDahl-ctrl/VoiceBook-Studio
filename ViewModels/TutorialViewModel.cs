@@ -503,7 +503,7 @@ namespace VoiceBookStudio.ViewModels
                         "PANEL 3 — AI Assistant (right side)\n" +
                         "Chat with Claude for feedback, browse 75 writing prompts, and save " +
                         "useful responses as cards.\n\n" +
-                        "Switch panels by pressing F1, F2, or F3. Or say Panel 1, Panel 2, or Panel 3."
+                        "Switch panels by pressing Ctrl+1, Ctrl+2, or Ctrl+3. Or say Panel 1, Panel 2, or Panel 3."
                 },
 
                 // ════════════════════════════════════════════════════════
@@ -516,7 +516,7 @@ namespace VoiceBookStudio.ViewModels
                     Content =
                         "You can switch panels in two ways.\n\n" +
                         "KEYBOARD\n" +
-                        "  F1 or Ctrl+1  — Chapter Manager\n" +
+                        "  Ctrl+1  — Chapter Manager\n" +
                         "  F2 or Ctrl+2  — Writing Editor\n" +
                         "  F3 or Ctrl+3  — AI Assistant\n\n" +
                         "VOICE (say any of these)\n" +
@@ -557,9 +557,9 @@ namespace VoiceBookStudio.ViewModels
                     Title          = "Return to the Chapter Manager — Panel 1",
                     Content        =
                         "Now return to the Chapter Manager.\n\n" +
-                        "Say Panel One — or press F1 or Ctrl+1.",
+                        "Say Panel One — or press Ctrl+1.",
                     RequiredAction = "panel1",
-                    ActionPrompt   = "Say Panel One, or press F1 or Ctrl+1",
+                    ActionPrompt   = "Say Panel One, or press Ctrl+1",
                     SuccessMessage = "Panel 1 focused. Navigation practice complete.",
                     IsSkippable    = true
                 },
@@ -701,7 +701,7 @@ namespace VoiceBookStudio.ViewModels
                     Content =
                         "Congratulations. You have completed the VoiceBook Studio tutorial.\n\n" +
                         "QUICK REFERENCE\n" +
-                        "  F1 / Ctrl+1      — Chapter Manager\n" +
+                        "  Ctrl+1            — Chapter Manager\n" +
                         "  F2 / Ctrl+2      — Writing Editor\n" +
                         "  F3 / Ctrl+3      — AI Assistant\n" +
                         "  Ctrl+S           — Save\n" +

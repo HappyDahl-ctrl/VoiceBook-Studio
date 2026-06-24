@@ -393,6 +393,38 @@ For setup instructions covering all 205 Dragon MyCommands, see:
 
 ---
 
+### Scenario C — ScrollLock Mic Toggle (Fastest Option)
+
+Press the **ScrollLock** key once to take exclusive control of the microphone away from Dragon and give it to the app. Press **ScrollLock** again to give it back.
+
+**What happens when you press ScrollLock:**
+
+- Dragon's microphone is muted immediately
+- The app's built-in voice recogniser activates
+- The app announces: "App microphone on. Dragon muted. Say a command."
+- Say any command in the Master Command List below — the app hears it directly, no command bar needed
+- Press **ScrollLock** again when finished
+- The app announces: "App microphone off. Dragon listening."
+- Dragon's microphone is restored — dictate normally
+
+**Example — getting pacing feedback, then back to dictation:**
+
+1. Press ScrollLock — app says "App microphone on. Dragon muted."
+2. Say "pacing feedback" — app runs the analysis
+3. Press ScrollLock — app says "App microphone off. Dragon listening."
+4. Dictate your next paragraph with Dragon as normal
+
+**Why this is faster than Scenario A or B:**
+
+- No "press Control Shift Space" step
+- No Dragon MyCommands setup required
+- A single key press each way — pressable with a thumb, mouth stick, or tongue switch
+- Works regardless of where focus is in the app (chapter list, editor, any panel)
+
+**The ScrollLock LED** on most keyboards lights up when the app mic is on, giving a physical indicator of which system owns the microphone.
+
+---
+
 ### Master Command List (Both Scenarios)
 
 The commands below work in both scenarios. In Scenario A, each one is the text you dictate into the command bar. In Scenario B, each one is the phrase you say directly to Dragon after MyCommands are set up.
@@ -665,7 +697,15 @@ The commands below work in both scenarios. In Scenario A, each one is the text y
 | Alt+Up | Move chapter up |
 | Alt+Down | Move chapter down |
 | Ctrl+F | Comprehensive AI feedback |
+| F2 | Focus AI Assistant panel |
+| F3 | Focus AI Assistant panel |
 | F4 | Read current paragraph |
+| F5 | Announce current chapter title |
+| F6 | Next chapter |
+| F7 | Previous chapter |
+| F8 | Read current chapter aloud |
+| F9 | Announce application status |
+| **ScrollLock** | **Toggle app microphone on/off (mutes/unmutes Dragon simultaneously)** |
 | Ctrl+Shift+Space | Open command bar (Dragon entry point) |
 | Escape | Leave editor, return to chapter list |
 

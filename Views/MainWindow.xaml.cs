@@ -28,6 +28,7 @@ namespace VoiceBookStudio.Views
         private VoiceCommandRouter?    _voiceRouter;
         private SpeechListenerService? _speechListener;
         private readonly AppSoundService _sounds;
+        private readonly DragonMicService _dragonMic = new DragonMicService();
 
         public MainWindow(AppSoundService sounds)
         {
@@ -102,6 +103,11 @@ namespace VoiceBookStudio.Views
             // "Close application" voice command — handled by closing the window.
             ViewModel.CloseApplicationRequested += (_, _) => Close();
 
+            // ── Dragon mic automation ────────────────────────────────────────
+            // Connect to Dragon's COM object so we can mute/unmute its mic in sync
+            // with the app's built-in mic toggle (ScrollLock key).
+            _dragonMic.Initialize();
+
             // ── Voice recognition ────────────────────────────────────────────
             _voiceRouter    = new VoiceCommandRouter(ViewModel);
             _speechListener = new SpeechListenerService();
@@ -128,7 +134,19 @@ namespace VoiceBookStudio.Views
                 string? error = (desired && !actual)
                     ? "Could not start microphone. Check that a microphone is connected and Windows Speech Recognition is set up."
                     : null;
-                ViewModel.SetMicListening(actual, error);
+
+                // When app mic turns on, mute Dragon so it doesn't steal the audio.
+                // When app mic turns off, restore Dragon so dictation works again.
+                if (error == null)
+                    _dragonMic.SetMicrophoneOn(!actual);
+
+                string? customMsg = error == null && _dragonMic.IsDragonAvailable
+                    ? (actual
+                        ? "App microphone on. Dragon muted. Say a command."
+                        : "App microphone off. Dragon listening.")
+                    : null;
+
+                ViewModel.SetMicListening(actual, error, customMsg);
             };
         }
 
@@ -186,6 +204,11 @@ namespace VoiceBookStudio.Views
                         return;
                     case WinForms.Keys.F9:
                         ViewModel.TryAnnounceApplicationStatus();
+                        e.Handled = e.SuppressKeyPress = true;
+                        return;
+                    // ScrollLock: toggle app mic on/off. Simultaneously mutes/unmutes Dragon.
+                    case WinForms.Keys.Scroll:
+                        Dispatcher.Invoke(() => ViewModel.ToggleMicCommand.Execute(null));
                         e.Handled = e.SuppressKeyPress = true;
                         return;
                     case WinForms.Keys.Escape:
@@ -343,14 +366,16 @@ namespace VoiceBookStudio.Views
             {
                 // NOTE: F1 intentionally NOT captured — JAWS uses F1 for contextual help on the focused control.
                 // Use Ctrl+1 / Ctrl+2 / Ctrl+3 for panel focus (user manual section 14).
-                if (e.Key == Key.F2) { ViewModel.FocusPanel2();                  e.Handled = true; return; }
-                if (e.Key == Key.F3) { ViewModel.FocusPanel3();                  e.Handled = true; return; }
-                if (e.Key == Key.F4) { ViewModel.TryReadParagraph();             e.Handled = true; return; }
-                if (e.Key == Key.F5) { ViewModel.TryAnnounceChapterTitle();      e.Handled = true; return; }
-                if (e.Key == Key.F6) { ViewModel.TrySelectNextChapter();         e.Handled = true; return; }
-                if (e.Key == Key.F7) { ViewModel.TrySelectPreviousChapter();     e.Handled = true; return; }
-                if (e.Key == Key.F8) { ViewModel.TryReadChapter();               e.Handled = true; return; }
-                if (e.Key == Key.F9) { ViewModel.TryAnnounceApplicationStatus(); e.Handled = true; return; }
+                if (e.Key == Key.F2)     { ViewModel.FocusPanel2();                  e.Handled = true; return; }
+                if (e.Key == Key.F3)     { ViewModel.FocusPanel3();                  e.Handled = true; return; }
+                if (e.Key == Key.F4)     { ViewModel.TryReadParagraph();             e.Handled = true; return; }
+                if (e.Key == Key.F5)     { ViewModel.TryAnnounceChapterTitle();      e.Handled = true; return; }
+                if (e.Key == Key.F6)     { ViewModel.TrySelectNextChapter();         e.Handled = true; return; }
+                if (e.Key == Key.F7)     { ViewModel.TrySelectPreviousChapter();     e.Handled = true; return; }
+                if (e.Key == Key.F8)     { ViewModel.TryReadChapter();               e.Handled = true; return; }
+                if (e.Key == Key.F9)     { ViewModel.TryAnnounceApplicationStatus(); e.Handled = true; return; }
+                // ScrollLock: toggle app mic on/off. Simultaneously mutes/unmutes Dragon.
+                if (e.Key == Key.Scroll) { ViewModel.ToggleMicCommand.Execute(null); e.Handled = true; return; }
             }
 
             if (ctrl)

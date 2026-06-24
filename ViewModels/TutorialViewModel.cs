@@ -409,8 +409,12 @@ namespace VoiceBookStudio.ViewModels
                   "and confirmations throughout your session.";
 
             string voiceCommandRoute = dragonDetected
-                ? "When Dragon is running, give VoiceBook commands by typing or dictating into " +
-                  "the Command box at the bottom of this tutorial window, then press Enter."
+                ? "When Dragon is running you have two ways to give VoiceBook commands.\n\n" +
+                  "SCROLL LOCK (fastest)\n" +
+                  "Press ScrollLock once — Dragon mutes, the app mic activates. " +
+                  "Say a command. Press ScrollLock again — Dragon's mic is restored.\n\n" +
+                  "COMMAND BAR\n" +
+                  "Press Ctrl+Shift+Space, dictate a command into the Command box, then press Enter."
                 : "You can give VoiceBook commands by speaking them. The built-in microphone is " +
                   "listening. You can also type commands into the Command box below and press Enter.";
 
@@ -580,8 +584,13 @@ namespace VoiceBookStudio.ViewModels
                         "  Export PDF       — export as a PDF\n" +
                         "  Comprehensive feedback — AI analysis of the current chapter\n" +
                         "  What can I say here — hear commands for the current panel\n\n" +
-                        "In the Writing Editor, give commands by going to Panel 3 and " +
-                        "typing or dictating in the Chat box, then pressing Enter."
+                        (dragonDetected
+                            ? "GIVING COMMANDS WITH DRAGON\n" +
+                              "Press ScrollLock — Dragon mutes, app mic activates. Say a command. " +
+                              "Press ScrollLock again to restore Dragon. " +
+                              "Or press Ctrl+Shift+Space, dictate a command, then press Enter."
+                            : "Say any of these commands out loud while the app microphone is on. " +
+                              "Or type them into the Command box and press Enter.")
                 },
 
                 new TutorialStep

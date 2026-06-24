@@ -1929,13 +1929,18 @@ namespace VoiceBookStudio.ViewModels
         private bool _startupMicToggle;
 
         /// <summary>Called by MainWindow after the mic service reports its actual state.</summary>
-        public void SetMicListening(bool isListening, string? errorMessage = null)
+        /// <param name="customAnnouncement">
+        /// When supplied, replaces the default "Microphone on/off" message.
+        /// Used by MainWindow to include Dragon mic state in the announcement.
+        /// </param>
+        public void SetMicListening(bool isListening, string? errorMessage = null, string? customAnnouncement = null)
         {
             IsMicListening = isListening;
             // During startup, suppress the redundant "Microphone on" announcement —
             // step 4 already said "VoiceBook microphone on". Always report errors.
             if (_startupMicToggle && isListening && errorMessage == null) return;
             string msg = errorMessage
+                ?? customAnnouncement
                 ?? (isListening
                     ? "Microphone on. Say a command to control the app."
                     : "Microphone off.");

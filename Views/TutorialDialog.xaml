@@ -130,8 +130,8 @@
                     Width="100" Margin="0,0,6,0"
                     Command="{Binding PreviousCommand}"
                     TabIndex="2"
-                    AutomationProperties.Name="Previous step"
-                    AutomationProperties.HelpText="Go to the previous tutorial step. Keyboard: P">
+                    AutomationProperties.Name="Previous"
+                    AutomationProperties.HelpText="Go to the previous tutorial step. Keyboard: P. Dragon: say click Previous.">
                 Previous
             </Button>
 
@@ -139,8 +139,8 @@
                     Width="100" Margin="0,0,6,0"
                     Command="{Binding RepeatCommand}"
                     TabIndex="3"
-                    AutomationProperties.Name="Repeat current step"
-                    AutomationProperties.HelpText="Repeat the audio for this step. Keyboard: R">
+                    AutomationProperties.Name="Repeat"
+                    AutomationProperties.HelpText="Repeat the audio for this step. Keyboard: R. Dragon: say click Repeat.">
                 Repeat
             </Button>
 
@@ -149,8 +149,8 @@
                     Width="100" Margin="0,0,6,0"
                     Command="{Binding SkipStepCommand}"
                     TabIndex="4"
-                    AutomationProperties.Name="Skip this step"
-                    AutomationProperties.HelpText="Skip the current interactive step and continue. Keyboard: S. Voice: say Skip step.">
+                    AutomationProperties.Name="Skip Step"
+                    AutomationProperties.HelpText="Skip the current interactive step and continue. Keyboard: S. Dragon: say click Skip Step.">
                 <Button.Style>
                     <Style TargetType="Button">
                         <Setter Property="Visibility" Value="Collapsed"/>
@@ -169,8 +169,8 @@
                     IsDefault="True"
                     Command="{Binding NextCommand}"
                     TabIndex="5"
-                    AutomationProperties.Name="Next step"
-                    AutomationProperties.HelpText="Advance to the next step. Disabled on interactive steps until action is detected. Keyboard: N">
+                    AutomationProperties.Name="Next"
+                    AutomationProperties.HelpText="Advance to the next step. Disabled on interactive steps until action is detected. Keyboard: N. Dragon: say click Next.">
                 Next
             </Button>
 
@@ -178,8 +178,8 @@
                     Width="110"
                     Command="{Binding ExitCommand}"
                     TabIndex="6"
-                    AutomationProperties.Name="Exit tutorial"
-                    AutomationProperties.HelpText="Close the tutorial and return to the main window. Keyboard: Escape. Voice: say Exit tutorial.">
+                    AutomationProperties.Name="Exit Tutorial"
+                    AutomationProperties.HelpText="Close the tutorial and return to the main window. Keyboard: Escape. Dragon: say click Exit Tutorial.">
                 Exit Tutorial
             </Button>
         </StackPanel>

@@ -82,16 +82,16 @@
                     Content="Insert Card"
                     Padding="6,5"
                     TabIndex="63"
-                    AutomationProperties.Name="Insert selected card into editor"
-                    AutomationProperties.HelpText="Insert the selected card content at the cursor position in the editor."/>
+                    AutomationProperties.Name="Insert Card"
+                    AutomationProperties.HelpText="Insert the selected card at the cursor position in the editor. Dragon: say click Insert Card."/>
 
             <Button Grid.Column="2"
                     Command="{Binding DeleteCardCommand}"
                     Content="Delete Card"
                     Padding="6,5"
                     TabIndex="64"
-                    AutomationProperties.Name="Delete selected card"
-                    AutomationProperties.HelpText="Permanently delete the selected card from the library."/>
+                    AutomationProperties.Name="Delete Card"
+                    AutomationProperties.HelpText="Permanently delete the selected card. Dragon: say click Delete Card."/>
         </Grid>
     </Grid>
 </UserControl>

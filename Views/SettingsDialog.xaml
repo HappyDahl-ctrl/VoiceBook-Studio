@@ -66,8 +66,8 @@
                                 Padding="10,5"
                                 TabIndex="2"
                                 Click="BrowseButton_Click"
-                                AutomationProperties.Name="Browse for default project folder"
-                                AutomationProperties.HelpText="Open folder picker to select the default project folder. Voice command: say Set project folder."/>
+                                AutomationProperties.Name="Browse"
+                                AutomationProperties.HelpText="Open folder picker to select the default project folder. Dragon: say click Browse."/>
 
                         <Button Grid.Column="4"
                                 x:Name="ClearButton"
@@ -75,8 +75,8 @@
                                 Padding="10,5"
                                 TabIndex="3"
                                 Click="ClearButton_Click"
-                                AutomationProperties.Name="Clear default project folder"
-                                AutomationProperties.HelpText="Remove the default folder setting — you will be prompted on each save."/>
+                                AutomationProperties.Name="Clear"
+                                AutomationProperties.HelpText="Remove the default folder setting. Dragon: say click Clear."/>
                     </Grid>
 
                     <!-- Folder structure note -->
@@ -103,16 +103,16 @@
                     Margin="0,0,8,0"
                     TabIndex="4"
                     Click="SaveButton_Click"
-                    AutomationProperties.Name="Save settings and close"
-                    AutomationProperties.HelpText="Save all changes and close the settings dialog."/>
+                    AutomationProperties.Name="Save Settings"
+                    AutomationProperties.HelpText="Save all changes and close. Dragon: say click Save Settings."/>
 
             <Button x:Name="CancelButton"
                     Content="Cancel"
                     IsCancel="True"
                     Padding="14,6"
                     TabIndex="5"
-                    AutomationProperties.Name="Cancel — discard changes"
-                    AutomationProperties.HelpText="Close without saving changes."/>
+                    AutomationProperties.Name="Cancel"
+                    AutomationProperties.HelpText="Close without saving changes. Dragon: say click Cancel."/>
         </StackPanel>
     </Grid>
 </Window>

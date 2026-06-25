@@ -49,8 +49,8 @@
                     Width="180"
                     IsCancel="True"
                     Command="{Binding SkipTutorialCommand}"
-                    AutomationProperties.Name="Skip tour and open the application"
-                    AutomationProperties.HelpText="Activating this button closes this dialog and opens VoiceBook Studio immediately. Dragon users say click skip tour and open the application.">
+                    AutomationProperties.Name="Skip tour"
+                    AutomationProperties.HelpText="Close this dialog and open VoiceBook Studio immediately. Dragon: say click Skip tour.">
                 Skip tour
             </Button>
 

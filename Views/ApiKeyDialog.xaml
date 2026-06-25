@@ -78,8 +78,8 @@
                     MinWidth="50"
                     TabIndex="2"
                     Click="ShowHideButton_Click"
-                    AutomationProperties.Name="Show or hide API key"
-                    AutomationProperties.HelpText="Toggle visibility of the API key text"/>
+                    AutomationProperties.Name="Show"
+                    AutomationProperties.HelpText="Toggle visibility of the API key text. Dragon: say click Show."/>
         </Grid>
 
         <!-- Buttons -->
@@ -91,8 +91,8 @@
                     Margin="0,0,8,0"
                     TabIndex="3"
                     Click="ClearButton_Click"
-                    AutomationProperties.Name="Clear saved API key"
-                    AutomationProperties.HelpText="Remove the saved API key. AI features will be disabled until a new key is entered."/>
+                    AutomationProperties.Name="Clear Key"
+                    AutomationProperties.HelpText="Remove the saved API key. Dragon: say click Clear Key."/>
             <Button Content="Cancel"
                     IsCancel="True"
                     Margin="0,0,8,0"
@@ -102,7 +102,8 @@
                     IsDefault="True"
                     TabIndex="5"
                     Click="SaveButton_Click"
-                    AutomationProperties.Name="Save API key"/>
+                    AutomationProperties.Name="Save"
+                    AutomationProperties.HelpText="Save the API key. Dragon: say click Save."/>
         </StackPanel>
     </Grid>
 </Window>

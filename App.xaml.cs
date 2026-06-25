@@ -73,26 +73,24 @@ namespace VoiceBookStudio
             bool dragonRunning = AssistiveTechnologyDetector.IsDragonRunning();
             bool jSayRunning   = AssistiveTechnologyDetector.IsJSayRunning();
 
-            // Step 2: Propagate detection results to shared settings and services.
-            // AudioFeedbackService.SetJawsDetected silences general app TTS so JAWS
-            // handles all feedback — only SystemAnnouncementService keeps speaking.
+            // Step 2: Propagate detection results to shared settings.
+            // The app always speaks its own feedback regardless of what AT is running —
+            // JAWS/Dragon users can mute the app voice in Settings if they prefer silence.
             AppSettings.IsJawsDetected  = jawsRunning;
             AppSettings.IsDragonRunning = dragonRunning;
             AppSettings.IsJSayDetected  = jSayRunning;
-            if (jawsRunning)
-                audio.SetJawsDetected(true);
 
             // Step 3: Wait for JAWS to finish its own startup speech before we speak.
             // Without this pause JAWS and the app talk over each other at launch.
             await Task.Delay(2000);
 
-            // Step 4: Single combined startup announcement — AT state, mic, and ready.
-            // Keeping it as one message avoids three separate interruptions during startup.
-            string atStatus  = AssistiveTechnologyDetector.BuildStartupStatusMessage();
+            // Step 4: Single startup announcement — only mention AT that IS running,
+            // then confirm mic mode and ready state.
+            string atStatus  = AssistiveTechnologyDetector.BuildStartupStatusMessage(); // empty string if nothing detected
             string micStatus = dragonRunning
-                ? "Microphone is controlled by Dragon."
-                : "Built-in voice recognition is starting. Say a command at any time.";
-            string readyMsg = $"{atStatus} {micStatus} VoiceBook Studio is ready. Focus is on the chapter list.";
+                ? "Microphone is controlled by Dragon. Use ScrollLock to toggle voice commands."
+                : "Built-in voice recognition is active. Say a command at any time.";
+            string readyMsg = $"{atStatus}{micStatus} VoiceBook Studio is ready.";
             try { await announce.SpeakAndWaitAsync(readyMsg); }
             catch { }
 

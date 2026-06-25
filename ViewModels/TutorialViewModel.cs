@@ -401,10 +401,10 @@ namespace VoiceBookStudio.ViewModels
                 : "The built-in VoiceBook microphone is on and listening for spoken commands.";
 
             string jawsInfo = jawsDetected
-                ? "JAWS is running. JAWS will read all controls, live regions, and status bar " +
-                  "updates automatically. VoiceBook still speaks critical tutorial messages."
-                : "JAWS is not running. VoiceBook's built-in voice will read all instructions " +
-                  "and confirmations throughout your session.";
+                ? "JAWS screen reader is running alongside VoiceBook. " +
+                  "VoiceBook's built-in voice will still read all tutorial steps and system messages. " +
+                  "You can mute the app voice in Settings if you prefer JAWS only."
+                : "VoiceBook's built-in voice will read all instructions and confirmations throughout your session.";
 
             string voiceCommandRoute = dragonDetected
                 ? "When Dragon is running you have two ways to give VoiceBook commands.\n\n" +

@@ -90,6 +90,27 @@
                        Margin="0,0,8,0"
                        FontSize="12"
                        AutomationProperties.Name="Voice command label"/>
+            <!-- Confirm Audio button — visible only when waiting for "continue" action.
+                 Dragon users can say "click Confirm Audio" without typing or custom commands. -->
+            <Button x:Name="ConfirmAudioButton"
+                    DockPanel.Dock="Right"
+                    Width="120" Margin="6,0,0,0"
+                    Click="ConfirmAudioButton_Click"
+                    TabIndex="7"
+                    AutomationProperties.Name="Confirm Audio"
+                    AutomationProperties.HelpText="Confirm audio and microphone are working. Dragon users: say click Confirm Audio.">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsWaitingForAction}" Value="True">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+                Confirm Audio
+            </Button>
             <TextBox x:Name="CommandInput"
                      FontSize="12"
                      Padding="4,3"

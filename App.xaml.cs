@@ -82,35 +82,21 @@ namespace VoiceBookStudio
             if (jawsRunning)
                 audio.SetJawsDetected(true);
 
-            // Step 3: Speak AT status. This always speaks regardless of JAWS state
-            // because the user must know whether JAWS itself is working before they
-            // can rely on it for anything else.
-            string atStatus = AssistiveTechnologyDetector.BuildStartupStatusMessage();
-            try { await announce.SpeakAndWaitAsync(atStatus); }
-            catch { }
-
-            // Step 4: Wait for JAWS to finish its own startup speech before continuing.
+            // Step 3: Wait for JAWS to finish its own startup speech before we speak.
+            // Without this pause JAWS and the app talk over each other at launch.
             await Task.Delay(2000);
 
-            // Step 5: Announce microphone state.
-            // NOTE: When Dragon is not running, MainViewModel.InitialiseAsync() starts
-            // the built-in Windows Speech Recognition engine. The message must reflect
-            // this so accessibility users know voice commands ARE available.
+            // Step 4: Single combined startup announcement — AT state, mic, and ready.
+            // Keeping it as one message avoids three separate interruptions during startup.
+            string atStatus  = AssistiveTechnologyDetector.BuildStartupStatusMessage();
             string micStatus = dragonRunning
-                ? "Microphone is controlled by Dragon. Speak your commands naturally."
-                : "Dragon was not detected. VoiceBook built-in voice recognition is starting. " +
-                  "You can say a command at any time after the ready announcement.";
-            try { await announce.SpeakAndWaitAsync(micStatus); }
+                ? "Microphone is controlled by Dragon."
+                : "Built-in voice recognition is starting. Say a command at any time.";
+            string readyMsg = $"{atStatus} {micStatus} VoiceBook Studio is ready. Focus is on the chapter list.";
+            try { await announce.SpeakAndWaitAsync(readyMsg); }
             catch { }
 
-            // Step 6: Pause before the ready announcement.
-            await Task.Delay(1500);
-
-            // Step 7: Final ready announcement — matches user manual section 4 wording.
-            try { await announce.SpeakAndWaitAsync("VoiceBook Studio ready. Focus is on the chapter list."); }
-            catch { }
-
-            // Step 8: Show and activate the window, then move keyboard focus to the
+            // Step 5: Show and activate the window, then move keyboard focus to the
             // chapter list. Activate() is required on Windows 11 because when JAWS or
             // Dragon owns the foreground at launch time, Show() alone does not bring the
             // window to the front. Task.Yield() hands control back to the dispatcher for

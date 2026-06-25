@@ -145,6 +145,12 @@ namespace VoiceBookStudio.Views
                 case Key.F1: FocusMainPanel(1); e.Handled = true; break;
                 case Key.F2: FocusMainPanel(2); e.Handled = true; break;
                 case Key.F3: FocusMainPanel(3); e.Handled = true; break;
+
+                // ScrollLock toggles Dragon / app mic even while the tutorial has focus.
+                case Key.Scroll:
+                    ForwardToMain(mvm => mvm.ToggleMicCommand.Execute(null));
+                    e.Handled = true;
+                    break;
             }
         }
 
@@ -170,6 +176,17 @@ namespace VoiceBookStudio.Views
         {
             if (Owner is MainWindow main && main.DataContext is MainViewModel vm)
                 action(vm);
+        }
+
+        // ----------------------------------------------------------------
+        // Confirm Audio button — Dragon can say "click Confirm Audio" to pass
+        // the mic check without typing or using the command box.
+        // ----------------------------------------------------------------
+
+        private void ConfirmAudioButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is TutorialViewModel vm)
+                vm.HandleAction("continue");
         }
 
         // ----------------------------------------------------------------

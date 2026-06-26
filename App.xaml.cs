@@ -73,44 +73,35 @@ namespace VoiceBookStudio
             bool dragonRunning = AssistiveTechnologyDetector.IsDragonRunning();
             bool jSayRunning   = AssistiveTechnologyDetector.IsJSayRunning();
 
-            // Step 2: Propagate detection results to shared settings and services.
-            // AudioFeedbackService.SetJawsDetected silences general app TTS so JAWS
-            // handles all feedback — only SystemAnnouncementService keeps speaking.
+            // Step 2: Propagate detection results to shared settings.
+            // When JAWS is running it handles all speech; silence both TTS services
+            // so they never compete with JAWS on the audio device.
             AppSettings.IsJawsDetected  = jawsRunning;
             AppSettings.IsDragonRunning = dragonRunning;
             AppSettings.IsJSayDetected  = jSayRunning;
-            if (jawsRunning)
-                audio.SetJawsDetected(true);
+            audio.SetJawsDetected(jawsRunning);
+            announce.SetJawsDetected(jawsRunning);
 
-            // Step 3: Speak AT status. This always speaks regardless of JAWS state
-            // because the user must know whether JAWS itself is working before they
-            // can rely on it for anything else.
-            string atStatus = AssistiveTechnologyDetector.BuildStartupStatusMessage();
-            try { await announce.SpeakAndWaitAsync(atStatus); }
-            catch { }
+            if (!jawsRunning)
+            {
+                // Step 3: Prime and speak startup announcement for non-JAWS users.
+                await Task.Delay(500);
+                string micStatus = dragonRunning
+                    ? "Microphone is controlled by Dragon. Use ScrollLock to toggle voice commands."
+                    : "Built-in voice recognition is active. Say a command at any time.";
+                string atStatus = AssistiveTechnologyDetector.BuildStartupStatusMessage();
+                string readyMsg = $"{atStatus}{micStatus} VoiceBook Studio is ready.";
+                try { await announce.SpeakAndWaitAsync(readyMsg); }
+                catch { }
+            }
+            else
+            {
+                // JAWS is running — wait for it to finish its own startup speech,
+                // then let it read the window title and focused control naturally.
+                await Task.Delay(2000);
+            }
 
-            // Step 4: Wait for JAWS to finish its own startup speech before continuing.
-            await Task.Delay(2000);
-
-            // Step 5: Announce microphone state.
-            // NOTE: When Dragon is not running, MainViewModel.InitialiseAsync() starts
-            // the built-in Windows Speech Recognition engine. The message must reflect
-            // this so accessibility users know voice commands ARE available.
-            string micStatus = dragonRunning
-                ? "Microphone is controlled by Dragon. Speak your commands naturally."
-                : "Dragon was not detected. VoiceBook built-in voice recognition is starting. " +
-                  "You can say a command at any time after the ready announcement.";
-            try { await announce.SpeakAndWaitAsync(micStatus); }
-            catch { }
-
-            // Step 6: Pause before the ready announcement.
-            await Task.Delay(1500);
-
-            // Step 7: Final ready announcement — matches user manual section 4 wording.
-            try { await announce.SpeakAndWaitAsync("VoiceBook Studio ready. Focus is on the chapter list."); }
-            catch { }
-
-            // Step 8: Show and activate the window, then move keyboard focus to the
+            // Step 5: Show and activate the window, then move keyboard focus to the
             // chapter list. Activate() is required on Windows 11 because when JAWS or
             // Dragon owns the foreground at launch time, Show() alone does not bring the
             // window to the front. Task.Yield() hands control back to the dispatcher for

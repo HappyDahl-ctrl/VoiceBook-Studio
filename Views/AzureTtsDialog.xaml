@@ -119,14 +119,14 @@ your key and region below.</Run>
                     Content="Test Voice" Margin="0,0,8,0"
                     TabIndex="4"
                     Click="TestButton_Click"
-                    AutomationProperties.Name="Test the selected voice"
-                    AutomationProperties.HelpText="Speak a sample sentence using the current settings to preview the voice"/>
+                    AutomationProperties.Name="Test Voice"
+                    AutomationProperties.HelpText="Speak a sample sentence to preview the selected voice. Dragon: say click Test Voice."/>
             <Button x:Name="ClearButton"
                     Content="Clear" Margin="0,0,8,0"
                     TabIndex="5"
                     Click="ClearButton_Click"
-                    AutomationProperties.Name="Clear Azure settings and use Windows SAPI voice"
-                    AutomationProperties.HelpText="Remove Azure credentials and revert to the best available Windows voice"/>
+                    AutomationProperties.Name="Clear"
+                    AutomationProperties.HelpText="Remove Azure credentials and revert to Windows voice. Dragon: say click Clear."/>
             <Button Content="Cancel"
                     IsCancel="True"
                     Margin="0,0,8,0"
@@ -136,7 +136,8 @@ your key and region below.</Run>
                     IsDefault="True"
                     TabIndex="7"
                     Click="SaveButton_Click"
-                    AutomationProperties.Name="Save voice settings"/>
+                    AutomationProperties.Name="Save"
+                    AutomationProperties.HelpText="Save voice settings. Dragon: say click Save."/>
         </StackPanel>
     </Grid>
 </Window>

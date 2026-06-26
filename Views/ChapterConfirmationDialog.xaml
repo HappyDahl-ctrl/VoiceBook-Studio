@@ -47,16 +47,16 @@
                     IsDefault="True"
                     TabIndex="2"
                     Click="AcceptButton_Click"
-                    AutomationProperties.Name="Accept all — import each chapter as a separate section"
-                    AutomationProperties.HelpText="Import all detected chapters as individual sections in your project">
+                    AutomationProperties.Name="Accept All"
+                    AutomationProperties.HelpText="Import all detected chapters as individual sections. Dragon: say click Accept All.">
                 Accept All
             </Button>
             <Button x:Name="SingleButton"
                     Width="150" Margin="0,0,8,0"
                     TabIndex="3"
                     Click="SingleButton_Click"
-                    AutomationProperties.Name="Import as single — bring the entire document in as one section"
-                    AutomationProperties.HelpText="Import the whole document as a single chapter without splitting">
+                    AutomationProperties.Name="Import as Single"
+                    AutomationProperties.HelpText="Import the whole document as one chapter without splitting. Dragon: say click Import as Single.">
                 Import as Single
             </Button>
             <Button x:Name="CancelButton"
@@ -64,8 +64,8 @@
                     IsCancel="True"
                     TabIndex="4"
                     Click="CancelButton_Click"
-                    AutomationProperties.Name="Cancel import"
-                    AutomationProperties.HelpText="Cancel and return to the main window without importing">
+                    AutomationProperties.Name="Cancel"
+                    AutomationProperties.HelpText="Cancel and return without importing. Dragon: say click Cancel.">
                 Cancel
             </Button>
         </StackPanel>

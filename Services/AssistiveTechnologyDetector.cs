@@ -82,22 +82,13 @@ namespace VoiceBookStudio.Services
             bool dragon = IsDragonRunning();
             bool jSay   = IsJSayRunning();
 
-            var parts = new List<string>
-            {
-                jaws   ? "JAWS screen reader is running"
-                       : "JAWS screen reader was not detected",
-                dragon ? "Dragon speech recognition is running"
-                       : "Dragon speech recognition was not detected",
-                jSay   ? "J-Say is running"
-                       : "J-Say was not detected"
-            };
+            // Only report what IS running — listing absent tools creates noise.
+            var parts = new List<string>();
+            if (jaws)   parts.Add("JAWS screen reader is running");
+            if (dragon) parts.Add("Dragon NaturallySpeaking is running");
+            if (jSay)   parts.Add("J-Say is running");
 
-            // Warn when neither Dragon nor J-Say is present — without them the only
-            // voice input path is VoiceBook's built-in recogniser, which is limited.
-            if (!dragon && !jSay)
-                parts.Add("Voice commands will be limited");
-
-            return string.Join(". ", parts) + ".";
+            return parts.Count > 0 ? string.Join(". ", parts) + ". " : string.Empty;
         }
     }
 }

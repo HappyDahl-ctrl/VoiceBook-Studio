@@ -126,6 +126,30 @@ namespace VoiceBookStudio.ViewModels
             RebuildDisplayItems();
         }
 
+        // ----------------------------------------------------------------
+        // JAWS-compatible announcement
+        //
+        // LiveAnnounce raises AnnouncementRequested so MainWindow can forward
+        // the text to UiaAnnouncer (RaiseNotificationEvent) — the most reliable
+        // path for JAWS to read app feedback without any SAPI voice competing.
+        // When JAWS is not detected, falls through to AudioFeedbackService so
+        // non-JAWS users still hear the feedback.
+        // ----------------------------------------------------------------
+
+        /// <summary>
+        /// Subscribe in MainWindow.xaml.cs to forward announcements to UiaAnnouncer.
+        /// Parameters: (message, isUrgent).
+        /// </summary>
+        public event Action<string, bool>? AnnouncementRequested;
+
+        private void LiveAnnounce(string msg, bool urgent = false)
+        {
+            if (string.IsNullOrWhiteSpace(msg)) return;
+            AnnouncementRequested?.Invoke(msg, urgent);
+            if (!Utils.AppSettings.IsJawsDetected)
+                LiveAnnounce(msg);
+        }
+
         // When SelectedChapter is set directly (e.g. voice-nav), mirror it into
         // SelectedDisplayItem so the ListBox highlights the correct row.
         // Skip the sync when WholeBook is active (SelectedChapter is null there).
@@ -418,7 +442,7 @@ namespace VoiceBookStudio.ViewModels
             _currentPanel = 1;
             FocusPanelRequested?.Invoke(this, 1);
             SetStatus("Chapter Manager panel focused.");
-            _audio.Speak("Chapters panel.");
+            LiveAnnounce("Chapters panel.");
             _tutorialActionSink?.Invoke("panel1");
         }
 
@@ -428,7 +452,7 @@ namespace VoiceBookStudio.ViewModels
             _currentPanel = 2;
             FocusPanelRequested?.Invoke(this, 2);
             SetStatus("Writing Editor panel focused.");
-            _audio.Speak("Editor panel.");
+            LiveAnnounce("Editor panel.");
             _tutorialActionSink?.Invoke("panel2");
         }
 
@@ -438,7 +462,7 @@ namespace VoiceBookStudio.ViewModels
             _currentPanel = 3;
             FocusPanelRequested?.Invoke(this, 3);
             SetStatus("AI Assistant panel focused.");
-            _audio.Speak("AI Assistant panel.");
+            LiveAnnounce("AI Assistant panel.");
             _tutorialActionSink?.Invoke("panel3");
         }
 
@@ -476,7 +500,7 @@ namespace VoiceBookStudio.ViewModels
         {
             SwitchAiTabRequested?.Invoke(this, "Prompts");
             SetStatus("Prompts tab opened.");
-            _audio.Speak("Prompts tab.");
+            LiveAnnounce("Prompts tab.");
         }
 
         public void TryUsePromptById(string promptId)
@@ -525,7 +549,7 @@ namespace VoiceBookStudio.ViewModels
         {
             SwitchAiTabRequested?.Invoke(this, "Cards");
             SetStatus("Response cards tab opened.");
-            _audio.Speak("Response cards tab.");
+            LiveAnnounce("Response cards tab.");
         }
 
         public void TryReadCardCategories()
@@ -555,7 +579,7 @@ namespace VoiceBookStudio.ViewModels
         {
             SwitchAiTabRequested?.Invoke(this, "Feedback");
             SetStatus("Feedback library tab opened.");
-            _audio.Speak("Feedback library.");
+            LiveAnnounce("Feedback library.");
         }
 
         public void TryReadFeedbackCategories()
@@ -1007,7 +1031,7 @@ namespace VoiceBookStudio.ViewModels
             catch (Exception ex)
             {
                 ShowError("Save Failed", ex.Message);
-                _audio.Speak("Save failed. " + ex.Message);
+                LiveAnnounce("Save failed. " + ex.Message);
             }
             finally
             {
@@ -1092,7 +1116,7 @@ namespace VoiceBookStudio.ViewModels
                 else if (_aiService.IsAvailable)
                 {
                     SetStatus("Asking Claude to detect chapter breaks…");
-                    _audio.Speak("Asking Claude to detect chapter breaks. This may take a moment.");
+                    LiveAnnounce("Asking Claude to detect chapter breaks. This may take a moment.");
 
                     try   { detected = await _aiService.DetectChaptersAsync(fullText); }
                     catch { detected = null; }
@@ -1133,7 +1157,7 @@ namespace VoiceBookStudio.ViewModels
             {
                 IsBusy = false;
                 ShowError("Import Failed", ex.Message);
-                _audio.Speak("Import failed. " + ex.Message);
+                LiveAnnounce("Import failed. " + ex.Message);
             }
             finally
             {
@@ -1327,7 +1351,7 @@ namespace VoiceBookStudio.ViewModels
             {
                 IsBusy = true;
                 SetStatus("Exporting manuscript…");
-                _audio.Speak("Exporting manuscript. Please wait.");
+                LiveAnnounce("Exporting manuscript. Please wait.");
 
                 var exporter  = new DocxExportService();
                 var chapters  = Chapters
@@ -1348,7 +1372,7 @@ namespace VoiceBookStudio.ViewModels
             {
                 _sounds.Play(AppSound.ExportError);
                 ShowError("Export Failed", ex.Message);
-                _audio.Speak("Export failed. " + ex.Message);
+                LiveAnnounce("Export failed. " + ex.Message);
             }
             finally
             {
@@ -1376,7 +1400,7 @@ namespace VoiceBookStudio.ViewModels
             {
                 IsBusy = true;
                 SetStatus("Exporting PDF…");
-                _audio.Speak("Exporting PDF. Please wait.");
+                LiveAnnounce("Exporting PDF. Please wait.");
 
                 var exporter = new PdfExportService();
                 var chapters = Chapters
@@ -1397,7 +1421,7 @@ namespace VoiceBookStudio.ViewModels
             {
                 _sounds.Play(AppSound.ExportError);
                 ShowError("Export Failed", ex.Message);
-                _audio.Speak("Export failed. " + ex.Message);
+                LiveAnnounce("Export failed. " + ex.Message);
             }
             finally
             {
@@ -1464,7 +1488,7 @@ namespace VoiceBookStudio.ViewModels
 
             _sounds.Play(AppSound.ChapterMoved);
             SetStatus($"Moved up: {SelectedChapter.Title}");
-            _audio.Speak($"{SelectedChapter.Title} moved up.");
+            LiveAnnounce($"{SelectedChapter.Title} moved up.");
         }
 
         [RelayCommand(CanExecute = nameof(CanModifyChapter))]
@@ -1482,7 +1506,7 @@ namespace VoiceBookStudio.ViewModels
 
             _sounds.Play(AppSound.ChapterMoved);
             SetStatus($"Moved down: {SelectedChapter.Title}");
-            _audio.Speak($"{SelectedChapter.Title} moved down.");
+            LiveAnnounce($"{SelectedChapter.Title} moved down.");
         }
 
         private bool CanModifyChapter() => SelectedChapter != null;
@@ -1500,7 +1524,7 @@ namespace VoiceBookStudio.ViewModels
             if (chapter != null)
             {
                 SetStatus($"Editing: {chapter.Title}  |  {chapter.WordCount:N0} words");
-                _audio.Speak($"Chapter loaded: {chapter.Title}. {chapter.WordCount} words.");
+                LiveAnnounce($"Chapter loaded: {chapter.Title}. {chapter.WordCount} words.");
             }
         }
 
@@ -1515,7 +1539,7 @@ namespace VoiceBookStudio.ViewModels
             WholeBook.Refresh(Chapters);
             SelectedChapter = null;
             SetStatus("Whole Book — read-only view of all chapters in order.");
-            _audio.Speak("Whole Book. Read only.");
+            LiveAnnounce("Whole Book. Read only.");
         }
 
         public void OnEditorTextChanged(string newText)
@@ -1548,7 +1572,7 @@ namespace VoiceBookStudio.ViewModels
                 string msg = "AI is not configured. Click the ⚠ AI Not Set button to add your API key.";
                 AiFeedbackText = msg;
                 SetStatus(msg);
-                _audio.Speak(msg);
+                LiveAnnounce(msg);
                 return;
             }
 
@@ -1556,7 +1580,7 @@ namespace VoiceBookStudio.ViewModels
             {
                 IsBusy = true;
                 SetStatus($"Running {feedbackType} analysis…");
-                _audio.Speak($"Running {feedbackType} analysis. Please wait.");
+                LiveAnnounce($"Running {feedbackType} analysis. Please wait.");
 
                 string chapterForFeedback;
                 AiFeedback feedback;
@@ -1584,7 +1608,7 @@ namespace VoiceBookStudio.ViewModels
                 FeedbackLibVM.AddEntry(feedbackType, chapterForFeedback, feedback.RawText);
 
                 SetStatus("AI analysis complete. Feedback saved to library. Use the Insert buttons to add it to your chapter.");
-                _audio.Speak("Analysis complete. Feedback saved to library. Review the feedback panel.");
+                LiveAnnounce("Analysis complete. Feedback saved to library. Review the feedback panel.");
                 _tutorialActionSink?.Invoke("feedback");
             }
             catch (Exception ex)
@@ -1592,7 +1616,7 @@ namespace VoiceBookStudio.ViewModels
                 string detail = $"{ex.GetType().Name}: {ex.Message}";
                 AiFeedbackText = $"Error: {detail}";
                 ShowError("AI Error", detail);
-                _audio.Speak("AI analysis failed. " + ex.Message);
+                LiveAnnounce("AI analysis failed. " + ex.Message);
             }
             finally
             {
@@ -1616,7 +1640,7 @@ namespace VoiceBookStudio.ViewModels
                 string msg = "AI is not configured. Click the ⚠ AI Not Set button to add your API key.";
                 AiFeedbackText = msg;
                 SetStatus(msg);
-                _audio.Speak(msg);
+                LiveAnnounce(msg);
                 return;
             }
 
@@ -1632,7 +1656,7 @@ namespace VoiceBookStudio.ViewModels
                 IsBusy = true;
                 string msg = $"Analysing full manuscript ({wordCount:N0} words)…";
                 SetStatus(msg);
-                _audio.Speak("Analysing your full manuscript. This may take a moment.");
+                LiveAnnounce("Analysing your full manuscript. This may take a moment.");
 
                 var feedback = await _aiService.GetBookFeedbackAsync(fullContent, Project.Title);
 
@@ -1643,7 +1667,7 @@ namespace VoiceBookStudio.ViewModels
                 FeedbackLibVM.AddEntry("book", Project.Title + " (full book)", feedback.RawText);
 
                 SetStatus("Book analysis complete. Feedback saved to library.");
-                _audio.Speak("Book analysis complete. Feedback saved to library.");
+                LiveAnnounce("Book analysis complete. Feedback saved to library.");
             }
             catch (Exception ex)
             {
@@ -1651,7 +1675,7 @@ namespace VoiceBookStudio.ViewModels
                 string detail = $"{ex.GetType().Name}: {ex.Message}";
                 AiFeedbackText = $"Error: {detail}";
                 ShowError("AI Error", detail);
-                _audio.Speak("Book analysis failed. " + ex.Message);
+                LiveAnnounce("Book analysis failed. " + ex.Message);
             }
             finally
             {
@@ -1707,7 +1731,7 @@ namespace VoiceBookStudio.ViewModels
             {
                 string notice = "AI is not configured. Click the ⚠ AI Not Set button to add your API key.";
                 AiFeedbackText = notice;
-                _audio.Speak(notice);
+                LiveAnnounce(notice);
                 return;
             }
 
@@ -1716,7 +1740,7 @@ namespace VoiceBookStudio.ViewModels
                 IsBusy        = true;
                 ChatInputText = string.Empty;
                 SetStatus("Asking Claude…");
-                _audio.Speak("Sending your question to Claude. Please wait.");
+                LiveAnnounce("Sending your question to Claude. Please wait.");
 
                 if (IsWholeBookSelected) WholeBook.Refresh(Chapters);
                 string? chatContext = IsWholeBookSelected ? WholeBook.Content : SelectedChapter?.Content;
@@ -1726,7 +1750,7 @@ namespace VoiceBookStudio.ViewModels
                 _sounds.Play(AppSound.AiResponded);
                 AiFeedbackText = response;
                 SetStatus("Claude responded. Use Insert buttons to add text to your chapter.");
-                _audio.Speak("Claude responded. Review the response, then use Insert buttons to add it to your chapter, or say Insert at cursor.");
+                LiveAnnounce("Claude responded. Review the response, then use Insert buttons to add it to your chapter, or say Insert at cursor.");
                 _tutorialActionSink?.Invoke("sendchat");
                 FocusChatInputRequested?.Invoke(this, EventArgs.Empty);
             }
@@ -1734,7 +1758,7 @@ namespace VoiceBookStudio.ViewModels
             {
                 AiFeedbackText = $"Error: {ex.Message}";
                 ShowError("Chat Error", ex.Message);
-                _audio.Speak("Chat failed. " + ex.Message);
+                LiveAnnounce("Chat failed. " + ex.Message);
                 FocusChatInputRequested?.Invoke(this, EventArgs.Empty);
             }
             finally
@@ -1756,7 +1780,7 @@ namespace VoiceBookStudio.ViewModels
 
             _sounds.Play(AppSound.TextInserted);
             SetStatus("AI response inserted at cursor position.");
-            _audio.Speak("Inserted at cursor position.");
+            LiveAnnounce("Inserted at cursor position.");
         }
 
         [RelayCommand(CanExecute = nameof(CanInsert))]
@@ -1768,7 +1792,7 @@ namespace VoiceBookStudio.ViewModels
 
             _sounds.Play(AppSound.TextInserted);
             SetStatus("AI response inserted at beginning of chapter.");
-            _audio.Speak("Inserted at beginning of chapter.");
+            LiveAnnounce("Inserted at beginning of chapter.");
         }
 
         [RelayCommand(CanExecute = nameof(CanInsert))]
@@ -1780,7 +1804,7 @@ namespace VoiceBookStudio.ViewModels
 
             _sounds.Play(AppSound.TextInserted);
             SetStatus("AI response inserted at end of chapter.");
-            _audio.Speak("Inserted at end of chapter.");
+            LiveAnnounce("Inserted at end of chapter.");
         }
 
         private bool CanInsert() =>
@@ -1847,7 +1871,7 @@ namespace VoiceBookStudio.ViewModels
                 : "API key removed. AI features disabled.";
 
             SetStatus(status);
-            _audio.Speak(status);
+            LiveAnnounce(status);
         }
 
         // ----------------------------------------------------------------
@@ -1945,7 +1969,7 @@ namespace VoiceBookStudio.ViewModels
                     ? "Microphone on. Say a command to control the app."
                     : "Microphone off.");
             SetStatus(msg);
-            _audio.Speak(msg);
+            LiveAnnounce(msg);
         }
 
         [RelayCommand]
@@ -1957,13 +1981,13 @@ namespace VoiceBookStudio.ViewModels
             {
                 // Temporarily re-enable to speak the "off" announcement, then silence.
                 _audio.IsEnabled = true;
-                _audio.Speak("App voice off. JAWS will handle all audio.");
+                LiveAnnounce("App voice off. JAWS will handle all audio.");
                 _audio.IsEnabled = false;
             }
             else
             {
                 _audio.IsEnabled = true;
-                _audio.Speak("App voice on.");
+                LiveAnnounce("App voice on.");
             }
 
             SetStatus(AppTtsStatusDisplay);
@@ -2028,7 +2052,7 @@ namespace VoiceBookStudio.ViewModels
             IsWholeBookSelected = false;
             SelectedChapter = Chapters.FirstOrDefault();
             if (SelectedChapter != null)
-                _audio.Speak($"First chapter: {SelectedChapter.Title}.");
+                LiveAnnounce($"First chapter: {SelectedChapter.Title}.");
         }
 
         /// <summary>
@@ -2309,7 +2333,7 @@ namespace VoiceBookStudio.ViewModels
             SwitchAiTabRequested?.Invoke(this, "Chat");
             FocusPanel3();
             SetStatus("Chat tab opened.");
-            _audio.Speak("Chat tab.");
+            LiveAnnounce("Chat tab.");
         }
 
 
@@ -2330,6 +2354,7 @@ namespace VoiceBookStudio.ViewModels
         /// <summary>The panel number currently in focus (1=Chapters, 2=Editor, 3=AI).</summary>
         public int CurrentPanel => _currentPanel;
 
+        [RelayCommand]
         public void TrySelectNextChapter()
         {
             if (Chapters.Count == 0) { AnnounceNotAvailable("No chapters in this project."); return; }
@@ -2339,9 +2364,10 @@ namespace VoiceBookStudio.ViewModels
             FocusPanelRequested?.Invoke(this, 1);
             string msg = $"Chapter: {SelectedChapter.Title}";
             SetStatus(msg);
-            _audio.Speak(msg);
+            LiveAnnounce(msg);
         }
 
+        [RelayCommand]
         public void TrySelectPreviousChapter()
         {
             if (Chapters.Count == 0) { AnnounceNotAvailable("No chapters in this project."); return; }
@@ -2351,7 +2377,7 @@ namespace VoiceBookStudio.ViewModels
             FocusPanelRequested?.Invoke(this, 1);
             string msg = $"Chapter: {SelectedChapter.Title}";
             SetStatus(msg);
-            _audio.Speak(msg);
+            LiveAnnounce(msg);
         }
 
         /// <summary>
@@ -2431,7 +2457,7 @@ namespace VoiceBookStudio.ViewModels
         {
             StopLibraryReading();
             SetStatus("Reading stopped.");
-            _audio.Speak("Stopped.");
+            LiveAnnounce("Stopped.");
         }
 
         // ----------------------------------------------------------------
@@ -2479,7 +2505,7 @@ namespace VoiceBookStudio.ViewModels
             AiFeedbackText = "Select a chapter and run an AI analysis to see feedback here.";
             string msg = "AI response discarded.";
             SetStatus(msg);
-            _audio.Speak(msg);
+            LiveAnnounce(msg);
         }
 
         // ----------------------------------------------------------------
@@ -2535,7 +2561,7 @@ namespace VoiceBookStudio.ViewModels
             string detail = string.IsNullOrEmpty(reason) ? string.Empty : " " + reason;
             string msg    = "That command is not available right now." + detail;
             SetStatus(msg);
-            _audio.Speak("That command is not available right now.");
+            LiveAnnounce("That command is not available right now.");
         }
 
         /// <summary>Speaks text through SystemAnnouncementService (for MainWindow event handlers).</summary>
@@ -2556,7 +2582,7 @@ namespace VoiceBookStudio.ViewModels
         public void OnCommandNotRecognized(string rawCommand)
         {
             SetStatus($"Command not recognized: \"{rawCommand}\". Say a voice command or type a message.");
-            _audio.Speak("Command not recognized. Try saying Panel 1, Panel 2, or Panel 3 to navigate, or ask Claude a question.");
+            LiveAnnounce("Command not recognized. Try saying Panel 1, Panel 2, or Panel 3 to navigate, or ask Claude a question.");
         }
     }
 }

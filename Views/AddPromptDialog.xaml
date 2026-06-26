@@ -103,8 +103,8 @@
                     IsDefault="True"
                     Click="OkButton_Click"
                     Padding="10,5"
-                    AutomationProperties.Name="Add prompt"
-                    AutomationProperties.HelpText="Save the new prompt to the library. Press Enter to confirm. Voice command: say Add prompt."/>
+                    AutomationProperties.Name="Add Prompt"
+                    AutomationProperties.HelpText="Save the new prompt to the library. Dragon: say click Add Prompt."/>
             <Button Grid.Column="2"
                     Content="Cancel"
                     IsCancel="True"

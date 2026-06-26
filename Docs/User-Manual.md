@@ -1,88 +1,118 @@
 # VoiceBook Studio — User Manual
 
 Version: Current Release · June 2026
+Designed for: JAWS · Dragon NaturallySpeaking · JSay · Windows built-in voice recognition
 
 ---
 
 ## Contents
 
-1. Starting the App
-2. The Three Panels
-3. Managing Your Project
-4. Writing and Dictating
-5. The Whole Book View
-6. AI Feedback
-7. The Prompt Library
-8. Response Cards
-9. The Feedback Library
-10. Exporting Your Book
-11. Settings
-12. Voice Control with Dragon — Two Scenarios
-13. All Voice Commands
-14. All Keyboard Shortcuts
-15. Sounds Reference
+1. What VoiceBook Studio Is
+2. Starting the App
+3. The Three Panels
+4. Managing Your Project
+5. Writing and Dictating
+6. The Whole Book View
+7. AI Feedback
+8. The Prompt Library
+9. Response Cards
+10. The Feedback Library
+11. Exporting Your Book
+12. Settings
+13. How JAWS Works with This App
+14. How Dragon Works with This App
+15. Voice Command Reference
+16. Keyboard Shortcut Reference
+17. Sounds Reference
 
 ---
 
-## 1. Starting the App
+## 1. What VoiceBook Studio Is
 
-When VoiceBook Studio opens, it speaks these announcements in order:
+VoiceBook Studio is a book-writing application built for writers who use assistive technology. Every feature — creating a project, writing chapters, getting AI feedback, saving, and exporting — can be done by voice or keyboard alone. You never need to touch the mouse.
 
-1. Which accessibility tools were detected — JAWS, Dragon, JSay
-2. Microphone status — whether the built-in voice recogniser started or Dragon owns the mic
-3. "VoiceBook Studio ready. Focus is on the chapter list."
+**Two supported modes:**
 
-When you close the app:
+- **JAWS running:** JAWS reads everything — all controls, all panels, all app announcements, the full tutorial. The app produces no TTS voice of its own so there is never any overlap. JAWS is the sole audio source.
+- **JAWS not running:** The app has its own built-in voice that speaks status messages, the tutorial, system announcements, and AI feedback. This works with Dragon alone, with JSay, or with no assistive technology at all.
+
+---
+
+## 2. Starting the App
+
+### When JAWS Is Running
+
+The main window opens and JAWS reads it naturally — window title, focused control, status. No startup announcement plays from the app. JAWS is the only voice.
+
+A Welcome dialog opens on first launch (see below).
+
+### When JAWS Is Not Running
+
+The app speaks one startup announcement:
+
+- If Dragon is detected: *"Dragon NaturallySpeaking is running. Microphone is controlled by Dragon. Use ScrollLock to toggle voice commands. VoiceBook Studio is ready."*
+- If Dragon is not detected: *"Built-in voice recognition is active. Say a command at any time. VoiceBook Studio is ready."*
+
+### When You Close the App
 
 - A soft falling chime plays
-- The app says "VoiceBook Studio closing. Goodbye."
+- The app says *"VoiceBook Studio closing. Goodbye."* (plays only when JAWS is not running)
 
-These announcements always play regardless of which tools are running.
+### First Launch — Welcome Dialog
 
-### First Launch
+On first launch, a Welcome dialog opens automatically. It speaks a greeting that reflects what was actually detected:
 
-On first launch, a Welcome dialog opens and speaks a greeting. You have two choices:
+- If Dragon is running: the greeting describes how to give voice commands with Dragon
+- If Dragon is not running: the greeting describes the built-in voice recognition
+
+Two choices:
 
 - **Start Guided Tour** — a 17-step interactive tutorial that walks through every feature
 - **Skip Tour** — go straight to the main window
 
-The tour can be started again at any time by saying "start tutorial" or opening Help → Welcome / Tutorial.
+The tour can be started again at any time by saying "start tutorial" or from Help → Welcome / Tutorial.
 
 ---
 
-## 2. The Three Panels
+## 3. The Three Panels
 
-The main window has three panels side by side.
+The main window has three panels side by side. Switch between them with keyboard shortcuts or voice commands.
 
 ### Panel 1 — Chapters
 
-Press **Ctrl+1** or say "panel one" or "go to chapters."
+**Keyboard:** Ctrl+1 · **Voice:** "panel one" or "go to chapters"
 
-This is the chapter list. At the top is always "Whole Book" — a live view of every chapter combined. Below it are all your chapters in order.
+The chapter list. At the top is always **"Whole Book"** — a read-only view of all chapters combined. Below it are your chapters and sections in document order.
 
-**What you can do:**
+**Buttons in Panel 1 (Dragon users: say "click [button name]" after setting up MyCommands):**
 
-- Add, rename, delete, and reorder chapters
-- Select a chapter to open it in the editor
-- Select "Whole Book" to view or analyse the full manuscript
+| Button | What it does |
+|---|---|
+| Add Chapter | Adds a new chapter |
+| Rename | Renames the selected chapter |
+| Delete | Deletes the selected chapter |
+| Change Type | Changes the section type (Chapter, Prologue, Dedication, Appendix, etc.) |
+| Move Chapter Up | Moves the selected chapter earlier in the book |
+| Move Chapter Down | Moves the selected chapter later in the book |
+| Previous Chapter | Selects the previous chapter in the list |
+| Next Chapter | Selects the next chapter in the list |
 
 **Voice commands in Panel 1:**
 
-| Say | What happens |
+| Say | Action |
 |---|---|
-| Add chapter | Adds a new chapter |
-| New chapter | Same as above |
-| Rename chapter | Renames the selected chapter |
-| Delete chapter | Deletes the selected chapter |
-| Move up | Moves selected chapter up |
-| Move down | Moves selected chapter down |
-| Change type | Changes the section type |
-| Next chapter | Selects the next chapter |
-| Previous chapter | Selects the previous chapter |
-| Go to chapters | Focuses Panel 1 |
-| Go to chapter list | Same as above |
+| Panel one | Focus Panel 1 |
+| Go to chapters / Go to chapter list | Focus Panel 1 |
+| Add chapter / New chapter | Add a chapter |
+| Rename chapter | Rename selected chapter |
+| Delete chapter | Delete selected chapter |
+| Change type | Change section type |
+| Move up | Move selected chapter up |
+| Move down | Move selected chapter down |
+| Next chapter | Select the next chapter |
+| Previous chapter | Select the previous chapter |
 
-**Keyboard shortcuts in Panel 1:**
+**Keyboard shortcuts:**
 
 | Keys | Action |
 |---|---|
@@ -91,75 +121,73 @@ This is the chapter list. At the top is always "Whole Book" — a live view of e
 | Ctrl+Delete | Delete chapter |
 | Alt+Up | Move chapter up |
 | Alt+Down | Move chapter down |
+| F6 | Next chapter |
+| F7 | Previous chapter |
 
 ---
 
 ### Panel 2 — Writing Editor
 
-Press **Ctrl+2** or say "panel two" or "go to editor."
+**Keyboard:** Ctrl+2 · **Voice:** "panel two" or "go to editor"
 
-This is the writing area. When a chapter is selected in Panel 1, it opens here for dictation and editing. When "Whole Book" is selected, the editor shows the full manuscript in read-only mode.
+The writing area. When a chapter is selected in Panel 1, it opens here for dictation and editing. When "Whole Book" is selected, the editor shows the full manuscript in read-only mode.
 
-The editor works identically to Microsoft Word for Dragon — dictate naturally, correct with "Correct that," delete with "Scratch that," navigate with voice cursor commands.
+The editor uses the same text layer as Microsoft Word, so Dragon NaturallySpeaking works here exactly as it does in Word — dictate naturally, correct with "Correct that," delete with "Scratch that," navigate with all Dragon cursor commands.
 
 **Voice commands in Panel 2:**
 
-| Say | What happens |
+| Say | Action |
 |---|---|
-| Read chapter | Reads the full chapter aloud |
-| Read paragraph | Reads the paragraph at the cursor |
-| Read chapter title | Announces the chapter name |
-| Current chapter | Same as above |
-| Stop reading | Stops speech |
-| Stop / Quiet / Silence | Same as above |
-| Go to editor | Focuses Panel 2 |
-| Open writing editor | Same as above |
+| Panel two | Focus Panel 2 |
+| Go to editor / Open writing editor | Focus Panel 2 |
+| Read chapter | Read the full chapter aloud |
+| Read paragraph | Read the paragraph at the cursor |
+| Read chapter title / Current chapter | Announce the chapter name |
+| Stop reading / Stop / Quiet / Silence | Stop speech |
 
-**Keyboard shortcuts in Panel 2:**
+**Keyboard shortcuts:**
 
 | Keys | Action |
 |---|---|
 | Ctrl+S | Save |
-| Ctrl+F | Comprehensive AI feedback |
-| F4 | Read current paragraph |
-| Escape | Return to chapter list |
+| Ctrl+F | Comprehensive AI feedback on this chapter |
+| F4 | Read the current paragraph |
+| F5 | Announce the current chapter title |
+| F8 | Read the full chapter aloud |
+| Escape | Return to the chapter list |
 
 ---
 
 ### Panel 3 — AI Assistant
 
-Press **Ctrl+3** or say "panel three" or "go to assistant."
+**Keyboard:** Ctrl+3 · **Voice:** "panel three" or "go to assistant"
 
-This panel has four tabs: Chat, Prompts, Cards, and Feedback.
+Four tabs: Chat, Prompts, Cards, Feedback.
 
-**Chat tab** — ask Claude questions, request feedback, load prompts. Type or dictate into the chat box and press Enter or say "send."
-
-**Prompts tab** — browse and use your saved writing prompts.
-
-**Cards tab** — browse and insert saved response cards.
-
-**Feedback tab** — read saved AI feedback entries.
+- **Chat** — ask Claude questions, request feedback, send prompts
+- **Prompts** — browse and load saved writing prompts
+- **Cards** — browse and insert saved response cards
+- **Feedback** — read saved AI feedback entries
 
 **Voice commands in Panel 3:**
 
-| Say | What happens |
+| Say | Action |
 |---|---|
-| Go to assistant | Focuses Panel 3 |
-| Open assistant panel | Same as above |
-| Go to chat | Switches to the Chat tab |
-| Open prompt library | Switches to the Prompts tab |
-| Open response cards | Switches to the Cards tab |
-| Open feedback library | Switches to the Feedback tab |
-| Send / Send message | Sends the chat input |
-| Ask Claude | Same as above |
+| Panel three | Focus Panel 3 |
+| Go to assistant / Open assistant panel | Focus Panel 3 |
+| Go to chat | Switch to the Chat tab |
+| Open prompt library | Switch to the Prompts tab |
+| Open response cards | Switch to the Cards tab |
+| Open feedback library | Switch to the Feedback tab |
+| Send / Send message / Ask Claude | Send chat input to Claude |
 
 ---
 
-## 3. Managing Your Project
+## 4. Managing Your Project
 
 ### Create a New Project
 
-Say "new project" or press **Ctrl+N**. Enter a title when asked. The project saves to your default folder automatically.
+Say "new project" or press **Ctrl+N**. Enter a title. The project saves to your default folder automatically.
 
 ### Open a Project
 
@@ -167,7 +195,7 @@ Say "open project" or press **Ctrl+O** to browse for a `.vbk` file.
 
 ### Save
 
-Say "save" or press **Ctrl+S**. You will hear "Project saved" when complete.
+Say "save" or press **Ctrl+S**. You will hear "Project saved" (or JAWS announces the status bar update) when complete.
 
 ### Save As
 
@@ -175,31 +203,27 @@ Say "save as" or press **Ctrl+Shift+S**. Choose a new file name or location.
 
 ### Import a Word Document
 
-Say "import document" or press **Ctrl+I**. Choose a `.docx` file.
-
-The app reads the document, detects chapter breaks automatically, shows you the results for confirmation, and creates all chapters in your project. You will hear "Importing document..." then "[N] chapters imported" when done.
+Say "import document" or press **Ctrl+I**. Choose a `.docx` file. The app reads the document, detects chapter breaks automatically using Claude (if an API key is set) or built-in pattern detection, shows you the results for confirmation, and creates all chapters. You will hear the chapter count when import is complete.
 
 ---
 
-## 4. Writing and Dictating
+## 5. Writing and Dictating
 
-When you select a chapter in Panel 1, it opens in the Panel 2 editor. Move focus to the editor with **Ctrl+2** and start dictating.
+Select a chapter in Panel 1, then press **Ctrl+2** to move to the editor and start dictating.
 
-Dragon works here exactly as it does in Microsoft Word:
+Dragon NaturallySpeaking works here exactly as in Microsoft Word:
 
 - Dictate text normally
-- Say "Correct that" to correct the last thing Dragon typed
+- Say "Correct that" to correct the last dictated text
 - Say "Scratch that" to delete the last utterance
-- Say "Select [phrase]" to select any text in the document
-- All Dragon cursor navigation commands work
+- Say "Select [phrase]" to select text
+- All Dragon cursor navigation and selection commands work as expected
 
-When you are done writing, say "save" or press **Ctrl+S**.
-
-To hear what you have written, say "read chapter" to hear the full chapter, or position your cursor and say "read paragraph" to hear just that section.
+To hear what you have written, say "read chapter" for the full chapter, or position your cursor and say "read paragraph" for just that section.
 
 ---
 
-## 5. The Whole Book View
+## 6. The Whole Book View
 
 The first item in the chapter list is always "Whole Book." Select it to see every chapter combined into a single continuous manuscript in the editor.
 
@@ -215,7 +239,7 @@ This is the best way to get feedback on pacing, continuity, character arcs, and 
 
 ---
 
-## 6. AI Feedback
+## 7. AI Feedback
 
 AI features require an Anthropic API key. Set it by saying "set API key" or clicking the key icon in the toolbar.
 
@@ -225,8 +249,7 @@ Select a chapter in Panel 1, then say any of these:
 
 | Say | What Claude analyses |
 |---|---|
-| Feedback | Overall: pacing, dialogue, style, structure |
-| Comprehensive | Same as above |
+| Feedback / Comprehensive | Overall: pacing, dialogue, style, structure |
 | Pacing | Where the chapter drags or rushes |
 | Dialogue | Naturalness, character voice, dialogue tags |
 | Style | Prose, word repetition, passive voice |
@@ -238,31 +261,31 @@ Select "Whole Book" in Panel 1, then say "book analysis" or "analyse book." Clau
 
 ### Chat
 
-Type or dictate a question in the chat box and say "send" or press Enter. Ask anything — writing questions, character advice, plot help, or use a saved prompt.
+Type or dictate a question in the chat box and say "send" or press Enter. Ask anything — writing questions, character advice, plot help — or load a saved prompt.
 
 ### Using Claude's Response
 
 After Claude responds:
 
-| Say | What happens |
+| Say | Action |
 |---|---|
-| Read response | Reads Claude's response aloud |
-| Insert at cursor | Inserts the response at your cursor position |
-| Insert at start | Inserts at the beginning of the chapter |
-| Insert at end | Inserts at the end of the chapter |
-| Save card / Save response card | Saves the response to the Card Library |
-| Discard response | Removes the response |
+| Read response | Read Claude's response aloud |
+| Insert at cursor | Insert the response at your cursor position |
+| Insert at start | Insert at the beginning of the chapter |
+| Insert at end | Insert at the end of the chapter |
+| Save card / Save response card | Save the response to the Card Library |
+| Discard response | Remove the response |
 
 ---
 
-## 7. The Prompt Library
+## 8. The Prompt Library
 
 The Prompt Library contains pre-written prompts organised by category. Categories cover editing, fiction, structure, non-fiction, research, description, dialogue, plot, character development, openings and endings, and whole-book feedback.
 
 **Using a prompt:**
 
 - Say "open prompt library" to browse the Prompts tab
-- Say "use prompt A one" (any letter A–K, number 1–10) to load a specific prompt
+- Say "use prompt A one" (letter A–K, number one–ten) to load a specific prompt into the chat box
 - Say "read prompt A" to hear all prompts in category A
 - Say "what prompts do I have" to hear the category list
 
@@ -270,324 +293,179 @@ The Prompt Library contains pre-written prompts organised by category. Categorie
 
 Say "add new prompt" or click Add Prompt in the Prompts tab.
 
-Prompts are shared across all your projects — they are not project-specific.
+Prompts are shared across all your projects.
 
 ---
 
-## 8. Response Cards
+## 9. Response Cards
 
 When you save a Claude response, it becomes a card. Cards let you keep useful responses and insert them into your writing later.
 
-**Working with cards:**
-
-| Say | What happens |
+| Say | Action |
 |---|---|
-| Open response cards | Opens the Cards tab |
-| What cards do I have | Announces card categories |
-| Insert card one | Inserts card number 1 into the chapter |
-| Insert card [number] | Inserts any card by number (1–20) |
-| Delete card [number] | Deletes a card |
+| Open response cards | Switch to the Cards tab |
+| What cards do I have | Announce card categories |
+| Insert card one | Insert card 1 into the chapter (one through twenty) |
+| Delete card one | Delete card 1 (one through five) |
 
 ---
 
-## 9. The Feedback Library
+## 10. The Feedback Library
 
-Every time you run an AI analysis, the result is saved automatically to the Feedback Library. You can re-read any previous feedback at any time.
+Every AI analysis is saved automatically to the Feedback Library. You can re-read any previous feedback at any time.
 
-**Accessing saved feedback:**
-
-| Say | What happens |
+| Say | Action |
 |---|---|
-| Open feedback library | Opens the Feedback tab |
-| Feedback categories | Lists the feedback categories |
-| Read my pacing feedback | Reads all saved pacing entries |
-| Read my dialogue feedback | Reads all saved dialogue entries |
-| Read my style feedback | Reads all saved style entries |
-| Read my structure feedback | Reads all saved structure entries |
-| Read my comprehensive feedback | Reads all comprehensive entries |
-| Resume reading | Continues reading where you left off |
+| Open feedback library | Switch to the Feedback tab |
+| Feedback categories | Hear the saved feedback categories |
+| Read my pacing feedback | Read all saved pacing entries |
+| Read my dialogue feedback | Read saved dialogue entries |
+| Read my style feedback | Read saved style entries |
+| Read my structure feedback | Read saved structure entries |
+| Read my comprehensive feedback | Read comprehensive entries |
+| Resume reading | Continue reading where you left off |
 
 ---
 
-## 10. Exporting Your Book
+## 11. Exporting Your Book
 
-| Say | What happens |
+| Say | Action |
 |---|---|
-| Export Word | Exports as a formatted .docx file |
-| Export manuscript | Same as above |
-| Export PDF | Exports as a PDF with title page and page numbers |
-| Create PDF | Same as above |
+| Export Word / Export manuscript | Export as a formatted `.docx` file |
+| Export PDF / Create PDF | Export as a PDF with title page and page numbers |
 
 ---
 
-## 11. Settings
+## 12. Settings
 
 Say "open settings" or press the settings button in the toolbar.
 
 ### API Key
 
-Say "set API key" to enter your Anthropic API key. This is required for all AI features. The key is saved locally on your PC and is never transmitted anywhere except to Anthropic.
+Say "set API key" to enter your Anthropic API key. Required for all AI features. The key is stored locally and sent only to Anthropic's servers.
 
 ### Default Project Folder
 
-Say "set project folder" to choose where new projects are saved.
+Say "set project folder" to choose where new projects are saved. Leave blank to be asked each time.
 
-### App Voice
+### Configure Voice (Azure TTS)
 
-Say "toggle voice" to turn the app's text-to-speech on or off. When off, JAWS or JSay handles all readback. When on, the app also speaks status messages.
-
----
-
-## 12. Voice Control with Dragon — Two Scenarios
-
-When Dragon NaturallySpeaking is running, it owns the microphone. VoiceBook Studio's built-in voice recogniser is automatically disabled. There are two ways to control the app by voice with Dragon, depending on whether you have set up Dragon MyCommands.
+Click the voice button in the toolbar to set up Azure Neural TTS for a more natural reading voice. Azure is optional — the app uses the best available Windows voice by default.
 
 ---
 
-### Scenario A — Dragon Without MyCommands (Works Immediately)
+## 13. How JAWS Works with This App
 
-No setup required. Use the Command Bar shortcut to send any command.
+### What JAWS reads — everything
 
-**How it works:**
+When JAWS is running, it is the sole audio source for the entire application:
 
-1. Say "press Control Shift Space" — the chat input box clears and gets focus
-2. Dictate the command you want (see the command list below)
-3. Say "press Enter" — the command runs
+- All controls, buttons, input fields, and list items have `AutomationProperties.Name` values that match their visible labels exactly, so JAWS reads the right text when you tab to or click any control
+- The chapter list, AI response areas, and status bar are all UIA live regions — JAWS announces changes automatically without you having to navigate there
+- Every dialog (Welcome, Settings, API Key, Azure TTS, Add Prompt, Project Selection) has an assertive live region that fires when the dialog opens, so JAWS announces the dialog name and purpose immediately
+- Tutorial steps: when you press Next, Previous, or Repeat, JAWS reads the full title and content of each step immediately via `RaiseNotificationEvent` — the most reliable JAWS announcement path
+- System events (chapter added, chapter moved, save confirmed, AI complete, errors) are routed through the same UIA notification system — JAWS announces them as they happen
 
-**Example — saving your project:**
+### What the app does not do when JAWS is running
 
-> "Press Control Shift Space" ... "save" ... "press Enter"
+The app produces **no SAPI voice at all**. Both the general feedback service and the system announcement service are fully silenced at startup when JAWS is detected. There is no overlap and no double-reading under any circumstances.
 
-**Example — getting AI feedback:**
+### No JAWS configuration needed
 
-> "Press Control Shift Space" ... "pacing feedback" ... "press Enter"
+JAWS works with VoiceBook Studio out of the box. No JAWS scripts, no custom configuration.
 
-**Example — switching panels:**
-
-> "Press Control Shift Space" ... "panel two" ... "press Enter"
-
-This two-step approach works for every command in the list below. It is slower than Scenario B but requires no Dragon configuration at all.
-
-**Writing in the editor** always works immediately with Dragon — no command bar needed. Just dictate normally, use "Correct that," "Scratch that," and all standard Dragon editing commands exactly as you would in Microsoft Word.
+**One recommended JAWS setting:** Make sure JAWS output is on the same audio device as Windows default playback (same headset or speakers). This is standard practice and unrelated to this app specifically.
 
 ---
 
-### Scenario B — Dragon With MyCommands (Full Hands-Free Control)
+## 14. How Dragon Works with This App
 
-After completing the one-time MyCommands setup (see the Installation and Configuration Guide), every command below becomes a single spoken phrase. Dragon sends the right keystroke or command bar sequence automatically — no "press Control Shift Space" step needed.
+### Dictation — works immediately, no setup needed
 
-**Example — saving your project:**
+The writing editor (Panel 2) is built on WinForms RichTextBox, which uses the Win32 Text Services Framework — the same layer as Microsoft Word. Dragon dictates into it identically to Word:
 
-> "Save VoiceBook"
+- Dictate naturally
+- "Correct that" corrects the last dictation
+- "Scratch that" deletes the last utterance
+- "Select [phrase]" selects text
+- All Dragon cursor navigation commands work
 
-**Example — getting AI feedback:**
+No Dragon configuration is needed for dictation.
 
-> "Pacing feedback"
+### App commands with Dragon
 
-**Example — switching panels:**
-
-> "Panel two"
-
-For setup instructions covering all 205 Dragon MyCommands, see:
-`Docs/Installation-and-Configuration-Guide.md` — Section 7.
-
----
-
-### Scenario C — ScrollLock Mic Toggle (Fastest Option)
-
-Press the **ScrollLock** key once to take exclusive control of the microphone away from Dragon and give it to the app. Press **ScrollLock** again to give it back.
-
-**What happens when you press ScrollLock:**
-
-- Dragon's microphone is muted immediately
-- The app's built-in voice recogniser activates
-- The app announces: "App microphone on. Dragon muted. Say a command."
-- Say any command in the Master Command List below — the app hears it directly, no command bar needed
-- Press **ScrollLock** again when finished
-- The app announces: "App microphone off. Dragon listening."
-- Dragon's microphone is restored — dictate normally
-
-**Example — getting pacing feedback, then back to dictation:**
-
-1. Press ScrollLock — app says "App microphone on. Dragon muted."
-2. Say "pacing feedback" — app runs the analysis
-3. Press ScrollLock — app says "App microphone off. Dragon listening."
-4. Dictate your next paragraph with Dragon as normal
-
-**Why this is faster than Scenario A or B:**
-
-- No "press Control Shift Space" step
-- No Dragon MyCommands setup required
-- A single key press each way — pressable with a thumb, mouth stick, or tongue switch
-- Works regardless of where focus is in the app (chapter list, editor, any panel)
-
-**The ScrollLock LED** on most keyboards lights up when the app mic is on, giving a physical indicator of which system owns the microphone.
+When Dragon is running, it owns the microphone and the app's built-in voice recogniser is disabled. For app-level commands (panel switching, save, chapter management, AI requests) you have three options:
 
 ---
 
-### Master Command List (Both Scenarios)
+**Option 1 — ScrollLock toggle (recommended, fastest)**
 
-The commands below work in both scenarios. In Scenario A, each one is the text you dictate into the command bar. In Scenario B, each one is the phrase you say directly to Dragon after MyCommands are set up.
+Press **ScrollLock** once. Dragon's microphone is muted and the app's built-in recogniser activates. Say any command from the voice command list. Press **ScrollLock** again to return the microphone to Dragon.
 
-#### Navigation
+- The ScrollLock LED on most keyboards lights when the app mic is on, giving you a physical indicator
+- Works from anywhere in the app — chapter list, editor, any panel, inside the tutorial
+- No Dragon setup required
 
-| Command | What it does |
-|---|---|
-| panel one | Focus Panel 1 — Chapters |
-| panel two | Focus Panel 2 — Writing Editor |
-| panel three | Focus Panel 3 — AI Assistant |
-| go to chapters | Focus Panel 1 |
-| go to editor | Focus Panel 2 |
-| go to assistant | Focus Panel 3 |
-| go to chat | Switch to Chat tab |
-| open prompt library | Switch to Prompts tab |
-| open response cards | Switch to Cards tab |
-| open feedback library | Switch to Feedback tab |
-| what can I say here | Hear available commands for current panel |
-| status | Announce current app state |
-
-#### Project
-
-| Command | What it does |
-|---|---|
-| new project | Create a new project |
-| open project | Browse for a project file |
-| save | Save current project |
-| save now | Same |
-| save as | Save to a new file |
-| import document | Import a Word .docx file |
-
-#### Chapters
-
-| Command | What it does |
-|---|---|
-| add chapter | Add a new chapter |
-| rename chapter | Rename selected chapter |
-| delete chapter | Delete selected chapter |
-| move up | Move chapter up in list |
-| move down | Move chapter down in list |
-| change type | Change section type |
-| next chapter | Select the next chapter |
-| previous chapter | Select the previous chapter |
-
-#### Reading Aloud
-
-| Command | What it does |
-|---|---|
-| read chapter | Read the full chapter aloud |
-| read paragraph | Read paragraph at cursor |
-| read chapter title | Announce the chapter name |
-| stop | Stop speech |
-| stop reading | Same |
-| silence | Same |
-
-#### AI Feedback
-
-| Command | What it does |
-|---|---|
-| feedback | Comprehensive chapter feedback |
-| pacing | Pacing analysis |
-| dialogue | Dialogue analysis |
-| style | Style analysis |
-| structure | Structure analysis |
-| book analysis | Full manuscript analysis — select Whole Book first |
-| send | Send chat input to Claude |
-| read response | Read Claude's response aloud |
-| insert at cursor | Insert response at cursor position |
-| insert at start | Insert at chapter beginning |
-| insert at end | Insert at chapter end |
-| save card | Save response as a card |
-| discard response | Remove the response |
-
-#### Prompt Library
-
-| Command | What it does |
-|---|---|
-| open prompt library | Open Prompts tab |
-| what prompts do I have | Hear the category list |
-| read prompt a | Hear all prompts in category A (A through J) |
-| use prompt a one | Load prompt A1 (letter A–K, number one–ten) |
-| add new prompt | Add a prompt to the library |
-
-#### Response Cards
-
-| Command | What it does |
-|---|---|
-| open response cards | Open Cards tab |
-| what cards do I have | Hear card categories |
-| insert card one | Insert card 1 (one through twenty) |
-| delete card one | Delete card 1 (one through five) |
-
-#### Feedback Library
-
-| Command | What it does |
-|---|---|
-| open feedback library | Open Feedback tab |
-| feedback categories | Hear saved feedback categories |
-| read my pacing feedback | Read all saved pacing entries |
-| read my dialogue feedback | Read saved dialogue entries |
-| read my style feedback | Read saved style entries |
-| read my structure feedback | Read saved structure entries |
-| read my comprehensive feedback | Read comprehensive entries |
-| resume reading | Continue reading where you left off |
-
-#### Settings
-
-| Command | What it does |
-|---|---|
-| set api key | Enter Anthropic API key |
-| open settings | Open settings dialog |
-| set project folder | Choose default save folder |
-| toggle voice | Turn app speech on or off |
-| start tutorial | Open the 17-step tutorial |
-
-#### App
-
-| Command | What it does |
-|---|---|
-| close voicebook | Close the application |
+**Example — getting pacing feedback then back to dictation:**
+1. Press ScrollLock — app mic on, Dragon muted
+2. Say "pacing feedback"
+3. Press ScrollLock — Dragon mic restored
+4. Dictate your next paragraph as normal
 
 ---
 
-## 13. All Voice Commands
+**Option 2 — Command bar (works immediately, no setup)**
+
+Press **Ctrl+Shift+Space** or say "press Control Shift Space" to open the command bar (the chat input box in Panel 3). Type or dictate the command and press Enter.
+
+**Example:** Press Ctrl+Shift+Space → dictate "panel two" → press Enter
+
+This works for every command in the voice command list. It is slower than ScrollLock but requires no setup at all.
+
+---
+
+**Option 3 — Dragon MyCommands (full hands-free, requires one-time setup)**
+
+Create Dragon MyCommands that map spoken phrases to keyboard shortcuts or command bar sequences. After setup, you can say commands like "pacing feedback" or "panel two" directly without pressing ScrollLock or using the command bar.
+
+**Button clicking with Dragon:** WPF buttons in VoiceBook Studio are not standard Win32 controls, so Dragon's built-in "click [button name]" does not work with them. To click buttons by voice in Dragon, create MyCommands that send the corresponding keyboard shortcut or command bar sequence. See `Dragon-Commands-Setup-Guide.md` for the full list of commands and setup instructions.
+
+---
+
+## 15. Voice Command Reference
 
 ### Navigation
 
 | Say | Action |
 |---|---|
 | Panel one / two / three | Switch panels |
-| Go to chapters | Panel 1 |
-| Go to chapter list | Panel 1 |
-| Go to editor | Panel 2 |
-| Open writing editor | Panel 2 |
-| Go to assistant | Panel 3 |
-| Open assistant panel | Panel 3 |
-| Go to chat | Chat tab in Panel 3 |
+| Go to chapters / Go to chapter list | Panel 1 |
+| Go to editor / Open writing editor | Panel 2 |
+| Go to assistant / Open assistant panel | Panel 3 |
+| Go to chat | Chat tab |
 | Open prompt library | Prompts tab |
 | Open response cards | Cards tab |
 | Open feedback library | Feedback tab |
-| What can I say here | Lists available commands for the current panel |
-| Application status | Announces current app state |
+| What can I say here | Hear available commands for the current panel |
+| Application status / Status | Announce current app state |
 
 ### Project
 
 | Say | Action |
 |---|---|
-| New project | Create a project |
-| Open project | Browse for a project |
-| Save | Save current project |
-| Save project | Same |
-| Save now | Same |
+| New project | Create a new project |
+| Open project | Browse for a project file |
+| Save / Save project / Save now | Save |
 | Save as | Save to a new file |
-| Import document | Import a .docx file |
-| Import Word document | Same |
+| Import document / Import Word document | Import a .docx file |
+| Export Word / Export manuscript | Export to Word |
+| Export PDF / Create PDF | Export to PDF |
 
 ### Chapters
 
 | Say | Action |
 |---|---|
-| Add chapter | Add a chapter |
-| New chapter | Same |
+| Add chapter / New chapter | Add a chapter |
 | Rename chapter | Rename selected chapter |
 | Delete chapter | Delete selected chapter |
 | Move up | Move chapter up |
@@ -602,35 +480,26 @@ The commands below work in both scenarios. In Scenario A, each one is the text y
 |---|---|
 | Read chapter | Read the full chapter |
 | Read paragraph | Read the paragraph at the cursor |
-| Read chapter title | Announce the chapter name |
-| Current chapter | Same |
-| Stop reading | Stop speech |
-| Stop | Same |
-| Quiet | Same |
-| Silence | Same |
+| Read chapter title / Current chapter | Announce the chapter name |
+| Stop reading / Stop / Quiet / Silence | Stop speech |
 
 ### AI
 
 | Say | Action |
 |---|---|
-| Feedback | Comprehensive chapter feedback |
-| Comprehensive | Same |
+| Feedback / Comprehensive | Comprehensive chapter feedback |
 | Pacing | Pacing analysis |
 | Dialogue | Dialogue analysis |
 | Style | Style analysis |
 | Structure | Structure analysis |
-| Book analysis | Full manuscript analysis |
-| Whole book | Same |
-| Send | Send chat input |
-| Send message | Same |
-| Ask Claude | Same |
+| Book analysis / Whole book / Analyse book | Full manuscript analysis |
+| Send / Send message / Ask Claude | Send chat input |
 | Read response | Read Claude's response aloud |
-| Insert at cursor | Insert response at cursor |
+| Insert at cursor | Insert response at cursor position |
 | Insert at start | Insert at chapter beginning |
 | Insert at end | Insert at chapter end |
-| Save card | Save response as a card |
-| Save response card | Same |
-| Discard response | Remove the response |
+| Save card / Save response card | Save response as a card |
+| Discard response / Clear response | Remove the response |
 
 ### Prompt Library
 
@@ -638,18 +507,18 @@ The commands below work in both scenarios. In Scenario A, each one is the text y
 |---|---|
 | Open prompt library | Open Prompts tab |
 | What prompts do I have | Hear categories |
-| Read prompt A through J | Hear prompts in that category |
-| Use prompt A one | Load prompt A1 |
+| Read prompt A (through J) | Hear all prompts in a category |
+| Use prompt A one | Load a specific prompt (letter A–K, number one–ten) |
 | Add new prompt | Add a prompt |
 
-### Cards
+### Response Cards
 
 | Say | Action |
 |---|---|
 | Open response cards | Open Cards tab |
-| What cards do I have | Hear categories |
-| Insert card one through twenty | Insert a card |
-| Delete card one through five | Delete a card |
+| What cards do I have | Hear card categories |
+| Insert card one (through twenty) | Insert a card |
+| Delete card one (through five) | Delete a card |
 
 ### Feedback Library
 
@@ -657,34 +526,37 @@ The commands below work in both scenarios. In Scenario A, each one is the text y
 |---|---|
 | Open feedback library | Open Feedback tab |
 | Feedback categories | Hear categories |
-| Read my [type] feedback | Read saved entries |
-| Resume reading | Continue reading |
+| Read my pacing feedback | Read saved pacing entries |
+| Read my dialogue feedback | Read saved dialogue entries |
+| Read my style feedback | Read saved style entries |
+| Read my structure feedback | Read saved structure entries |
+| Read my comprehensive feedback | Read comprehensive entries |
+| Resume reading | Continue reading where you left off |
 
-### Settings
+### Settings and Help
 
 | Say | Action |
 |---|---|
 | Set API key | Enter Anthropic API key |
 | Open settings | Open settings dialog |
 | Set project folder | Choose default save folder |
-| Toggle voice | Toggle app speech on or off |
-| Start tutorial | Open the 17-step tutorial |
+| Toggle voice | Toggle app TTS on or off (not relevant when JAWS is running) |
+| Start tutorial | Open the 17-step guided tutorial |
 
 ### App
 
 | Say | Action |
 |---|---|
-| Close VoiceBook | Close the application |
-| Exit VoiceBook | Same |
+| Close VoiceBook / Exit VoiceBook | Close the application |
 
 ---
 
-## 14. All Keyboard Shortcuts
+## 16. Keyboard Shortcut Reference
 
 | Keys | Action |
 |---|---|
 | Ctrl+1 | Panel 1 — Chapters |
-| Ctrl+2 | Panel 2 — Editor |
+| Ctrl+2 | Panel 2 — Writing Editor |
 | Ctrl+3 | Panel 3 — AI Assistant |
 | Ctrl+N | New project |
 | Ctrl+O | Open project |
@@ -697,28 +569,26 @@ The commands below work in both scenarios. In Scenario A, each one is the text y
 | Alt+Up | Move chapter up |
 | Alt+Down | Move chapter down |
 | Ctrl+F | Comprehensive AI feedback |
-| F2 | Focus AI Assistant panel |
-| F3 | Focus AI Assistant panel |
 | F4 | Read current paragraph |
 | F5 | Announce current chapter title |
 | F6 | Next chapter |
 | F7 | Previous chapter |
-| F8 | Read current chapter aloud |
+| F8 | Read full chapter aloud |
 | F9 | Announce application status |
-| **ScrollLock** | **Toggle app microphone on/off (mutes/unmutes Dragon simultaneously)** |
-| Ctrl+Shift+Space | Open command bar (Dragon entry point) |
+| ScrollLock | Toggle app microphone on/off (mutes/unmutes Dragon simultaneously) |
+| Ctrl+Shift+Space | Open command bar |
 | Escape | Leave editor, return to chapter list |
 
 ---
 
-## 15. Sounds Reference
+## 17. Sounds Reference
 
 | Sound | Meaning |
 |---|---|
 | Rising chime | App ready |
 | Falling chime | App closing |
 | Soft pop | Project opened |
-| Soft click | Project saved |
+| Soft click | Project saved / auto-saved |
 | Ascending tone | Chapter added |
 | Descending tone | Chapter deleted |
 | Shuffle tone | Chapter moved |

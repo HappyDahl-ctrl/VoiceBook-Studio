@@ -184,29 +184,29 @@
             <Button Command="{Binding NewProjectCommand}"
                     ToolTip="New Project (Ctrl+N)"
                     TabIndex="1"
-                    AutomationProperties.Name="New project"
-                    AutomationProperties.HelpText="Create a new VoiceBook project, Control N">
+                    AutomationProperties.Name="New"
+                    AutomationProperties.HelpText="Create a new VoiceBook project. Keyboard: Control N. Dragon: say click New.">
                 <TextBlock Text="New" FontWeight="Bold"/>
             </Button>
             <Button Command="{Binding OpenProjectCommand}"
                     ToolTip="Open Project (Ctrl+O)"
                     TabIndex="2"
-                    AutomationProperties.Name="Open project"
-                    AutomationProperties.HelpText="Open an existing .vbk project file, Control O">
+                    AutomationProperties.Name="Open"
+                    AutomationProperties.HelpText="Open an existing project file. Keyboard: Control O. Dragon: say click Open.">
                 <TextBlock Text="Open"/>
             </Button>
             <Button Command="{Binding SaveProjectCommand}"
                     ToolTip="Save (Ctrl+S)"
                     TabIndex="3"
-                    AutomationProperties.Name="Save project"
-                    AutomationProperties.HelpText="Save the current project, Control S">
+                    AutomationProperties.Name="Save"
+                    AutomationProperties.HelpText="Save the current project. Keyboard: Control S. Dragon: say click Save.">
                 <TextBlock Text="Save"/>
             </Button>
             <Button Command="{Binding ImportDocumentCommand}"
                     ToolTip="Import .docx (Ctrl+I)"
                     TabIndex="4"
-                    AutomationProperties.Name="Import Word document"
-                    AutomationProperties.HelpText="Import a Word .docx file with Claude chapter detection, Control I">
+                    AutomationProperties.Name="Import Document"
+                    AutomationProperties.HelpText="Import a Word document with Claude chapter detection. Keyboard: Control I. Dragon: say click Import Document.">
                 <TextBlock Text="Import .docx"/>
             </Button>
 
@@ -214,8 +214,8 @@
             <Button Command="{Binding ShowWelcomeCommand}"
                     ToolTip="Welcome / Tutorial"
                     TabIndex="5"
-                    AutomationProperties.Name="Welcome and tutorial"
-                    AutomationProperties.HelpText="Open the Welcome dialog and start the guided tutorial">
+                    AutomationProperties.Name="Welcome"
+                    AutomationProperties.HelpText="Open the Welcome dialog and start the guided tutorial. Dragon: say click Welcome.">
                 <TextBlock Text="Welcome"/>
             </Button>
 
@@ -224,22 +224,22 @@
             <Button Command="{Binding AddChapterCommand}"
                     ToolTip="Add Chapter (Ctrl+A)"
                     TabIndex="6"
-                    AutomationProperties.Name="Add chapter"
-                    AutomationProperties.HelpText="Add a new chapter to the project, Control A">
+                    AutomationProperties.Name="Add Chapter"
+                    AutomationProperties.HelpText="Add a new chapter to the project. Keyboard: Control A. Dragon: say click Add Chapter.">
                 <TextBlock Text="+ Chapter"/>
             </Button>
             <Button Command="{Binding MoveChapterUpCommand}"
                     ToolTip="Move Chapter Up (Alt+Up)"
                     TabIndex="7"
-                    AutomationProperties.Name="Move chapter up"
-                    AutomationProperties.HelpText="Move the selected chapter up in the list, Alt Up arrow">
+                    AutomationProperties.Name="Move Up"
+                    AutomationProperties.HelpText="Move the selected chapter up in the list. Keyboard: Alt Up arrow. Dragon: say click Move Up.">
                 <TextBlock Text="&#x2191; Up"/>
             </Button>
             <Button Command="{Binding MoveChapterDownCommand}"
                     ToolTip="Move Chapter Down (Alt+Down)"
                     TabIndex="8"
-                    AutomationProperties.Name="Move chapter down"
-                    AutomationProperties.HelpText="Move the selected chapter down in the list, Alt Down arrow">
+                    AutomationProperties.Name="Move Down"
+                    AutomationProperties.HelpText="Move the selected chapter down in the list. Keyboard: Alt Down arrow. Dragon: say click Move Down.">
                 <TextBlock Text="&#x2193; Down"/>
             </Button>
 
@@ -383,23 +383,23 @@
                     <Button Command="{Binding AddChapterCommand}"
                             Content="Add Chapter (Ctrl+A)" Padding="6,5" Margin="0,0,0,4"
                             TabIndex="21"
-                            AutomationProperties.Name="Add chapter, Control A"
-                            AutomationProperties.HelpText="Add a new chapter to the project"/>
+                            AutomationProperties.Name="Add Chapter"
+                            AutomationProperties.HelpText="Add a new chapter to the project. Keyboard: Control A. Dragon: say click Add Chapter."/>
                     <Button Command="{Binding RenameChapterCommand}"
                             Content="Rename (Ctrl+D)" Padding="6,5" Margin="0,0,0,4"
                             TabIndex="22"
-                            AutomationProperties.Name="Rename chapter, Control D"
-                            AutomationProperties.HelpText="Rename the selected chapter"/>
+                            AutomationProperties.Name="Rename"
+                            AutomationProperties.HelpText="Rename the selected chapter. Keyboard: Control D. Dragon: say click Rename."/>
                     <Button Command="{Binding DeleteChapterCommand}"
                             Content="Delete (Ctrl+Del)" Padding="6,5" Margin="0,0,0,4"
                             TabIndex="23"
-                            AutomationProperties.Name="Delete chapter, Control Delete"
-                            AutomationProperties.HelpText="Permanently delete the selected chapter"/>
+                            AutomationProperties.Name="Delete"
+                            AutomationProperties.HelpText="Permanently delete the selected chapter. Keyboard: Control Delete. Dragon: say click Delete."/>
                     <Button Command="{Binding ChangeChapterTypeCommand}"
                             Content="Change Type..." Padding="6,5" Margin="0,0,0,4"
                             TabIndex="24"
-                            AutomationProperties.Name="Change section type"
-                            AutomationProperties.HelpText="Change whether this is a chapter, dedication, appendix, or other section type"/>
+                            AutomationProperties.Name="Change Type"
+                            AutomationProperties.HelpText="Change whether this is a chapter, dedication, appendix, or other section type. Dragon: say click Change Type."/>
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
@@ -409,13 +409,30 @@
                         <Button Grid.Column="0" Command="{Binding MoveChapterUpCommand}"
                                 Content="&#x2191; Move Up" Padding="6,5"
                                 TabIndex="25"
-                                AutomationProperties.Name="Move chapter up, Alt Up arrow"
-                                AutomationProperties.HelpText="Move the selected chapter earlier in the book"/>
+                                AutomationProperties.Name="Move Chapter Up"
+                                AutomationProperties.HelpText="Move the selected chapter earlier in the book. Keyboard: Alt Up arrow. Dragon: say click Move Chapter Up."/>
                         <Button Grid.Column="2" Command="{Binding MoveChapterDownCommand}"
                                 Content="&#x2193; Move Down" Padding="6,5"
                                 TabIndex="26"
-                                AutomationProperties.Name="Move chapter down, Alt Down arrow"
-                                AutomationProperties.HelpText="Move the selected chapter later in the book"/>
+                                AutomationProperties.Name="Move Chapter Down"
+                                AutomationProperties.HelpText="Move the selected chapter later in the book. Keyboard: Alt Down arrow. Dragon: say click Move Chapter Down."/>
+                    </Grid>
+                    <Grid Margin="0,4,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" Command="{Binding TrySelectPreviousChapterCommand}"
+                                Content="&#x25C4; Previous Chapter" Padding="6,5"
+                                TabIndex="27"
+                                AutomationProperties.Name="Previous Chapter"
+                                AutomationProperties.HelpText="Select the previous chapter in the list. Dragon: say click Previous Chapter."/>
+                        <Button Grid.Column="2" Command="{Binding TrySelectNextChapterCommand}"
+                                Content="Next Chapter &#x25BA;" Padding="6,5"
+                                TabIndex="28"
+                                AutomationProperties.Name="Next Chapter"
+                                AutomationProperties.HelpText="Select the next chapter in the list. Dragon: say click Next Chapter."/>
                     </Grid>
                 </StackPanel>
             </Grid>
@@ -531,8 +548,8 @@
                                         Content="Analyse Full Book" Padding="6,5" Margin="0,0,0,6"
                                         TabIndex="39"
                                         FontWeight="SemiBold"
-                                        AutomationProperties.Name="Analyse full book — all chapters"
-                                        AutomationProperties.HelpText="Send the entire manuscript to Claude for book-wide analysis: arc, character consistency, pacing, continuity, and themes. Voice command: say Book Analysis."/>
+                                        AutomationProperties.Name="Analyse Full Book"
+                                        AutomationProperties.HelpText="Send the entire manuscript to Claude for book-wide analysis. Dragon: say click Analyse Full Book."/>
 
                                 <Separator Margin="0,0,0,4"/>
 
@@ -540,8 +557,8 @@
                                         CommandParameter="comprehensive"
                                         Content="Comprehensive (Ctrl+F)" Padding="6,5" Margin="0,0,0,4"
                                         TabIndex="40"
-                                        AutomationProperties.Name="Run comprehensive feedback on current chapter, Control F"
-                                        AutomationProperties.HelpText="Get overall feedback on the current chapter: pacing, dialogue, style and structure. Claude also sees the rest of the book for context."/>
+                                        AutomationProperties.Name="Comprehensive"
+                                        AutomationProperties.HelpText="Get overall feedback on the current chapter. Keyboard: Control F. Dragon: say click Comprehensive."/>
                                 <Grid Margin="0,0,0,4">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition/><ColumnDefinition Width="4"/>
@@ -551,25 +568,25 @@
                                     <Button Grid.Column="0" Command="{Binding RunAiFeedbackCommand}"
                                             CommandParameter="pacing" Content="Pacing" Padding="4,5"
                                             TabIndex="41"
-                                            AutomationProperties.Name="Run pacing analysis"
-                                            AutomationProperties.HelpText="Analyze chapter for pacing issues, where it drags or rushes"/>
+                                            AutomationProperties.Name="Pacing"
+                                            AutomationProperties.HelpText="Analyze chapter for pacing issues. Dragon: say click Pacing."/>
                                     <Button Grid.Column="2" Command="{Binding RunAiFeedbackCommand}"
                                             CommandParameter="dialogue" Content="Dialogue" Padding="4,5"
                                             TabIndex="42"
-                                            AutomationProperties.Name="Run dialogue analysis"
-                                            AutomationProperties.HelpText="Analyze dialogue naturalness, character voice, and dialogue tags"/>
+                                            AutomationProperties.Name="Dialogue"
+                                            AutomationProperties.HelpText="Analyze dialogue naturalness and character voice. Dragon: say click Dialogue."/>
                                     <Button Grid.Column="4" Command="{Binding RunAiFeedbackCommand}"
                                             CommandParameter="style" Content="Style" Padding="4,5"
                                             TabIndex="43"
-                                            AutomationProperties.Name="Run style analysis"
-                                            AutomationProperties.HelpText="Analyze prose style, repeated words, passive voice, weak verbs"/>
+                                            AutomationProperties.Name="Style"
+                                            AutomationProperties.HelpText="Analyze prose style and word choice. Dragon: say click Style."/>
                                 </Grid>
                                 <Button Command="{Binding RunAiFeedbackCommand}"
                                         CommandParameter="structure"
                                         Content="Structure" Padding="6,5"
                                         TabIndex="44"
-                                        AutomationProperties.Name="Run structure analysis"
-                                        AutomationProperties.HelpText="Analyze chapter structure, hook, transitions, and ending"/>
+                                        AutomationProperties.Name="Structure"
+                                        AutomationProperties.HelpText="Analyze chapter structure, hook, and transitions. Dragon: say click Structure."/>
                             </StackPanel>
 
                             <!-- AI response text -->
@@ -595,8 +612,8 @@
                                         Content="Save as Card..."
                                         Padding="6,4" FontSize="11"
                                         TabIndex="46"
-                                        AutomationProperties.Name="Save AI response as a response card"
-                                        AutomationProperties.HelpText="Save the current AI response as a reusable card. You will be asked for a title and category."/>
+                                        AutomationProperties.Name="Save as Card"
+                                        AutomationProperties.HelpText="Save the current AI response as a reusable card. Dragon: say click Save as Card."/>
                             </Border>
 
                             <!-- INSERT buttons — 3 options -->
@@ -618,25 +635,25 @@
                                                 Content="At Cursor"
                                                 Padding="4,5" FontSize="11"
                                                 TabIndex="47"
-                                                ToolTip="Insert at the last cursor position in the editor before you opened the AI panel"
-                                                AutomationProperties.Name="Insert at cursor position"
-                                                AutomationProperties.HelpText="Insert AI response where your cursor was in the editor before you switched to this panel"/>
+                                                ToolTip="Insert at the last cursor position in the editor"
+                                                AutomationProperties.Name="At Cursor"
+                                                AutomationProperties.HelpText="Insert AI response at your last cursor position. Dragon: say click At Cursor."/>
                                         <Button Grid.Column="2"
                                                 Command="{Binding InsertAtStartCommand}"
                                                 Content="At Start"
                                                 Padding="4,5" FontSize="11"
                                                 TabIndex="48"
                                                 ToolTip="Insert at the beginning of the chapter"
-                                                AutomationProperties.Name="Insert at beginning of chapter"
-                                                AutomationProperties.HelpText="Insert AI response at the very beginning of the chapter text"/>
+                                                AutomationProperties.Name="At Start"
+                                                AutomationProperties.HelpText="Insert AI response at the beginning of the chapter. Dragon: say click At Start."/>
                                         <Button Grid.Column="4"
                                                 Command="{Binding InsertAtEndCommand}"
                                                 Content="At End"
                                                 Padding="4,5" FontSize="11"
                                                 TabIndex="49"
                                                 ToolTip="Insert at the end of the chapter"
-                                                AutomationProperties.Name="Insert at end of chapter"
-                                                AutomationProperties.HelpText="Insert AI response at the very end of the chapter text"/>
+                                                AutomationProperties.Name="At End"
+                                                AutomationProperties.HelpText="Insert AI response at the end of the chapter. Dragon: say click At End."/>
                                     </Grid>
                                 </StackPanel>
                             </Border>
@@ -665,8 +682,8 @@
                                         Content="Send"
                                         Padding="10,5"
                                         TabIndex="51"
-                                        AutomationProperties.Name="Send chat message to Claude"
-                                        AutomationProperties.HelpText="Send your question to Claude AI"/>
+                                        AutomationProperties.Name="Send"
+                                        AutomationProperties.HelpText="Send your question to Claude AI. Dragon: say click Send."/>
                             </Grid>
                         </Grid>
                     </TabItem>
@@ -755,15 +772,15 @@
                                         Content="Use Prompt"
                                         Padding="6,5"
                                         TabIndex="56"
-                                        AutomationProperties.Name="Use selected prompt"
-                                        AutomationProperties.HelpText="Load the selected prompt into the chat input box, then switch to Chat to send it."/>
+                                        AutomationProperties.Name="Use Prompt"
+                                        AutomationProperties.HelpText="Load the selected prompt into the chat input box. Dragon: say click Use Prompt."/>
                                 <Button Grid.Column="2"
                                         Click="AddPromptButton_Click"
                                         Content="Add Prompt"
                                         Padding="6,5"
                                         TabIndex="57"
-                                        AutomationProperties.Name="Add a new prompt to the library"
-                                        AutomationProperties.HelpText="Create a new prompt and save it to your prompt library. Voice command: say Add new prompt."/>
+                                        AutomationProperties.Name="Add Prompt"
+                                        AutomationProperties.HelpText="Create a new prompt and save it to your library. Dragon: say click Add Prompt."/>
                             </Grid>
                         </Grid>
                     </TabItem>
@@ -862,15 +879,15 @@
                                         Content="Read Full Entry"
                                         Padding="6,5"
                                         TabIndex="68"
-                                        AutomationProperties.Name="Read the full selected feedback entry aloud"
-                                        AutomationProperties.HelpText="Read the complete feedback text aloud. Press any key to stop reading."/>
+                                        AutomationProperties.Name="Read Full Entry"
+                                        AutomationProperties.HelpText="Read the complete feedback text aloud. Press any key to stop. Dragon: say click Read Full Entry."/>
                                 <Button Grid.Column="2"
                                         Command="{Binding FeedbackLibVM.DeleteEntryCommand}"
                                         Content="Delete Entry"
                                         Padding="6,5"
                                         TabIndex="69"
-                                        AutomationProperties.Name="Delete the selected feedback entry"
-                                        AutomationProperties.HelpText="Permanently delete this feedback entry from the library."/>
+                                        AutomationProperties.Name="Delete Entry"
+                                        AutomationProperties.HelpText="Permanently delete this feedback entry. Dragon: say click Delete Entry."/>
                             </Grid>
                         </Grid>
                     </TabItem>

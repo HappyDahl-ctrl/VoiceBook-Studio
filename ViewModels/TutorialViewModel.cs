@@ -149,6 +149,12 @@ namespace VoiceBookStudio.ViewModels
         /// </summary>
         public event Action? StepAdvanced;
 
+        /// <summary>
+        /// Fired by Repeat() so the dialog can re-announce the current step to JAWS
+        /// without a PropertyChanged event (the index does not change on Repeat).
+        /// </summary>
+        public event Action? RepeatRequested;
+
         // ----------------------------------------------------------------
         // Public navigation methods
         // ----------------------------------------------------------------
@@ -200,6 +206,7 @@ namespace VoiceBookStudio.ViewModels
         {
             _announcer.StopSpeaking();
             AnnounceCurrentStep();
+            RepeatRequested?.Invoke();
         }
 
         public void Exit()
@@ -317,12 +324,10 @@ namespace VoiceBookStudio.ViewModels
         {
             _sounds?.Play(AppSound.TutorialStep);
 
-            // When JAWS is running, live regions on StepHeader and ActionStatusText
-            // (both Assertive) already announce content immediately on change.
-            // Speaking via SAPI at the same time causes double-reading.
-            // Skip SAPI for JAWS users — live regions handle it.
-            if (_jawsDetected) return;
-
+            // Always speak tutorial steps via SystemAnnouncementService regardless of JAWS.
+            // SystemAnnouncementService already adds a 500 ms pre-delay when JAWS is present
+            // to avoid clashing with JAWS speech. UIA live regions on StepHeader / ActionStatusText
+            // still fire in parallel; if the user prefers JAWS only, they can disable app TTS in Settings.
             var step = _steps[_currentIndex];
 
             if (IsWaitingForAction)
@@ -403,18 +408,22 @@ namespace VoiceBookStudio.ViewModels
                 : "The built-in VoiceBook microphone is on and listening for spoken commands.";
 
             string jawsInfo = jawsDetected
-                ? "JAWS is running. JAWS will read all controls, live regions, and status bar " +
-                  "updates automatically. VoiceBook still speaks critical tutorial messages."
-                : "JAWS is not running. VoiceBook's built-in voice will read all instructions " +
-                  "and confirmations throughout your session.";
+                ? "JAWS screen reader is running alongside VoiceBook. " +
+                  "VoiceBook's built-in voice will still read all tutorial steps and system messages. " +
+                  "You can mute the app voice in Settings if you prefer JAWS only."
+                : "VoiceBook's built-in voice will read all instructions and confirmations throughout your session.";
 
             string voiceCommandRoute = dragonDetected
                 ? "When Dragon is running you have two ways to give VoiceBook commands.\n\n" +
                   "SCROLL LOCK (fastest)\n" +
                   "Press ScrollLock once — Dragon mutes, the app mic activates. " +
-                  "Say a command. Press ScrollLock again — Dragon's mic is restored.\n\n" +
+                  "Say a command. Press ScrollLock again — Dragon's mic is restored. " +
+                  "ScrollLock works at any time, including right now during this tutorial.\n\n" +
                   "COMMAND BAR\n" +
-                  "Press Ctrl+Shift+Space, dictate a command into the Command box, then press Enter."
+                  "Dictate or type a command into the Command box at the bottom of this window and press Enter.\n\n" +
+                  "BUTTON CLICKS\n" +
+                  "Dragon can click any button by name. Say \"click [button name]\" — " +
+                  "no custom Dragon command files are required."
                 : "You can give VoiceBook commands by speaking them. The built-in microphone is " +
                   "listening. You can also type commands into the Command box below and press Enter.";
 
@@ -444,18 +453,19 @@ namespace VoiceBookStudio.ViewModels
                     Content =
                         "Now let us confirm the app can hear you.\n\n" +
                         (dragonDetected
-                            ? "Dragon NaturallySpeaking is running. Type the word Hello into the " +
-                              "Command box below and press Enter. This confirms Dragon is connected " +
-                              "and command routing is working."
+                            ? "Dragon NaturallySpeaking is running.\n\n" +
+                              "THREE WAYS TO CONFIRM AUDIO:\n" +
+                              "  1. Say \"click Confirm Audio\" — Dragon clicks the Confirm Audio button below\n" +
+                              "  2. Type the word Hello into the Command box below and press Enter\n" +
+                              "  3. Press ScrollLock to activate the app mic, say Hello, then press ScrollLock again\n\n" +
+                              "Any of these confirms that Dragon and command routing are working."
                             : "If the microphone hears you, the step will pass automatically.\n\n" +
-                              "You can type Hello into the Command box below and press Enter, " +
-                              "or say hello out loud right now."),
+                              "You can also type Hello into the Command box below and press Enter, " +
+                              "or press the Confirm Audio button."),
                     RequiredAction = "continue",
                     ActionPrompt   = dragonDetected
-                        ? "Type Hello in the Command box and press Enter"
-                        : "If the microphone hears you, the step will pass automatically. " +
-                          "You can type Hello into the Command box below and press Enter, " +
-                          "or say hello out loud right now",
+                        ? "Say \"click Confirm Audio\", type Hello and press Enter, or press ScrollLock to use the app mic"
+                        : "Say Hello, type Hello and press Enter, or press Confirm Audio",
                     SuccessMessage = "Audio and microphone confirmed. Everything is working.",
                     IsSkippable    = true
                 },
@@ -586,9 +596,14 @@ namespace VoiceBookStudio.ViewModels
                         "  What can I say here — hear commands for the current panel\n\n" +
                         (dragonDetected
                             ? "GIVING COMMANDS WITH DRAGON\n" +
-                              "Press ScrollLock — Dragon mutes, app mic activates. Say a command. " +
-                              "Press ScrollLock again to restore Dragon. " +
-                              "Or press Ctrl+Shift+Space, dictate a command, then press Enter."
+                              "You do not need any custom Dragon command files. Dragon can click any " +
+                              "button in VoiceBook Studio by name — just say \"click [button name]\". " +
+                              "For example: \"click Next step\", \"click Skip Step\", \"click Confirm Audio\".\n\n" +
+                              "For voice commands that are not buttons:\n" +
+                              "  SCROLL LOCK (fastest) — Press ScrollLock once. Dragon mutes, the app " +
+                              "mic activates. Say a command. Press ScrollLock again to restore Dragon.\n" +
+                              "  COMMAND BAR — Type or dictate a command into the Command box below and press Enter.\n\n" +
+                              "ScrollLock works at any time — including during this tutorial."
                             : "Say any of these commands out loud while the app microphone is on. " +
                               "Or type them into the Command box and press Enter.")
                 },

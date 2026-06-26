@@ -29,9 +29,9 @@
 
         <TextBlock TextWrapping="Wrap" FontSize="13"
                    Margin="0,0,0,24"
-                   AutomationProperties.Name="This is a writing application designed for complete voice control. JAWS will read all controls. Dragon commands are active.">
+                   AutomationProperties.Name="This is a writing application designed for complete voice control. VoiceBook's built-in voice will guide you through every step.">
             This is a writing application designed for complete voice control.
-            JAWS will read all controls. Dragon commands are active.
+            VoiceBook's built-in voice will guide you through every step.
         </TextBlock>
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
@@ -49,8 +49,8 @@
                     Width="180"
                     IsCancel="True"
                     Command="{Binding SkipTutorialCommand}"
-                    AutomationProperties.Name="Skip tour and open the application"
-                    AutomationProperties.HelpText="Activating this button closes this dialog and opens VoiceBook Studio immediately. Dragon users say click skip tour and open the application.">
+                    AutomationProperties.Name="Skip tour"
+                    AutomationProperties.HelpText="Close this dialog and open VoiceBook Studio immediately. Dragon: say click Skip tour.">
                 Skip tour
             </Button>
 

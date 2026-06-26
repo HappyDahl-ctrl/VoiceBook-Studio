@@ -401,31 +401,43 @@ namespace VoiceBookStudio.ViewModels
 
         private static TutorialStep[] BuildSteps(bool jawsDetected, bool dragonDetected)
         {
-            // Dynamic sentences inserted into steps where AT state matters
+            // Dynamic sentences inserted into steps where AT state matters.
+            // Two scenarios:
+            //   A) No Dragon, No JAWS — app reads everything, app mic is on, speak commands directly.
+            //   B) Dragon + JAWS     — JAWS reads everything (no app voice), Dragon dictates,
+            //                          use ScrollLock or command bar for app commands.
+
             string micInfo = dragonDetected
-                ? "Dragon NaturallySpeaking is running. Dragon handles all your voice input. " +
-                  "The built-in VoiceBook microphone is disabled so they do not conflict."
-                : "The built-in VoiceBook microphone is on and listening for spoken commands.";
+                ? "Dragon NaturallySpeaking is running and owns the microphone. " +
+                  "The built-in VoiceBook microphone is off so Dragon and the app do not conflict."
+                : "The built-in VoiceBook microphone is on right now and listening for spoken commands. " +
+                  "You do not need to press anything to activate it.";
 
             string jawsInfo = jawsDetected
-                ? "JAWS screen reader is running alongside VoiceBook. " +
-                  "VoiceBook's built-in voice will still read all tutorial steps and system messages. " +
-                  "You can mute the app voice in Settings if you prefer JAWS only."
-                : "VoiceBook's built-in voice will read all instructions and confirmations throughout your session.";
+                ? "JAWS screen reader is running. JAWS reads all content in this application — " +
+                  "buttons, panels, list items, and all announcements. " +
+                  "VoiceBook's own voice is completely silent when JAWS is present so there is never any overlap."
+                : "VoiceBook's built-in voice is reading these words to you right now. " +
+                  "It will read every tutorial step, every status message, and every system announcement throughout your session. " +
+                  "No screen reader is required.";
 
             string voiceCommandRoute = dragonDetected
-                ? "When Dragon is running you have two ways to give VoiceBook commands.\n\n" +
-                  "SCROLL LOCK (fastest)\n" +
-                  "Press ScrollLock once — Dragon mutes, the app mic activates. " +
-                  "Say a command. Press ScrollLock again — Dragon's mic is restored. " +
-                  "ScrollLock works at any time, including right now during this tutorial.\n\n" +
-                  "COMMAND BAR\n" +
-                  "Dictate or type a command into the Command box at the bottom of this window and press Enter.\n\n" +
-                  "BUTTON CLICKS\n" +
-                  "Dragon can click any button by name. Say \"click [button name]\" — " +
-                  "no custom Dragon command files are required."
-                : "You can give VoiceBook commands by speaking them. The built-in microphone is " +
-                  "listening. You can also type commands into the Command box below and press Enter.";
+                ? "GIVING COMMANDS WITH DRAGON\n\n" +
+                  "Dragon owns the microphone for dictation. For VoiceBook app commands you have two options.\n\n" +
+                  "SCROLL LOCK — fastest option\n" +
+                  "Press ScrollLock once. Dragon mutes, the VoiceBook mic activates. " +
+                  "Say a command. Press ScrollLock again to restore Dragon. " +
+                  "The ScrollLock key works at any time, including right now during this tutorial.\n\n" +
+                  "COMMAND BAR — works without any setup\n" +
+                  "Type or dictate a command into the Command box at the bottom of this window and press Enter.\n\n" +
+                  "BUTTON CLICKS — requires Dragon MyCommands setup\n" +
+                  "WPF buttons require a one-time Dragon MyCommands configuration before voice-clicking works. " +
+                  "See the Dragon Commands Setup Guide in the Docs folder for instructions."
+                : "GIVING COMMANDS WITH YOUR VOICE\n\n" +
+                  "The microphone is already on. Just speak — no ScrollLock or setup needed.\n\n" +
+                  "Say any command out loud and the app will act on it immediately. " +
+                  "You can also type commands into the Command box below and press Enter.\n\n" +
+                  "Try saying: \"Panel two\", \"Add chapter\", or \"What can I say here\".";
 
             return new[]
             {
@@ -508,8 +520,12 @@ namespace VoiceBookStudio.ViewModels
                         "Lists all your book sections in order: front matter, body chapters, " +
                         "back matter. Navigate with the Up and Down arrow keys.\n\n" +
                         "PANEL 2 — Writing Editor (centre)\n" +
-                        "Where you write. Dragon NaturallySpeaking dictation works here the " +
-                        "same as in Microsoft Word — all correction and navigation commands work.\n\n" +
+                        "Where you write and dictate. " +
+                        (dragonDetected
+                            ? "Dragon NaturallySpeaking works here exactly as in Microsoft Word — " +
+                              "dictate, correct with \"Correct that\", and use all Dragon navigation commands."
+                            : "Speak into the microphone to dictate, or type normally. " +
+                              "The app mic stays on while you write.") + "\n\n" +
                         "PANEL 3 — AI Assistant (right side)\n" +
                         "Chat with Claude for feedback, browse 75 writing prompts, and save " +
                         "useful responses as cards.\n\n" +
@@ -596,16 +612,13 @@ namespace VoiceBookStudio.ViewModels
                         "  What can I say here — hear commands for the current panel\n\n" +
                         (dragonDetected
                             ? "GIVING COMMANDS WITH DRAGON\n" +
-                              "You do not need any custom Dragon command files. Dragon can click any " +
-                              "button in VoiceBook Studio by name — just say \"click [button name]\". " +
-                              "For example: \"click Next step\", \"click Skip Step\", \"click Confirm Audio\".\n\n" +
-                              "For voice commands that are not buttons:\n" +
-                              "  SCROLL LOCK (fastest) — Press ScrollLock once. Dragon mutes, the app " +
-                              "mic activates. Say a command. Press ScrollLock again to restore Dragon.\n" +
-                              "  COMMAND BAR — Type or dictate a command into the Command box below and press Enter.\n\n" +
-                              "ScrollLock works at any time — including during this tutorial."
-                            : "Say any of these commands out loud while the app microphone is on. " +
-                              "Or type them into the Command box and press Enter.")
+                              "Use ScrollLock (fastest) or the Command box to send app commands while Dragon owns the mic.\n" +
+                              "ScrollLock works right now — press it, say a command, press it again to restore Dragon.\n\n" +
+                              "To click buttons by voice with Dragon, set up Dragon MyCommands once. " +
+                              "See the Dragon Commands Setup Guide in the Docs folder."
+                            : "The app microphone is on. Just say any of these commands out loud — " +
+                              "no setup needed, no key to press first. " +
+                              "Or type them into the Command box below and press Enter.")
                 },
 
                 new TutorialStep

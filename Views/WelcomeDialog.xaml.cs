@@ -8,10 +8,21 @@ namespace VoiceBookStudio.Views
     {
         private static string BuildWelcomeMessage()
         {
+            bool jaws   = VoiceBookStudio.Utils.AppSettings.IsJawsDetected;
             bool dragon = VoiceBookStudio.Utils.AppSettings.IsDragonRunning;
-            string voiceNote = dragon
-                ? "Dragon NaturallySpeaking is running. Use ScrollLock to give voice commands, or type them in the Command box."
-                : "VoiceBook's built-in voice will guide you through every step.";
+
+            string voiceNote;
+            if (jaws)
+                voiceNote = "JAWS screen reader is running. JAWS will read everything in this application. " +
+                            "VoiceBook's own voice is silent — JAWS is your only audio source.";
+            else if (dragon)
+                voiceNote = "Dragon NaturallySpeaking is running. " +
+                            "VoiceBook's built-in voice will guide you through the tour. " +
+                            "Use ScrollLock to give app commands, or type them in the Command box.";
+            else
+                voiceNote = "VoiceBook's built-in voice is reading this message to you right now. " +
+                            "The microphone is on and listening. Speak commands directly at any time.";
+
             return
                 "Welcome to VoiceBook Studio. " +
                 "This is a writing application designed for complete voice control. " +

@@ -2330,6 +2330,7 @@ namespace VoiceBookStudio.ViewModels
         /// <summary>The panel number currently in focus (1=Chapters, 2=Editor, 3=AI).</summary>
         public int CurrentPanel => _currentPanel;
 
+        [RelayCommand]
         public void TrySelectNextChapter()
         {
             if (Chapters.Count == 0) { AnnounceNotAvailable("No chapters in this project."); return; }
@@ -2342,6 +2343,7 @@ namespace VoiceBookStudio.ViewModels
             _audio.Speak(msg);
         }
 
+        [RelayCommand]
         public void TrySelectPreviousChapter()
         {
             if (Chapters.Count == 0) { AnnounceNotAvailable("No chapters in this project."); return; }

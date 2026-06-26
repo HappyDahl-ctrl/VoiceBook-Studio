@@ -417,6 +417,23 @@
                                 AutomationProperties.Name="Move Chapter Down"
                                 AutomationProperties.HelpText="Move the selected chapter later in the book. Keyboard: Alt Down arrow. Dragon: say click Move Chapter Down."/>
                     </Grid>
+                    <Grid Margin="0,4,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" Command="{Binding TrySelectPreviousChapterCommand}"
+                                Content="&#x25C4; Previous Chapter" Padding="6,5"
+                                TabIndex="27"
+                                AutomationProperties.Name="Previous Chapter"
+                                AutomationProperties.HelpText="Select the previous chapter in the list. Dragon: say click Previous Chapter."/>
+                        <Button Grid.Column="2" Command="{Binding TrySelectNextChapterCommand}"
+                                Content="Next Chapter &#x25BA;" Padding="6,5"
+                                TabIndex="28"
+                                AutomationProperties.Name="Next Chapter"
+                                AutomationProperties.HelpText="Select the next chapter in the list. Dragon: say click Next Chapter."/>
+                    </Grid>
                 </StackPanel>
             </Grid>
 

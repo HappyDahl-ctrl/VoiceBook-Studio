@@ -62,8 +62,8 @@ namespace VoiceBookStudio.Services
 
         /// <summary>
         /// Called once at startup with the JAWS detection result.
-        /// When detected, each Speak call is preceded by a 500 ms pause to avoid
-        /// clashing with JAWS's current utterance.
+        /// When detected, all Speak methods become no-ops — JAWS handles all speech
+        /// via UIA live regions and UiaAnnouncer.RaiseNotificationEvent instead.
         /// </summary>
         public void SetJawsDetected(bool detected) => _jawsDetected = detected;
 
@@ -74,7 +74,7 @@ namespace VoiceBookStudio.Services
         /// </summary>
         public async Task PrimeAsync()
         {
-            if (_sapiPrimed || _azure.IsConfigured) return;
+            if (_jawsDetected || _sapiPrimed || _azure.IsConfigured) return;
             try
             {
                 var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -95,31 +95,26 @@ namespace VoiceBookStudio.Services
         /// </summary>
         public void Speak(string text)
         {
-            if (_disposed || string.IsNullOrWhiteSpace(text)) return;
+            if (_jawsDetected || _disposed || string.IsNullOrWhiteSpace(text)) return;
             text = SanitizeForSpeech(text);
-            if (_jawsDetected)
-                _ = Task.Run(async () => { await Task.Delay(500); ActuallySpeak(text); });
-            else
-                ActuallySpeak(text);
+            ActuallySpeak(text);
         }
 
         /// <summary>
         /// Speak with explicit priority control.
-        ///   Critical — interrupts any current speech immediately, then 500 ms pause if JAWS.
-        ///   Normal   — queues normally, 500 ms pause if JAWS.
+        ///   Critical — interrupts any current speech immediately.
+        ///   Normal   — queues normally.
         ///   Silent   — suppresses the announcement entirely.
+        /// No-op when JAWS is detected — JAWS handles all speech.
         /// </summary>
         public void AnnounceWithPriority(string message, AnnouncementPriority priority)
         {
             if (priority == AnnouncementPriority.Silent) return;
-            if (_disposed || string.IsNullOrWhiteSpace(message)) return;
+            if (_jawsDetected || _disposed || string.IsNullOrWhiteSpace(message)) return;
             message = SanitizeForSpeech(message);
             if (priority == AnnouncementPriority.Critical)
                 StopSpeaking();
-            if (_jawsDetected)
-                _ = Task.Run(async () => { await Task.Delay(500); ActuallySpeak(message); });
-            else
-                ActuallySpeak(message);
+            ActuallySpeak(message);
         }
 
         /// <summary>
@@ -165,10 +160,8 @@ namespace VoiceBookStudio.Services
         /// </summary>
         public async Task SpeakAndWaitAsync(string text)
         {
-            if (_disposed || string.IsNullOrWhiteSpace(text)) return;
+            if (_jawsDetected || _disposed || string.IsNullOrWhiteSpace(text)) return;
             text = SanitizeForSpeech(text);
-
-            if (_jawsDetected) await Task.Delay(500);
 
             if (_azure.IsConfigured)
             {

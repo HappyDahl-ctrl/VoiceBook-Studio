@@ -74,25 +74,32 @@ namespace VoiceBookStudio
             bool jSayRunning   = AssistiveTechnologyDetector.IsJSayRunning();
 
             // Step 2: Propagate detection results to shared settings.
-            // The app always speaks its own feedback regardless of what AT is running —
-            // JAWS/Dragon users can mute the app voice in Settings if they prefer silence.
+            // When JAWS is running it handles all speech; silence both TTS services
+            // so they never compete with JAWS on the audio device.
             AppSettings.IsJawsDetected  = jawsRunning;
             AppSettings.IsDragonRunning = dragonRunning;
             AppSettings.IsJSayDetected  = jSayRunning;
+            audio.SetJawsDetected(jawsRunning);
+            announce.SetJawsDetected(jawsRunning);
 
-            // Step 3: Wait for JAWS to finish its own startup speech before we speak.
-            // Without this pause JAWS and the app talk over each other at launch.
-            await Task.Delay(2000);
-
-            // Step 4: Single startup announcement — only mention AT that IS running,
-            // then confirm mic mode and ready state.
-            string atStatus  = AssistiveTechnologyDetector.BuildStartupStatusMessage(); // empty string if nothing detected
-            string micStatus = dragonRunning
-                ? "Microphone is controlled by Dragon. Use ScrollLock to toggle voice commands."
-                : "Built-in voice recognition is active. Say a command at any time.";
-            string readyMsg = $"{atStatus}{micStatus} VoiceBook Studio is ready.";
-            try { await announce.SpeakAndWaitAsync(readyMsg); }
-            catch { }
+            if (!jawsRunning)
+            {
+                // Step 3: Prime and speak startup announcement for non-JAWS users.
+                await Task.Delay(500);
+                string micStatus = dragonRunning
+                    ? "Microphone is controlled by Dragon. Use ScrollLock to toggle voice commands."
+                    : "Built-in voice recognition is active. Say a command at any time.";
+                string atStatus = AssistiveTechnologyDetector.BuildStartupStatusMessage();
+                string readyMsg = $"{atStatus}{micStatus} VoiceBook Studio is ready.";
+                try { await announce.SpeakAndWaitAsync(readyMsg); }
+                catch { }
+            }
+            else
+            {
+                // JAWS is running — wait for it to finish its own startup speech,
+                // then let it read the window title and focused control naturally.
+                await Task.Delay(2000);
+            }
 
             // Step 5: Show and activate the window, then move keyboard focus to the
             // chapter list. Activate() is required on Windows 11 because when JAWS or

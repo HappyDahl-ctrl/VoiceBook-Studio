@@ -149,6 +149,12 @@ namespace VoiceBookStudio.ViewModels
         /// </summary>
         public event Action? StepAdvanced;
 
+        /// <summary>
+        /// Fired by Repeat() so the dialog can re-announce the current step to JAWS
+        /// without a PropertyChanged event (the index does not change on Repeat).
+        /// </summary>
+        public event Action? RepeatRequested;
+
         // ----------------------------------------------------------------
         // Public navigation methods
         // ----------------------------------------------------------------
@@ -200,6 +206,7 @@ namespace VoiceBookStudio.ViewModels
         {
             _announcer.StopSpeaking();
             AnnounceCurrentStep();
+            RepeatRequested?.Invoke();
         }
 
         public void Exit()

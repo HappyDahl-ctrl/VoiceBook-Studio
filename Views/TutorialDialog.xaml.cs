@@ -1,5 +1,7 @@
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
+using VoiceBookStudio.Helpers;
 using VoiceBookStudio.ViewModels;
 
 namespace VoiceBookStudio.Views
@@ -31,6 +33,11 @@ namespace VoiceBookStudio.Views
             {
                 vm.Start();
 
+                // When JAWS is running, push every step change and repeat through UiaAnnouncer
+                // so JAWS reads the full title + content without any SAPI voice competing.
+                vm.PropertyChanged += OnVmPropertyChanged;
+                vm.RepeatRequested += () => AnnounceCurrentStepToJaws(vm);
+
                 // Re-show the tutorial dialog after the import flow completes.
                 // The import path hides us to avoid a WPF modal conflict with the
                 // file picker and chapter-confirmation dialogs; StepAdvanced fires
@@ -52,6 +59,28 @@ namespace VoiceBookStudio.Views
             // StepContent's Polite live region already announced the step to JAWS;
             // focusing StepContent here would cause a second JAWS reading of the same content.
             NextButton.Focus();
+        }
+
+        // ----------------------------------------------------------------
+        // JAWS step announcements
+        //
+        // JAWS reads the step when CurrentTitle changes (each Next/Previous/Repeat).
+        // UiaAnnouncer.RaiseNotificationEvent is more reliable than a live-region
+        // TextBlock because it fires immediately regardless of focus position.
+        // ----------------------------------------------------------------
+
+        private void OnVmPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != nameof(TutorialViewModel.CurrentTitle)) return;
+            if (DataContext is not TutorialViewModel vm) return;
+            AnnounceCurrentStepToJaws(vm);
+        }
+
+        private void AnnounceCurrentStepToJaws(TutorialViewModel vm)
+        {
+            if (!Utils.AppSettings.IsJawsDetected) return;
+            string announcement = $"{vm.CurrentTitle}. {vm.CurrentContent}";
+            UiaAnnouncer.Announce(this, announcement, isUrgent: true);
         }
 
         // ----------------------------------------------------------------

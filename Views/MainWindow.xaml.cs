@@ -2,6 +2,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using VoiceBookStudio.Helpers;
 using VoiceBookStudio.Services;
 using VoiceBookStudio.ViewModels;
 using WinForms = System.Windows.Forms;
@@ -91,6 +92,8 @@ namespace VoiceBookStudio.Views
             // the guided tour starts and ends.
             ViewModel.TourStarted += (_, svc) => _voiceRouter?.SetTourService(svc);
             ViewModel.TourEnded   += (_, _)   => _voiceRouter?.SetTourService(null);
+            ViewModel.AnnouncementRequested += (msg, urgent) =>
+                UiaAnnouncer.Announce(this, msg, urgent);
 
             // "Read paragraph" — extract the paragraph under the WinForms caret and speak it.
             ViewModel.ReadParagraphAtCursorRequested += (_, _) =>

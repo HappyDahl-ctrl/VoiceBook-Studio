@@ -1,7 +1,19 @@
 # VoiceBook Studio — Full Codebase Audit
 
 **Scope:** Full repository at `/home/user/VoiceBook-Studio`, C# 12 / .NET 8 WPF app (~11,400 lines of C#, ~2,250 lines of XAML).
-**Method:** Manual review of manuals + git history, plus three independent deep-read passes over the entire ViewModels/Services/Views tree, cross-checked against each other. Every finding below cites `file:line`. No code was changed — this is a read-only report.
+**Method:** Manual review of manuals + git history, plus three independent deep-read passes over the entire ViewModels/Services/Views tree, cross-checked against each other. Every finding below cites `file:line`. No code was changed at the time this report was first written — it was a read-only audit.
+
+## Update — Tier 1 JAWS/repetition fixes applied
+
+Following this audit, the Tier 1 (accessibility-breaking) findings involving repetitive or competing audio were fixed:
+
+- **§3.0 `LiveAnnounce` infinite recursion** — fixed. The non-JAWS fallback now calls `_audio.Speak(msg)` (`ViewModels/MainViewModel.cs`) instead of calling itself, so the app no longer crashes with a `StackOverflowException` on the first system event in any Dragon-only/JSay-only/no-AT session.
+- **§3.6 `SpeakGoodbye` audio leak** — fixed. `SystemAnnouncementService.SpeakSync` now checks `_jawsDetected` like every other method on the class, so the app no longer speaks "Goodbye" over JAWS on close (`Services/SystemAnnouncementService.cs`). This now matches what the User Manual already documented ("plays only when JAWS is not running").
+- **§3.6 Azure "Test Voice" audio leak** — fixed. `AzureTtsDialog.xaml.cs`'s `TestButton_Click` now skips audible Azure test playback when JAWS is detected, confirming success via the (Polite live-region) status label instead of competing spoken audio.
+- **§3.7 No throttling in `SystemAnnouncementService`** — fixed. `Speak()` now calls `StopSpeaking()` before starting new speech, mirroring `AudioFeedbackService`'s cancel-and-replace policy, so rapid events can no longer queue into a stale audio backlog that plays back after the app has moved on.
+- **§3.5 Inconsistent JAWS coverage for system events** — fixed. ~20 call sites that previously announced state changes only through `SystemAnnouncementService.Speak` (silent under JAWS beyond a Polite status-bar update) — chapter added/renamed/deleted, project opened/created/saved, import results, export success, application status, and others — were switched to the same `LiveAnnounce` path already used correctly by sibling events (chapter moved, AI feedback, export failure), so JAWS now gets a `RaiseNotificationEvent` announcement consistently across the whole event set, and non-JAWS users continue to hear the same messages via `AudioFeedbackService` (which itself already cancels-and-replaces, so no new backlog risk).
+
+Everything else in this report (architecture, dead code, manual-vs-code accuracy, remaining accessibility items like the chapter list's missing live region and the three voice-command gaps) is unchanged and still open for review.
 
 ## 0. Which documents this audit treats as authoritative
 

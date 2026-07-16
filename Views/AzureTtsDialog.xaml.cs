@@ -77,10 +77,20 @@ namespace VoiceBookStudio.Views
 
             if (tester.IsConfigured)
             {
-                await tester.SpeakAndWaitAsync(
-                    $"Hello! This is {voice.Replace("en-US-", "").Replace("Neural", "")} speaking. " +
-                    "VoiceBook Studio is ready to help you write your book.");
-                StatusLabel.Text = "Test complete. Save to keep this voice.";
+                if (AppSettings.IsJawsDetected)
+                {
+                    // JAWS is the sole audio source while running — skip audible
+                    // playback to avoid talking over it. The status text below is
+                    // itself a Polite live region, so JAWS still confirms the result.
+                    StatusLabel.Text = "Azure voice connected. Playback skipped while JAWS is running.";
+                }
+                else
+                {
+                    await tester.SpeakAndWaitAsync(
+                        $"Hello! This is {voice.Replace("en-US-", "").Replace("Neural", "")} speaking. " +
+                        "VoiceBook Studio is ready to help you write your book.");
+                    StatusLabel.Text = "Test complete. Save to keep this voice.";
+                }
             }
             else
             {

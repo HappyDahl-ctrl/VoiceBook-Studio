@@ -527,7 +527,7 @@ namespace VoiceBookStudio.ViewModels
                             : "Speak into the microphone to dictate, or type normally. " +
                               "The app mic stays on while you write.") + "\n\n" +
                         "PANEL 3 — AI Assistant (right side)\n" +
-                        "Chat with Claude for feedback, browse 75 writing prompts, and save " +
+                        "Chat with Claude for feedback, browse 76 writing prompts, and save " +
                         "useful responses as cards.\n\n" +
                         "Switch panels by pressing Ctrl+1, Ctrl+2, or Ctrl+3. Or say Panel 1, Panel 2, or Panel 3."
                 },

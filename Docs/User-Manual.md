@@ -203,7 +203,7 @@ Say "save as" or press **Ctrl+Shift+S**. Choose a new file name or location.
 
 ### Import a Word Document
 
-Say "import document" or press **Ctrl+I**. Choose a `.docx` file. The app reads the document, detects chapter breaks automatically using Claude (if an API key is set) or built-in pattern detection, shows you the results for confirmation, and creates all chapters. You will hear the chapter count when import is complete.
+Say "import document" or press **Ctrl+I**. Choose a `.docx` file. The app first tries built-in pattern detection (heading styles, chapter breaks) and, only if that finds fewer than two chapters and an API key is set, asks Claude to detect the chapter breaks instead. Either way, it shows you the results for confirmation and creates all chapters. You will hear the chapter count when import is complete.
 
 ---
 
@@ -257,7 +257,7 @@ Select a chapter in Panel 1, then say any of these:
 
 ### Whole Book Analysis
 
-Select "Whole Book" in Panel 1, then say "book analysis" or "analyse book." Claude receives the entire manuscript and gives feedback on arc, character consistency, continuity, and book-wide strengths and weaknesses.
+Say "book analysis" or "analyse book" from anywhere — you don't need to select "Whole Book" first. Claude always receives the entire manuscript for this command and gives feedback on arc, character consistency, continuity, and book-wide strengths and weaknesses.
 
 ### Chat
 
@@ -306,7 +306,7 @@ When you save a Claude response, it becomes a card. Cards let you keep useful re
 | Open response cards | Switch to the Cards tab |
 | What cards do I have | Announce card categories |
 | Insert card one | Insert card 1 into the chapter (one through twenty) |
-| Delete card one | Delete card 1 (one through five) |
+| Delete card one | Delete card 1 (one through twenty) |
 
 ---
 
@@ -350,7 +350,7 @@ Say "set project folder" to choose where new projects are saved. Leave blank to 
 
 ### Configure Voice (Azure TTS)
 
-Click the voice button in the toolbar to set up Azure Neural TTS for a more natural reading voice. Azure is optional — the app uses the best available Windows voice by default.
+Say "configure voice" or choose Settings → Configure Voice from the menu to set up Azure Neural TTS for a more natural reading voice. Azure is optional — the app uses the best available Windows voice by default.
 
 ---
 
@@ -402,7 +402,7 @@ When Dragon is running, it owns the microphone and the app's built-in voice reco
 
 Press **ScrollLock** once. Dragon's microphone is muted and the app's built-in recogniser activates. Say any command from the voice command list. Press **ScrollLock** again to return the microphone to Dragon.
 
-- The ScrollLock LED on most keyboards lights when the app mic is on, giving you a physical indicator
+- On most keyboards, pressing ScrollLock also lights the ScrollLock LED as a Windows side-effect of the key itself — a handy physical indicator, though the app doesn't control the light directly
 - Works from anywhere in the app — chapter list, editor, any panel, inside the tutorial
 - No Dragon setup required
 
@@ -473,6 +473,7 @@ Create Dragon MyCommands that map spoken phrases to keyboard shortcuts or comman
 | Change type | Change section type |
 | Next chapter | Select the next chapter |
 | Previous chapter | Select the previous chapter |
+| Open chapter / Show chapter / Select chapter | Focus the chapter list and hear all chapter names — then say "click [chapter name]" to open one |
 
 ### Reading Aloud
 
@@ -494,6 +495,7 @@ Create Dragon MyCommands that map spoken phrases to keyboard shortcuts or comman
 | Structure | Structure analysis |
 | Book analysis / Whole book / Analyse book | Full manuscript analysis |
 | Send / Send message / Ask Claude | Send chat input |
+| Ask assistant [your question] | Send a question straight to Claude in one phrase |
 | Read response | Read Claude's response aloud |
 | Insert at cursor | Insert response at cursor position |
 | Insert at start | Insert at chapter beginning |
@@ -518,7 +520,8 @@ Create Dragon MyCommands that map spoken phrases to keyboard shortcuts or comman
 | Open response cards | Open Cards tab |
 | What cards do I have | Hear card categories |
 | Insert card one (through twenty) | Insert a card |
-| Delete card one (through five) | Delete a card |
+| Delete card one (through twenty) | Delete a card |
+| Show [category] cards | Filter the card list to a category, e.g. "show fiction cards" |
 
 ### Feedback Library
 

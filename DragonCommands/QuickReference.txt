@@ -1,6 +1,15 @@
 VoiceBook Studio Voice Command Quick Reference
 ================================================
 
+*** SUPERSEDED - DO NOT FOLLOW THIS DOCUMENT ***
+This card uses a different phrase vocabulary than the app actually
+implements (e.g. "voice off"/"voice on" instead of "toggle voice", "close
+application" instead of "close voicebook", compact IDs like "prompt A1"
+instead of "use prompt a one", "next step"/"end tour" instead of "next"/
+"exit tutorial"). For the current, accurate voice command list see
+Docs/User-Manual.md, Section 15 "Voice Command Reference". Kept here for
+historical reference only.
+
 This card lists every voice command and what it does. All commands are spoken
 while VoiceBook Studio is the active application. JAWS will confirm each action.
 

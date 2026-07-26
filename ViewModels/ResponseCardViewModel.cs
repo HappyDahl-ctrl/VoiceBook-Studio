@@ -14,7 +14,6 @@ namespace VoiceBookStudio.ViewModels
     public class ResponseCardViewModel : INotifyPropertyChanged
     {
         private readonly ResponseCardService       _service;
-        private readonly SystemAnnouncementService _announcer;
 
         private List<ResponseCard> _allCards = new();
 
@@ -75,14 +74,20 @@ namespace VoiceBookStudio.ViewModels
 
         public event EventHandler<ResponseCard>? InsertCardRequested;
 
+        /// <summary>
+        /// Raised for spoken feedback the ViewModel wants announced. MainViewModel
+        /// forwards this to LiveAnnounce so JAWS and non-JAWS users both hear it
+        /// through the app's single announcement path (avoids double-speech).
+        /// </summary>
+        public event Action<string>? AnnouncementRequested;
+
         // ----------------------------------------------------------------
         // Constructor
         // ----------------------------------------------------------------
 
-        public ResponseCardViewModel(ResponseCardService service, SystemAnnouncementService announcer)
+        public ResponseCardViewModel(ResponseCardService service)
         {
             _service  = service;
-            _announcer = announcer;
 
             InsertCardCommand = new RelayCommand(InsertCard, () => _selectedCard != null);
             DeleteCardCommand = new RelayCommand(DeleteCard, () => _selectedCard != null);
@@ -102,7 +107,7 @@ namespace VoiceBookStudio.ViewModels
             RebuildCategories();
             ApplyFilter();
             SaveCards();
-            _announcer.Speak($"Card saved: {card.Title}");
+            AnnouncementRequested?.Invoke($"Card saved: {card.Title}");
         }
 
         public void InsertCardByNumber(int oneBased)
@@ -110,7 +115,7 @@ namespace VoiceBookStudio.ViewModels
             int idx = oneBased - 1;
             if (idx < 0 || idx >= Cards.Count)
             {
-                _announcer.Speak($"No card number {oneBased}.");
+                AnnouncementRequested?.Invoke($"No card number {oneBased}.");
                 return;
             }
             SelectedCard = Cards[idx];
@@ -131,7 +136,7 @@ namespace VoiceBookStudio.ViewModels
 
             if (catKey == null)
             {
-                _announcer.Speak($"No card category {letter}.");
+                AnnouncementRequested?.Invoke($"No card category {letter}.");
                 return;
             }
 
@@ -143,7 +148,7 @@ namespace VoiceBookStudio.ViewModels
             int idx = num - 1;
             if (idx < 0 || idx >= cards.Count)
             {
-                _announcer.Speak($"No card {id}.");
+                AnnouncementRequested?.Invoke($"No card {id}.");
                 return;
             }
 
@@ -156,7 +161,7 @@ namespace VoiceBookStudio.ViewModels
             int idx = oneBased - 1;
             if (idx < 0 || idx >= Cards.Count)
             {
-                _announcer.Speak($"No card number {oneBased}.");
+                AnnouncementRequested?.Invoke($"No card number {oneBased}.");
                 return;
             }
             SelectedCard = Cards[idx];
@@ -168,7 +173,7 @@ namespace VoiceBookStudio.ViewModels
             string? match = Categories.FirstOrDefault(c =>
                 string.Equals(c, category, StringComparison.OrdinalIgnoreCase));
             SelectedCategory = match ?? "All";
-            _announcer.Speak($"Showing {SelectedCategory} cards.");
+            AnnouncementRequested?.Invoke($"Showing {SelectedCategory} cards.");
         }
 
         // ----------------------------------------------------------------
@@ -290,7 +295,7 @@ namespace VoiceBookStudio.ViewModels
             RebuildCategories();
             ApplyFilter();
             SaveCards();
-            _announcer.Speak($"Card deleted: {title}");
+            AnnouncementRequested?.Invoke($"Card deleted: {title}");
         }
 
         private void SaveCards() => _service.Save(_allCards);

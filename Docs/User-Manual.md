@@ -532,6 +532,7 @@ Create Dragon MyCommands that map spoken phrases to keyboard shortcuts or comman
 | Read my structure feedback | Read saved structure entries |
 | Read my comprehensive feedback | Read comprehensive entries |
 | Resume reading | Continue reading where you left off |
+| Delete feedback entry | Delete the entry currently selected in the Feedback tab |
 
 ### Settings and Help
 
@@ -541,7 +542,9 @@ Create Dragon MyCommands that map spoken phrases to keyboard shortcuts or comman
 | Open settings | Open settings dialog |
 | Set project folder | Choose default save folder |
 | Toggle voice | Toggle app TTS on or off (not relevant when JAWS is running) |
+| Configure voice | Open the Configure Voice (Azure TTS) dialog |
 | Start tutorial | Open the 17-step guided tutorial |
+| Open welcome | Reopen the Welcome dialog (Start Guided Tour / Skip Tour) |
 
 ### App
 

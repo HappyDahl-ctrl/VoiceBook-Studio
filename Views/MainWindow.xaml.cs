@@ -9,7 +9,7 @@ using WinForms = System.Windows.Forms;
 
 namespace VoiceBookStudio.Views
 {
-    public partial class MainWindow : Window, Services.ITutorialPresenter
+    public partial class MainWindow : Window
     {
         // ----------------------------------------------------------------
         // Dragon-compatible editor (WinForms RichTextBox via WindowsFormsHost)
@@ -88,10 +88,6 @@ namespace VoiceBookStudio.Views
                 ChatInputBox.Focus();
             };
 
-            // Register / deregister TutorialService with the voice router when
-            // the guided tour starts and ends.
-            ViewModel.TourStarted += (_, svc) => _voiceRouter?.SetTourService(svc);
-            ViewModel.TourEnded   += (_, _)   => _voiceRouter?.SetTourService(null);
             ViewModel.AnnouncementRequested += (msg, urgent) =>
                 UiaAnnouncer.Announce(this, msg, urgent);
 
@@ -472,26 +468,6 @@ namespace VoiceBookStudio.Views
         }
 
         private void ExitMenuItem_Click(object sender, RoutedEventArgs e) => Close();
-
-        // ----------------------------------------------------------------
-        // ITutorialPresenter — implemented explicitly to keep the interface
-        // contract off the public surface of MainWindow.
-        // ----------------------------------------------------------------
-
-        System.Windows.UIElement Services.ITutorialPresenter.ChapterListElement => ChaptersPanel;
-        System.Windows.UIElement Services.ITutorialPresenter.EditorElement      => EditorPanel;
-        System.Windows.UIElement Services.ITutorialPresenter.AssistantElement   => AiPanel;
-
-        void Services.ITutorialPresenter.FocusChapterList() => ChapterListBox?.Focus();
-        void Services.ITutorialPresenter.FocusEditor()      => _editorRtb?.Focus();
-        void Services.ITutorialPresenter.FocusAssistant()   => ChatInputBox?.Focus();
-
-        void Services.ITutorialPresenter.NotifyTourComplete()
-        {
-            // ViewModel clears the tour reference and fires TourEnded, which causes
-            // Window_Loaded's TourEnded handler to deregister the tour from the router.
-            ViewModel.OnTourComplete();
-        }
 
         private void ShowShortcuts_Click(object sender, RoutedEventArgs e)
         {

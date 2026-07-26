@@ -11,21 +11,9 @@ namespace VoiceBookStudio.Services
     {
         private readonly MainViewModel _vm;
 
-        // Set by MainViewModel when the five-step guided tour starts; cleared when it ends.
-        private TutorialService? _tourService;
-
         public VoiceCommandRouter(MainViewModel vm)
         {
             _vm = vm ?? throw new ArgumentNullException(nameof(vm));
-        }
-
-        /// <summary>
-        /// Registers the active guided tour so that tour-specific commands are routed to it.
-        /// Pass null to deregister (commands fall through to the normal handlers).
-        /// </summary>
-        public void SetTourService(TutorialService? service)
-        {
-            _tourService = service;
         }
 
         /// <summary>
@@ -40,30 +28,6 @@ namespace VoiceBookStudio.Services
             if (string.IsNullOrWhiteSpace(rawCommand)) return false;
 
             string cmd = rawCommand.Trim().ToLowerInvariant();
-
-            // ----------------------------------------------------------------
-            // Guided-tour commands — active only while TutorialService is running.
-            // These intercept "next" and "repeat" so they go to TourService rather
-            // than the 17-step TutorialViewModel when the quick tour is in progress.
-            // ----------------------------------------------------------------
-            if (_tourService?.IsActive == true)
-            {
-                if (cmd is "next step" or "next")
-                {
-                    _tourService.AdvanceStep();
-                    return true;
-                }
-                if (cmd is "repeat step" or "repeat")
-                {
-                    _tourService.RepeatStep();
-                    return true;
-                }
-                if (cmd is "end tour" or "exit tour" or "stop tour" or "cancel tour")
-                {
-                    _tourService.EndTour();
-                    return true;
-                }
-            }
 
             // ----------------------------------------------------------------
             // Panel navigation — "Panel N" or "Go to panel N"
@@ -220,8 +184,6 @@ namespace VoiceBookStudio.Services
                 return true;
             }
 
-            // Specific "open …" commands — must precede the generic "open <project name>"
-            // handler so these are not routed to TryOpenProjectByName.
             if (cmd == "open settings")
             {
                 _vm.TryOpenSettings();
@@ -231,14 +193,6 @@ namespace VoiceBookStudio.Services
             if (cmd is "open feedback" or "open feedback library")
             {
                 _vm.TryOpenFeedbackLibrary();
-                return true;
-            }
-
-            if (cmd.StartsWith("open "))
-            {
-                // Generic: 'Open <project name>'
-                string name = cmd["open ".Length..].Trim();
-                _vm.TryOpenProjectByName(name);
                 return true;
             }
 

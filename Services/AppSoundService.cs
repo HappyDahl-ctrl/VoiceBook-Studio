@@ -46,7 +46,6 @@ namespace VoiceBookStudio.Services
 
         // Generic
         Error,               // soft error tone
-        Success,             // two-note positive
     }
 
     /// <summary>
@@ -225,11 +224,6 @@ namespace VoiceBookStudio.Services
             AppSound.Error =>
             [
                 T(180, 0.20, 0.28)
-            ],
-            AppSound.Success =>
-            [
-                T(659, 0.08),
-                T(880, 0.18)
             ],
 
             _ => [T(660, 0.08)]

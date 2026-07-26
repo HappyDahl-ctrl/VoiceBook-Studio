@@ -109,39 +109,6 @@ namespace VoiceBookStudio.Services
         }
 
         /// <summary>
-        /// Returns an improved version of a passage together with reasoning.
-        /// </summary>
-        public async Task<AiSuggestion> SuggestImprovementAsync(string passage, string issue)
-        {
-            string prompt = $"""
-                You are a professional fiction editor. A writer wants to improve the following passage.
-
-                PASSAGE:
-                {passage}
-
-                IDENTIFIED ISSUE: {issue}
-
-                Provide:
-                IMPROVED VERSION:
-                [rewrite that fixes the issue]
-
-                CHANGES MADE:
-                [brief bullet list of what changed and why]
-                """;
-
-            string raw      = await CallClaudeAsync(prompt);
-            string improved = ExtractSection(raw, "IMPROVED VERSION:", "CHANGES MADE:");
-            string changes  = ExtractSection(raw, "CHANGES MADE:", null);
-
-            return new AiSuggestion
-            {
-                OriginalText  = passage,
-                SuggestedText = improved.Trim(),
-                Reasoning     = changes.Trim()
-            };
-        }
-
-        /// <summary>
         /// Sends a free-form chat message.
         /// chapterContext: full text of the chapter currently open in the editor.
         /// bookContext: formatted summary of all other sections so Claude understands
@@ -414,21 +381,6 @@ namespace VoiceBookStudio.Services
             };
         }
 
-        // ----------------------------------------------------------------
-        // Helpers
-        // ----------------------------------------------------------------
-
-        private static string ExtractSection(string text, string startHeader, string? endHeader)
-        {
-            int start = text.IndexOf(startHeader, StringComparison.OrdinalIgnoreCase);
-            if (start < 0) return text;
-            start += startHeader.Length;
-
-            if (endHeader == null) return text[start..];
-
-            int end = text.IndexOf(endHeader, start, StringComparison.OrdinalIgnoreCase);
-            return end < 0 ? text[start..] : text[start..end];
-        }
     }
 
     // ----------------------------------------------------------------
@@ -440,15 +392,6 @@ namespace VoiceBookStudio.Services
         public string Assessment   { get; set; } = string.Empty;
         public string RawText      { get; set; } = string.Empty;
         public string FeedbackType { get; set; } = string.Empty;
-        public bool   IsStub       { get; set; }
-    }
-
-    public class AiSuggestion
-    {
-        public string OriginalText  { get; set; } = string.Empty;
-        public string SuggestedText { get; set; } = string.Empty;
-        public string Reasoning     { get; set; } = string.Empty;
-        public bool   IsStub        { get; set; }
     }
 
     /// <summary>

@@ -147,7 +147,7 @@ namespace VoiceBookStudio.ViewModels
             if (string.IsNullOrWhiteSpace(msg)) return;
             AnnouncementRequested?.Invoke(msg, urgent);
             if (!Utils.AppSettings.IsJawsDetected)
-                LiveAnnounce(msg);
+                _audio.Speak(msg);
         }
 
         // When SelectedChapter is set directly (e.g. voice-nav), mirror it into
@@ -538,7 +538,7 @@ namespace VoiceBookStudio.ViewModels
             SwitchAiTabRequested?.Invoke(this, "Prompts");
             string msg = $"Prompt {id} added: {dlg.PromptTitle}";
             SetStatus(msg);
-            _systemAnnouncements.Speak(msg);
+            LiveAnnounce(msg);
         }
 
         // ----------------------------------------------------------------
@@ -692,14 +692,14 @@ namespace VoiceBookStudio.ViewModels
 
                 _sounds.Play(AppSound.ProjectOpened);
                 SetStatus($"Opened: {Project.Title}");
-                _systemAnnouncements.Speak($"Project opened: {Project.Title}");
+                LiveAnnounce($"Project opened: {Project.Title}");
                 _tutorialActionSink?.Invoke("projectopened");
             }
             catch (Exception ex)
             {
                 _sounds.Play(AppSound.Error);
                 ShowError("Open Failed", ex.Message);
-                _systemAnnouncements.Speak("Could not open project. " + ex.Message);
+                LiveAnnounce("Could not open project. " + ex.Message);
             }
             finally
             {
@@ -771,7 +771,7 @@ namespace VoiceBookStudio.ViewModels
                         _currentPanel = 1;
                         string skipMsg = "VoiceBook Studio ready. Panel 1 focused.";
                         SetStatus(skipMsg);
-                        _systemAnnouncements.Speak(skipMsg);
+                        LiveAnnounce(skipMsg);
                     }
                 }
                 catch (Exception ex)
@@ -817,7 +817,7 @@ namespace VoiceBookStudio.ViewModels
                         "Tutorial complete. VoiceBook Studio is ready. " +
                         "Panel 1 focused. Say What can I say here at any time for available commands.";
                     SetStatus(doneMsg);
-                    _systemAnnouncements.Speak(doneMsg);
+                    LiveAnnounce(doneMsg);
                 });
             };
 
@@ -908,21 +908,21 @@ namespace VoiceBookStudio.ViewModels
                     _currentFilePath = System.IO.Path.Combine(projectDir, safeName + ProjectService.FileExtension);
                     await SaveToPathAsync(_currentFilePath);
                     SetStatus($"New project created: {title}. Project folder is ready.");
-                    _systemAnnouncements.Speak($"Project {title} created. Project folder is ready.");
+                    LiveAnnounce($"Project {title} created. Project folder is ready.");
                 }
                 catch (Exception ex)
                 {
                     _currentFilePath = null;
                     _sounds.Play(AppSound.ProjectOpened);
                     SetStatus($"New project created: {title}. Auto-save failed — {ex.Message}");
-                    _systemAnnouncements.Speak($"Project created: {title}. Could not auto-save.");
+                    LiveAnnounce($"Project created: {title}. Could not auto-save.");
                 }
             }
             else
             {
                 _sounds.Play(AppSound.ProjectOpened);
                 SetStatus($"New project created: {title}");
-                _systemAnnouncements.Speak($"Project opened: {title}");
+                LiveAnnounce($"Project opened: {title}");
             }
 
             _tutorialActionSink?.Invoke("projectopened");
@@ -961,12 +961,12 @@ namespace VoiceBookStudio.ViewModels
                 _sounds.Play(AppSound.ProjectOpened);
                 string msg = $"Opened: {Project.Title}. {Project.Chapters.Count} chapters.";
                 SetStatus(msg);
-                _systemAnnouncements.Speak($"Project opened: {Project.Title}");
+                LiveAnnounce($"Project opened: {Project.Title}");
             }
             catch (Exception ex)
             {
                 ShowError("Open Failed", ex.Message);
-                _systemAnnouncements.Speak("Could not open project. " + ex.Message);
+                LiveAnnounce("Could not open project. " + ex.Message);
             }
             finally
             {
@@ -1022,7 +1022,7 @@ namespace VoiceBookStudio.ViewModels
 
                 _sounds.Play(AppSound.ProjectSaved);
                 SetStatus($"Saved: {System.IO.Path.GetFileName(path)}");
-                _systemAnnouncements.Speak("Project saved");
+                LiveAnnounce("Project saved");
 
                 // Notify the tutorial that a save occurred (only user-initiated saves
                 // reach here; auto-save calls _projectService.SaveAsync directly).
@@ -1072,7 +1072,7 @@ namespace VoiceBookStudio.ViewModels
             {
                 IsBusy = true;
                 SetStatus("Reading document…");
-                _systemAnnouncements.Speak("Importing document...");
+                LiveAnnounce("Importing document.");
 
                 var docxService = new DocxImportService();
                 // Extract paragraphs with style metadata for better detection
@@ -1085,7 +1085,7 @@ namespace VoiceBookStudio.ViewModels
                 MessageBox.Show(
                         "The document appears to be empty or could not be read.",
                         "Import Document", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    _systemAnnouncements.Speak("The document is empty.");
+                    LiveAnnounce("The document is empty.");
                     return;
                 }
 
@@ -1226,7 +1226,7 @@ namespace VoiceBookStudio.ViewModels
                 ? "1 chapter imported from document."
                 : $"{created} of {total} chapters imported from document.";
             SetStatus(msg);
-            _systemAnnouncements.Speak(msg);
+            LiveAnnounce(msg);
             if (created > 0) MarkDirty();
         }
 
@@ -1242,7 +1242,7 @@ namespace VoiceBookStudio.ViewModels
 
             string msg = $"Document imported as chapter: {title}";
             SetStatus(msg);
-            _systemAnnouncements.Speak(msg);
+            LiveAnnounce(msg);
             MarkDirty();
         }
 
@@ -1302,7 +1302,7 @@ namespace VoiceBookStudio.ViewModels
 
             string label = SectionTypeHelper.GetDisplayName(sectionType);
             SetStatus($"Added: {title}  [{label}]");
-            _systemAnnouncements.Speak($"Added {label}: {title}");
+            LiveAnnounce($"Added {label}: {title}");
             _tutorialActionSink?.Invoke("addchapter");
         }
 
@@ -1328,7 +1328,7 @@ namespace VoiceBookStudio.ViewModels
 
             string label = SectionTypeHelper.GetDisplayName(dlg.SelectedType.Value);
             SetStatus($"{SelectedChapter.Title} → [{label}]");
-            _systemAnnouncements.Speak($"Section type changed to {label}");
+            LiveAnnounce($"Section type changed to {label}");
         }
 
         [RelayCommand(CanExecute = nameof(HasProject))]
@@ -1366,7 +1366,7 @@ namespace VoiceBookStudio.ViewModels
                 _sounds.Play(AppSound.ExportSuccess);
                 string msg = $"Exported: {System.IO.Path.GetFileName(dlg.FileName)}";
                 SetStatus(msg);
-                _systemAnnouncements.Speak(msg);
+                LiveAnnounce(msg);
             }
             catch (Exception ex)
             {
@@ -1415,7 +1415,7 @@ namespace VoiceBookStudio.ViewModels
                 _sounds.Play(AppSound.ExportSuccess);
                 string msg = $"Exported: {System.IO.Path.GetFileName(dlg.FileName)}";
                 SetStatus(msg);
-                _systemAnnouncements.Speak(msg);
+                LiveAnnounce(msg);
             }
             catch (Exception ex)
             {
@@ -1445,7 +1445,7 @@ namespace VoiceBookStudio.ViewModels
 
             _sounds.Play(AppSound.ChapterAdded);
             SetStatus($"Renamed: {old} → {title}");
-            _systemAnnouncements.Speak("Chapter renamed");
+            LiveAnnounce("Chapter renamed");
         }
 
         [RelayCommand(CanExecute = nameof(CanModifyChapter))]
@@ -1470,7 +1470,7 @@ namespace VoiceBookStudio.ViewModels
 
             _sounds.Play(AppSound.ChapterDeleted);
             SetStatus($"Chapter deleted: {title}");
-            _systemAnnouncements.Speak("Chapter deleted");
+            LiveAnnounce("Chapter deleted");
         }
 
         [RelayCommand(CanExecute = nameof(CanModifyChapter))]
@@ -1852,7 +1852,7 @@ namespace VoiceBookStudio.ViewModels
 
             string msg = $"Card inserted: {card.Title}";
             SetStatus(msg);
-            _systemAnnouncements.Speak(msg);
+            LiveAnnounce(msg);
         }
 
         // ----------------------------------------------------------------
@@ -1909,7 +1909,7 @@ namespace VoiceBookStudio.ViewModels
                 VoiceBookStudio.Utils.AppSettings.SaveJsonSettings();
                 string msg = $"Default project folder set to: {dlg.SelectedPath}";
                 SetStatus(msg);
-                _systemAnnouncements.Speak(msg);
+                LiveAnnounce(msg);
             }
         }
 
@@ -2392,14 +2392,14 @@ namespace VoiceBookStudio.ViewModels
             {
                 string empty = "No chapters in this project. Say new chapter to create one.";
                 SetStatus(empty);
-                _systemAnnouncements.Speak(empty);
+                LiveAnnounce(empty);
                 return;
             }
             string list = string.Join(", ", Chapters.Select(c => c.Title));
             string msg  = $"Chapter list is focused. Available chapters: {list}. " +
                           "Say click followed by the chapter name to open it.";
             SetStatus(msg);
-            _systemAnnouncements.Speak(msg);
+            LiveAnnounce(msg);
         }
 
         // ----------------------------------------------------------------
@@ -2411,7 +2411,7 @@ namespace VoiceBookStudio.ViewModels
             if (!HasSelectedChapter) { AnnounceNotAvailable("No chapter is open."); return; }
             string msg = $"Current chapter: {SelectedChapter!.Title}. {SelectedChapter.WordCount} words.";
             SetStatus(msg);
-            _systemAnnouncements.Speak(msg);
+            LiveAnnounce(msg);
         }
 
         /// <summary>
@@ -2434,7 +2434,7 @@ namespace VoiceBookStudio.ViewModels
             string content = SelectedChapter!.Content ?? string.Empty;
             if (string.IsNullOrWhiteSpace(content))
             {
-                _systemAnnouncements.Speak("The current chapter has no content.");
+                LiveAnnounce("The current chapter has no content.");
                 return;
             }
 
@@ -2533,7 +2533,7 @@ namespace VoiceBookStudio.ViewModels
 
             string status = string.Join(" ", parts);
             SetStatus(status);
-            _systemAnnouncements.Speak(status);
+            LiveAnnounce(status);
         }
 
         /// <summary>

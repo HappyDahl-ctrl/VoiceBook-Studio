@@ -27,11 +27,8 @@ namespace VoiceBookStudio.Services
 
     /// <summary>
     /// Speaks system-level announcements (startup greeting, project events, tutorial steps).
-    /// Always speaks regardless of JAWS — these are critical notifications that must be
-    /// delivered even if JAWS is busy or the user has JAWS set to a quiet mode.
-    ///
-    /// When JAWS is detected, each announcement is preceded by a 500 ms pause so
-    /// this service does not clash with whatever JAWS is currently reading.
+    /// No-ops entirely once JAWS is detected (see <see cref="SetJawsDetected"/>) — JAWS is
+    /// the sole audio source in that mode, so nothing here may compete with it.
     ///
     /// Uses Azure Neural TTS when configured, otherwise SAPI with best available voice.
     /// </summary>
@@ -90,13 +87,16 @@ namespace VoiceBookStudio.Services
         public void ReconfigureAzure() => _azure.Configure();
 
         /// <summary>
-        /// Speak an announcement. Always fires even when JAWS is running.
-        /// Adds a 500 ms pre-speech pause when JAWS is detected.
+        /// Speak an announcement. No-op when JAWS is detected.
+        /// Interrupts any in-progress or queued speech first so a burst of rapid
+        /// events (e.g. several chapters confirmed in quick succession) cannot pile
+        /// up into a stale backlog that plays back after the app has moved on.
         /// </summary>
         public void Speak(string text)
         {
             if (_jawsDetected || _disposed || string.IsNullOrWhiteSpace(text)) return;
             text = SanitizeForSpeech(text);
+            StopSpeaking();
             ActuallySpeak(text);
         }
 
@@ -121,11 +121,13 @@ namespace VoiceBookStudio.Services
         /// Speaks text synchronously (blocks until the utterance is complete).
         /// Used only for the app-closing goodbye so the message finishes before
         /// the process exits. Do not use this for anything else — it blocks the
-        /// UI thread. No JAWS delay is applied since we are already shutting down.
+        /// UI thread. No-op when JAWS is detected, same as every other method on
+        /// this class — JAWS is closing its own reading of the window and must
+        /// not be talked over during shutdown either.
         /// </summary>
         public void SpeakSync(string text)
         {
-            if (_disposed || string.IsNullOrWhiteSpace(text)) return;
+            if (_jawsDetected || _disposed || string.IsNullOrWhiteSpace(text)) return;
             text = SanitizeForSpeech(text);
             if (_azure.IsConfigured)
             {

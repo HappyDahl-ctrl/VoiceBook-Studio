@@ -539,6 +539,20 @@ namespace VoiceBookStudio.Services
                 return true;
             }
 
+            if (cmd is "configure voice" or "configure voice settings" or "voice settings"
+                     or "azure voice" or "azure tts" or "set up azure voice" or "change voice")
+            {
+                _vm.TryConfigureVoice();
+                return true;
+            }
+
+            if (cmd is "open welcome" or "show welcome" or "welcome dialog"
+                     or "open welcome dialog" or "show welcome dialog" or "welcome screen")
+            {
+                _vm.TryShowWelcome();
+                return true;
+            }
+
             if (cmd is "set project folder" or "change project folder"
                      or "default project folder" or "set default folder"
                      or "change default folder" or "project folder")
@@ -625,6 +639,13 @@ namespace VoiceBookStudio.Services
                      or "show feedback library" or "my feedback library")
             {
                 _vm.TryOpenFeedbackLibrary();
+                return true;
+            }
+
+            if (cmd is "delete feedback entry" or "delete this feedback entry"
+                     or "delete feedback" or "remove feedback entry" or "delete this feedback")
+            {
+                _vm.TryDeleteFeedbackEntry();
                 return true;
             }
 

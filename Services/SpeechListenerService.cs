@@ -168,6 +168,14 @@ namespace VoiceBookStudio.Services
                 // Settings dialog
                 "open settings", "settings", "show settings", "open preferences", "preferences",
 
+                // Configure voice (Azure TTS) dialog
+                "configure voice", "configure voice settings", "voice settings",
+                "azure voice", "azure tts", "set up azure voice", "change voice",
+
+                // Welcome / tutorial dialog
+                "open welcome", "show welcome", "welcome dialog",
+                "open welcome dialog", "show welcome dialog", "welcome screen",
+
                 // Project folder
                 "set project folder", "change project folder", "default project folder",
                 "set default folder", "change default folder", "project folder",
@@ -194,6 +202,10 @@ namespace VoiceBookStudio.Services
                 // Feedback library
                 "open feedback library", "open feedback", "feedback library",
                 "show feedback library", "my feedback library",
+
+                // Feedback entry deletion
+                "delete feedback entry", "delete this feedback entry",
+                "delete feedback", "remove feedback entry", "delete this feedback",
 
                 // Feedback library listing
                 "feedback categories", "what feedback do i have",

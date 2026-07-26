@@ -21,6 +21,16 @@ Everything else in this report (architecture, dead code, manual-vs-code accuracy
 - **§1.3 Prompt category K unreachable via built-in mic** — fixed. `Services/SpeechListenerService.cs`'s prompt-letter grammars (`promptLetters`, `usePromptLetters`) only listed `a`–`j`; added `k` to both so "read prompt k" and "use prompt k one" now work through the app's own microphone, not just Dragon MyCommands.
 - **§1.10 `.vbk`/`.vbsproj` mismatch** — not patched; on inspection, `ProjectService.GetRecentProjects`'s only caller is `ProjectSelectionViewModel`, which is itself dead code (never instantiated — see §2.8). It's being deleted along with that dead code rather than fixed in place.
 
+## Update — Accessibility completeness pass (chapter list + 3 voice-command gaps + 3 more JAWS gaps found along the way)
+
+- **§3.2 Chapter list missing live region** — `Views/MainWindow.xaml`'s `ChapterListBox` now has `AutomationProperties.LiveSetting="Polite"`, matching the pattern already used on the status bar and AI response box. Note for anyone touching this next: WPF only auto-raises `LiveRegionChanged` for text-bearing controls like `TextBlock`; a `ListBox` needs the app to raise it manually to get real behavioral benefit from this attribute. The substantive fix — JAWS actually being told about chapter add/rename/delete/move/select — was already delivered by routing all of those events through `LiveAnnounce`/`RaiseNotificationEvent` in the Tier 1 pass above; this XAML attribute brings the markup in line with the manual's literal claim but isn't load-bearing on its own.
+- **§3.8 Three voice-command-only gaps** — all three now have voice/Dragon-command-bar phrases dispatched through `VoiceCommandRouter.cs` and reachable via the app's own built-in microphone grammar (`SpeechListenerService.cs`):
+  - "configure voice" / "voice settings" / "azure voice" / etc. → opens the Configure Voice (Azure TTS) dialog.
+  - "open welcome" / "show welcome" / "welcome dialog" / etc. → reopens the Welcome dialog.
+  - "delete feedback entry" / "delete this feedback" / etc. → deletes the currently-selected Feedback Library entry (announces "not available" if nothing is selected).
+  - Documented all three in `Docs/User-Manual.md`'s Voice Command Reference.
+- **Bonus finding, fixed in the same pass**: while wiring the feedback-entry command, found the exact same "silent under JAWS beyond a Polite status update" bug from §3.5 also present in three sibling ViewModels — `PromptLibraryViewModel`, `ResponseCardViewModel`, and `FeedbackLibraryViewModel` all spoke exclusively through a direct `SystemAnnouncementService.Speak(...)` call (10 call sites total: prompt not found/loaded, card saved/not-found/deleted/category-shown, feedback entry deleted). Since these ViewModels don't have access to `MainViewModel.LiveAnnounce`, each now raises a new `AnnouncementRequested` event instead of calling `SystemAnnouncementService` directly (its `SystemAnnouncementService` dependency was removed from all three), and `MainViewModel`'s constructor forwards each event to `LiveAnnounce`. Same swap-not-add discipline as the Tier 1 fix, so no new double-announcements were introduced.
+
 ## 0. Which documents this audit treats as authoritative
 
 The repo contains **six** documents that all claim to be setup/user instructions, and they actively disagree with each other:

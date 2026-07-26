@@ -91,8 +91,7 @@ namespace VoiceBookStudio.ViewModels
 
             // Prompt library — loads from Data/PromptLibrary/prompts.json
             PromptLibVM = new PromptLibraryViewModel(
-                new VoiceBookStudio.Services.PromptLibraryService(),
-                _systemAnnouncements);
+                new VoiceBookStudio.Services.PromptLibraryService());
 
             // When the user picks a prompt, load it into the chat box and switch to Chat.
             PromptLibVM.PromptSelected += (_, content) =>
@@ -101,20 +100,22 @@ namespace VoiceBookStudio.ViewModels
                 SwitchAiTabRequested?.Invoke(this, "Chat");
                 SetStatus("Prompt loaded. Edit it if needed, then click Send.");
             };
+            PromptLibVM.AnnouncementRequested += msg => LiveAnnounce(msg);
 
             // Response cards
             _responseCardService = new VoiceBookStudio.Services.ResponseCardService();
-            ResponseCardVM = new ResponseCardViewModel(_responseCardService, _systemAnnouncements);
+            ResponseCardVM = new ResponseCardViewModel(_responseCardService);
 
             // When a card is inserted, route it to the editor via InsertTextRequested.
             ResponseCardVM.InsertCardRequested += (_, card) => InsertCardAtCursor(card);
+            ResponseCardVM.AnnouncementRequested += msg => LiveAnnounce(msg);
 
             // Feedback library — auto-receives entries from RunAiFeedbackAsync.
             _feedbackLibraryService = new VoiceBookStudio.Services.FeedbackLibraryService();
             FeedbackLibVM = new FeedbackLibraryViewModel(
                 _feedbackLibraryService,
-                _systemAnnouncements,
                 items => StartLibraryReading(items));
+            FeedbackLibVM.AnnouncementRequested += msg => LiveAnnounce(msg);
 
             // Auto-save every 30 seconds — only fires when there are unsaved changes.
             _autoSaveTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(30) };
@@ -1916,6 +1917,24 @@ namespace VoiceBookStudio.ViewModels
         public void TryOpenSettings()
         {
             OpenSettingsCommand.Execute(null);
+        }
+
+        public void TryConfigureVoice()
+        {
+            ConfigureVoiceCommand.Execute(null);
+        }
+
+        public void TryShowWelcome()
+        {
+            ShowWelcomeCommand.Execute(null);
+        }
+
+        public void TryDeleteFeedbackEntry()
+        {
+            if (FeedbackLibVM.DeleteEntryCommand.CanExecute(null))
+                FeedbackLibVM.DeleteEntryCommand.Execute(null);
+            else
+                AnnounceNotAvailable("No feedback entry is selected.");
         }
 
         [RelayCommand]

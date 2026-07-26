@@ -357,6 +357,7 @@
                          Margin="4"
                          TabIndex="20"
                          AutomationProperties.Name="Chapter list"
+                         AutomationProperties.LiveSetting="Polite"
                          AutomationProperties.HelpText="Select a chapter to edit. Use arrow keys to navigate. Front matter, body chapters, and back matter are shown in order.">
                     <ListBox.ItemTemplate>
                         <DataTemplate>

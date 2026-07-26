@@ -31,7 +31,6 @@ namespace VoiceBookStudio.ViewModels
     public class PromptLibraryViewModel : INotifyPropertyChanged
     {
         private readonly PromptLibraryService      _service;
-        private readonly SystemAnnouncementService _announcer;
 
         private List<PromptItemViewModel> _allPrompts = new();
 
@@ -84,14 +83,20 @@ namespace VoiceBookStudio.ViewModels
 
         public event EventHandler<string>? PromptSelected;
 
+        /// <summary>
+        /// Raised for spoken feedback the ViewModel wants announced. MainViewModel
+        /// forwards this to LiveAnnounce so JAWS and non-JAWS users both hear it
+        /// through the app's single announcement path (avoids double-speech).
+        /// </summary>
+        public event Action<string>? AnnouncementRequested;
+
         // ----------------------------------------------------------------
         // Constructor
         // ----------------------------------------------------------------
 
-        public PromptLibraryViewModel(PromptLibraryService service, SystemAnnouncementService announcer)
+        public PromptLibraryViewModel(PromptLibraryService service)
         {
             _service   = service;
-            _announcer = announcer;
 
             UsePromptCommand = new RelayCommand(UsePrompt, () => _selectedPrompt != null);
 
@@ -153,7 +158,7 @@ namespace VoiceBookStudio.ViewModels
 
             if (match == null)
             {
-                _announcer.Speak($"Prompt {id} not found.");
+                AnnouncementRequested?.Invoke($"Prompt {id} not found.");
                 return;
             }
 
@@ -235,7 +240,7 @@ namespace VoiceBookStudio.ViewModels
             if (_selectedPrompt == null) return;
             AppSettings.LastUsedPromptId = _selectedPrompt.Number;
             PromptSelected?.Invoke(this, _selectedPrompt.Model.Content);
-            _announcer.Speak($"Prompt loaded: {_selectedPrompt.Title}");
+            AnnouncementRequested?.Invoke($"Prompt loaded: {_selectedPrompt.Title}");
         }
 
         // ----------------------------------------------------------------

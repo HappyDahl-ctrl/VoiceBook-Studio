@@ -37,7 +37,6 @@ namespace VoiceBookStudio.ViewModels
     public class FeedbackLibraryViewModel : INotifyPropertyChanged
     {
         private readonly FeedbackLibraryService      _service;
-        private readonly SystemAnnouncementService   _announcer;
         private readonly Action<IEnumerable<string>> _startReading;
 
         private List<FeedbackEntry> _allEntries = new();
@@ -96,16 +95,21 @@ namespace VoiceBookStudio.ViewModels
         public ICommand ReadEntryCommand   { get; }
         public ICommand DeleteEntryCommand { get; }
 
+        /// <summary>
+        /// Raised for spoken feedback the ViewModel wants announced. MainViewModel
+        /// forwards this to LiveAnnounce so JAWS and non-JAWS users both hear it
+        /// through the app's single announcement path (avoids double-speech).
+        /// </summary>
+        public event Action<string>? AnnouncementRequested;
+
         // ----------------------------------------------------------------
         // Constructor
         // ----------------------------------------------------------------
 
         public FeedbackLibraryViewModel(FeedbackLibraryService      service,
-                                        SystemAnnouncementService   announcer,
                                         Action<IEnumerable<string>> startReading)
         {
             _service      = service;
-            _announcer    = announcer;
             _startReading = startReading;
 
             ReadEntryCommand   = new RelayCommand(ReadEntry,   () => _selectedEntry != null);
@@ -236,7 +240,7 @@ namespace VoiceBookStudio.ViewModels
             _service.Save(_allEntries);
             RebuildCategories();
             ApplyFilter();
-            _announcer.Speak("Feedback entry deleted.");
+            AnnouncementRequested?.Invoke("Feedback entry deleted.");
         }
 
         private static IEnumerable<string> SplitIntoChunks(string text, int maxChars)

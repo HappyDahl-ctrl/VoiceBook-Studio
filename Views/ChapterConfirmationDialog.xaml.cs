@@ -1,5 +1,4 @@
 using System.Windows;
-using VoiceBookStudio.ViewModels;
 using VoiceBookStudio.Services;
 using System.Collections.Generic;
 using VoiceBookStudio.Models;
@@ -18,8 +17,6 @@ namespace VoiceBookStudio.Views
             AnnouncementRegion.Text = "Confirm detected chapters dialog is open.";
             ChaptersList.Focus();
         }
-
-        public ChapterConfirmationViewModel ViewModel => (ChapterConfirmationViewModel)DataContext;
 
         public bool AcceptedAll { get; private set; }
         public bool ImportSingle { get; private set; }

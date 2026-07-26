@@ -160,11 +160,6 @@ namespace VoiceBookStudio.ViewModels
                 SelectedDisplayItem = value;
         }
 
-        public void SetProjectSelection(ProjectSelectionViewModel proj)
-        {
-            _projectSelection = proj;
-        }
-
         // ----------------------------------------------------------------
         // Observable properties
         // ----------------------------------------------------------------
@@ -348,19 +343,7 @@ namespace VoiceBookStudio.ViewModels
         /// </summary>
         public event EventHandler? FocusAndClearChatInputRequested;
 
-        /// <summary>
-        /// Raised when the five-step guided tour starts.
-        /// The payload is the new TutorialService so MainWindow can register it
-        /// with the voice router.
-        /// </summary>
-        public event EventHandler<TutorialService>? TourStarted;
-
-        /// <summary>Raised when the guided tour ends so the voice router can be unhooked.</summary>
-        public event EventHandler? TourEnded;
-
         private TutorialViewModel? _tutorial;
-        private TutorialService?  _guidedTour;
-        private ProjectSelectionViewModel? _projectSelection;
 
         // Receives app action codes and forwards them to the active tutorial.
         // Null when no tutorial is running, so the invocation is always safe.
@@ -637,21 +620,6 @@ namespace VoiceBookStudio.ViewModels
             ResponseCardVM.DeleteCardByNumber(oneBased);
         }
 
-        // Project selection actions invoked by voice router
-        public void TryOpenProjectByName(string name)
-        {
-            // If a project selection VM is active, attempt to match by name
-            var vm = _projectSelection;
-            if (vm == null) return;
-
-            var match = vm.RecentProjects.FirstOrDefault(p => string.Equals(p.Name, name, StringComparison.InvariantCultureIgnoreCase));
-            if (match != null)
-            {
-                // Load project
-                TryLoadProject(match.Path);
-            }
-        }
-
         public void TryCreateNewProject()
         {
             // Signal tutorial that the user chose the new-project path (step 13 detection).
@@ -823,35 +791,6 @@ namespace VoiceBookStudio.ViewModels
             };
 
             dlg.Show();
-        }
-
-        /// <summary>
-        /// Starts the five-step guided tour on the main window.
-        /// Non-blocking: the tour runs asynchronously after this method returns.
-        /// </summary>
-        public void StartGuidedTour(ITutorialPresenter presenter)
-        {
-            var firstLaunch = new FirstLaunchService();
-            _guidedTour = new TutorialService(
-                _systemAnnouncements,
-                presenter,
-                firstLaunch,
-                VoiceBookStudio.Utils.AppSettings.IsJawsDetected);
-
-            TourStarted?.Invoke(this, _guidedTour);
-            _guidedTour.StartTour();
-        }
-
-        /// <summary>
-        /// Called by MainWindow's ITutorialPresenter.NotifyTourComplete when the tour ends.
-        /// Clears the tour reference and returns focus to panel 1.
-        /// </summary>
-        public void OnTourComplete()
-        {
-            _guidedTour = null;
-            TourEnded?.Invoke(this, System.EventArgs.Empty);
-            FocusPanelRequested?.Invoke(this, 1);
-            _currentPanel = 1;
         }
 
         /// <summary>

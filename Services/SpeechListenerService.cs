@@ -268,8 +268,8 @@ namespace VoiceBookStudio.Services
             showCards.Append(categories);
             showCards.Append("cards");
 
-            // "read prompt a" / "read prompts a" — prompt categories A-J (10 categories)
-            var promptLetters = new Choices("a", "b", "c", "d", "e", "f", "g", "h", "i", "j");
+            // "read prompt a" / "read prompts a" — prompt categories A-K (K has only 1 prompt)
+            var promptLetters = new Choices("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k");
             var readPrompt = new GrammarBuilder("read prompt");
             readPrompt.Append(promptLetters);
             var readPrompts = new GrammarBuilder("read prompts");
@@ -287,9 +287,9 @@ namespace VoiceBookStudio.Services
             var readFeedbackLetter = new GrammarBuilder("read feedback");
             readFeedbackLetter.Append(feedbackLetters);
 
-            // "use prompt a one" … "use prompt j ten"
-            // Numbers are spoken words; VoiceCommandRouter.ResolveSpokenPromptId converts them to A1..J10.
-            var usePromptLetters  = new Choices("a", "b", "c", "d", "e", "f", "g", "h", "i", "j");
+            // "use prompt a one" … "use prompt k one"
+            // Numbers are spoken words; VoiceCommandRouter.ResolveSpokenPromptId converts them to A1..K1.
+            var usePromptLetters  = new Choices("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k");
             var usePromptNumbers  = new Choices(
                 "one", "two", "three", "four", "five",
                 "six", "seven", "eight", "nine", "ten");

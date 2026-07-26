@@ -15,6 +15,12 @@ Following this audit, the Tier 1 (accessibility-breaking) findings involving rep
 
 Everything else in this report (architecture, dead code, manual-vs-code accuracy, remaining accessibility items like the chapter list's missing live region and the three voice-command gaps) is unchanged and still open for review.
 
+## Update — Tier 2 fixes applied (security + voice-command gap)
+
+- **§2.4 API key stored in plaintext** — fixed. `Services/ApiKeyService.cs` now encrypts the key with DPAPI (`ProtectedData.Protect`/`Unprotect`, `DataProtectionScope.CurrentUser`) before writing it to the registry, and transparently decrypts on read. A pre-existing plaintext value from before this fix is still read correctly (falls back to the raw stored string if it isn't valid encrypted data) and gets re-saved encrypted the next time the user saves a key, so no one is locked out by the migration. Added the `System.Security.Cryptography.ProtectedData` package reference this required. The "stored securely" claim in `HelpDialog.xaml.cs` is now actually true.
+- **§1.3 Prompt category K unreachable via built-in mic** — fixed. `Services/SpeechListenerService.cs`'s prompt-letter grammars (`promptLetters`, `usePromptLetters`) only listed `a`–`j`; added `k` to both so "read prompt k" and "use prompt k one" now work through the app's own microphone, not just Dragon MyCommands.
+- **§1.10 `.vbk`/`.vbsproj` mismatch** — not patched; on inspection, `ProjectService.GetRecentProjects`'s only caller is `ProjectSelectionViewModel`, which is itself dead code (never instantiated — see §2.8). It's being deleted along with that dead code rather than fixed in place.
+
 ## 0. Which documents this audit treats as authoritative
 
 The repo contains **six** documents that all claim to be setup/user instructions, and they actively disagree with each other:

@@ -1,7 +1,7 @@
 namespace VoiceBookStudio.Models
 {
     /// <summary>
-    /// The 14 recognised section types for a book manuscript.
+    /// The 17 recognised section types for a book manuscript.
     /// Enum values encode natural document order:
     ///   0–99   = Front matter  (before the main text)
     ///   100–199 = Body          (numbered chapters / parts)

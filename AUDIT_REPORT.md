@@ -44,6 +44,21 @@ All of the following were re-verified as genuinely unreferenced (repo-wide grep,
 
 Net effect: 12 files touched, ~640 lines removed, 1 line added (across `AiFeedback`/`AppSoundService`/`VoiceCommandRouter`/`MainViewModel`/`MainWindow`/`ChapterConfirmationDialog` plus 6 fully-deleted files).
 
+## Update — Documentation accuracy pass
+
+- **§1.1 API key storage path** — fixed. `Docs/Installation-and-Configuration-Guide.md` now correctly says the key lives in the Windows Registry (`HKCU\SOFTWARE\VoiceBookStudio`), DPAPI-encrypted, not in `settings.json`.
+- **§1.2 Import chapter-detection precedence** — fixed. `Docs/User-Manual.md` now describes the actual order (pattern detection first, Claude only as a fallback when patterns find fewer than 2 breaks and a key is set), rather than implying Claude runs first.
+- **§1.4 Response Card capacity** — fixed. Both manuals' "Delete card one (through five)" claims were wrong (code allows 1–20 for delete, same as insert) — updated to "through twenty" in both `Docs/User-Manual.md` locations. Added a note to the Config Guide's Dragon MyCommands table (Section N) clarifying the table shows a starting set and both insert/delete accept any number 1–20.
+- **§1.5 ScrollLock LED overstatement** — fixed. `Docs/User-Manual.md` no longer implies the app drives the physical LED; it now correctly frames it as a Windows side-effect of the key itself.
+- **§1.6 Book analysis precondition** — fixed. `Docs/User-Manual.md` no longer implies you must select "Whole Book" first — the command always uses the full manuscript regardless of selection, matching the code.
+- **§1.11 Undocumented working commands** — added to `Docs/User-Manual.md`'s Voice Command Reference: "ask assistant [question]" (AI table), "open chapter / show chapter / select chapter" (Chapters table), "show [category] cards" (Response Cards table).
+- **Toolbar-button claim for Configure Voice** — fixed. It's a Settings-menu item ("Settings → Configure Voice..."), not a toolbar button as the manual claimed; also mentioned the new "configure voice" voice command from the accessibility-completeness pass.
+- **§1.9 Config Guide self-contradiction (201 vs 205)** — fixed both prose mentions to say 205, matching the guide's own totals table.
+- **Stale JAWS/dual-announcement section in the Config Guide** — while fixing the above, found Section 5 ("Configuring JAWS") still described the *pre-fix* behavior as intentional design: "critical announcements... still speak through a separate SAPI channel" and "some events are announced both by JAWS and by the app's system announcer... this is intentional." Both claims directly contradict the Tier 1 JAWS fixes already shipped (the goodbye message and all system events are now JAWS-silent, routed through UIA notifications only). Rewrote both passages to describe current, correct behavior.
+- **§1.12 `SectionType.cs` stale comment** — fixed "14 recognised section types" → "17" (verified against the enum's own 17 values and its `AllTypes` comment).
+- **Tutorial prompt count** — fixed `TutorialViewModel.cs`'s spoken tutorial narration from "76 writing prompts" typo'd as "75" to the verified actual count of 76.
+- **§0 doc sprawl** — added a `⚠ SUPERSEDED` banner to each of the six stale/conflicting legacy documents (`VoiceBook-Studio-User-Guide.md`, `Dragon-Commands-Setup-Guide.md`, `Installer/VoiceBook_Studio_Setup_Guide.txt`, `DragonCommands/QuickReference.txt`, `DragonCommands/HowToAddCommands.txt`), each pointing to the correct canonical doc and naming its specific inaccuracies, rather than deleting them outright (kept for historical reference). `DragonCommands/CommandConflictAudit.txt` got a lighter "stale, not kept in sync" note instead, since its command vocabulary mostly still matches — it just predates several recently-added commands.
+
 ## 0. Which documents this audit treats as authoritative
 
 The repo contains **six** documents that all claim to be setup/user instructions, and they actively disagree with each other:

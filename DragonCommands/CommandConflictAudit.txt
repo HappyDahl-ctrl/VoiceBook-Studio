@@ -2,6 +2,13 @@ COMMAND CONFLICT AUDIT
 VoiceBook Studio — Dragon Professional v16 MyCommands
 Generated: 2026-06-08
 
+*** STALE - NOT KEPT IN SYNC WITH THE APP ***
+Most phrases below still match the live command vocabulary, but this audit
+has not been re-run since 2026-06-08 and does not cover commands added
+since (e.g. "configure voice", "open welcome", "delete feedback entry").
+Cross-check against Services/VoiceCommandRouter.cs and Docs/User-Manual.md
+before relying on a specific conflict rating here.
+
 ════════════════════════════════════════════════════════════════════════════════
 METHODOLOGY
 ════════════════════════════════════════════════════════════════════════════════

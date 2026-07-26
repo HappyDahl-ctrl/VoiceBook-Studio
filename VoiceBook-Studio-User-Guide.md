@@ -1,5 +1,12 @@
 # VoiceBook Studio — User Guide
 
+> **⚠ Superseded — do not follow this document.** It predates and contradicts
+> the current, maintained manual and describes app behavior that no longer
+> matches the code (e.g. it claims startup/closing announcements "always
+> play, regardless of whether JAWS is running," which directly contradicts
+> the current JAWS-silence design). For accurate, up-to-date instructions,
+> see **`Docs/User-Manual.md`**. Kept here for historical reference only.
+
 **Version:** Current release (June 2026)
 **Designed for:** Dragon NaturallySpeaking · JAWS · JSay · Windows built-in voice recognition
 

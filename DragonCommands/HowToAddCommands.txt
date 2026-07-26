@@ -1,6 +1,14 @@
 VoiceBook Studio: How to Add Voice Commands in Dragon Professional v16
 ======================================================================
 
+*** SUPERSEDED - DO NOT FOLLOW THIS DOCUMENT ***
+This describes an "Advanced Scripting" / dot-DAT MyCommands setup, an
+entirely different Dragon integration approach than the app actually ships.
+The current setup uses simple Keystroke and Step-by-Step MyCommand types
+instead. For accurate, current setup instructions see
+Docs/Installation-and-Configuration-Guide.md, Section 7. Kept here for
+historical reference only.
+
 This file contains step-by-step instructions for creating every VoiceBook Studio
 voice command inside Dragon's Command Browser. Read each section carefully before
 starting. All steps are written for keyboard navigation with JAWS.

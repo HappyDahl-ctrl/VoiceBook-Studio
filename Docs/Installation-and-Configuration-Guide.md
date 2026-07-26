@@ -12,7 +12,7 @@ For a PC that already has Dragon NaturallySpeaking Professional, JAWS, and JSay 
 4. Getting Your Anthropic API Key
 5. Configuring JAWS
 6. Configuring Dragon — App Settings
-7. Configuring Dragon — MyCommands Setup (201 commands)
+7. Configuring Dragon — MyCommands Setup (205 commands)
 8. Configuring JSay
 9. Windows System Settings
 10. Verifying Everything Works
@@ -85,10 +85,7 @@ The AI features (feedback, chat, book analysis) require a free Anthropic account
 3. Paste the API key into the field and click Save
 4. You will hear "API key saved"
 
-The key is stored locally in:
-```
-C:\Users\[username]\AppData\Roaming\VoiceBookStudio\settings.json
-```
+The key is stored locally in the Windows Registry under `HKEY_CURRENT_USER\SOFTWARE\VoiceBookStudio`, encrypted at rest with Windows Data Protection (DPAPI) so it can only be read back by your own Windows account. It is not stored in `settings.json` — that file only holds your default project folder and first-launch state.
 
 It is never shared with anyone other than Anthropic when you use the AI features.
 
@@ -100,10 +97,10 @@ It is never shared with anyone other than Anthropic when you use the AI features
 
 **No JAWS configuration is required.** VoiceBook Studio detects JAWS at launch and adjusts automatically:
 
-- The app's general TTS is silenced — JAWS handles interface readback
-- Critical announcements (startup, project events, errors, goodbye) still speak through a separate SAPI channel with a 500 ms delay so they do not clash with JAWS
+- The app produces no SAPI voice of its own at all — JAWS is the sole audio source for the entire application, including the closing "Goodbye" message
+- Every dynamic event (chapter added/renamed/deleted/moved, project opened/saved, import/export results, AI feedback complete, errors, application status, and more) is announced through a UIA notification channel that JAWS reads directly — there is no competing app voice, so you will not hear anything spoken twice
 - All buttons, lists, input fields, menus, and tabs have UIA accessibility labels that JAWS reads correctly
-- Live regions on the status bar, editor title, and AI response box cause JAWS to announce changes automatically
+- The status bar and AI response box are additionally UIA live regions, so JAWS also picks up their text as it changes
 
 ### Recommended JAWS Settings
 
@@ -123,9 +120,9 @@ JAWS → Settings Center → Virtual Cursor → List Items → Verbosity → Low
 
 **Speech history:** JAWS Speech History (Insert+Space, then H) is useful for reviewing what the app announced if you missed it.
 
-### Note on Dual Announcements
+### If You Hear Double Speech
 
-Some events are announced both by JAWS (reading the control) and by the app's system announcer. This is intentional — it ensures critical events (project saved, import complete, AI responded) are never missed. If this becomes repetitive, say "toggle voice" in VoiceBook to silence the app's secondary voice and rely on JAWS alone.
+With JAWS running, the app should never speak over it — every event is routed through JAWS's own announcement channel instead of a separate app voice. If you ever do hear an event announced twice, that is unexpected; note what you were doing and report it rather than assuming it is by design. The "toggle voice" command still exists, but it controls the app's own text-to-speech voice for when JAWS is *not* running — it is not needed to work around double-speech while JAWS is active.
 
 ---
 
@@ -160,14 +157,14 @@ Dragon should accept dictation in the editor exactly as in Word. If dictation do
 When Dragon is running, VoiceBook's built-in voice recogniser is automatically disabled. Dragon owns the microphone. The startup announcement will say "Dragon detected — using Dragon for voice input."
 
 App voice commands are issued by:
-- Using Dragon MyCommands (the 201 commands you set up in Section 7)
+- Using Dragon MyCommands (the 205 commands you set up in Section 7)
 - Pressing Ctrl+Shift+Space to open the command bar, then dictating a command
 
 ---
 
 ## 7. Configuring Dragon — MyCommands Setup
 
-This is the main setup task. You will create 201 Dragon MyCommands that cover every VoiceBook Studio feature.
+This is the main setup task. You will create 205 Dragon MyCommands that cover every VoiceBook Studio feature.
 
 ### Before You Start
 
@@ -495,6 +492,8 @@ Format: say "use prompt [letter] [number]" — for example "use prompt A one."
 | Delete card three | delete card three |
 | Delete card four | delete card four |
 | Delete card five | delete card five |
+
+Both "insert card" and "delete card" accept any number one through twenty — this table shows a starting set. To go higher, create more MyCommands following the same pattern (e.g. "Insert card eleven" → step 3 text `insert card eleven`).
 
 ---
 

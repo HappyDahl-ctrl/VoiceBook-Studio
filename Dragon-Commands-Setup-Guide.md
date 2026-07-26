@@ -1,5 +1,13 @@
 # VoiceBook Studio — Dragon Professional MyCommands Setup Guide
 
+> **⚠ Superseded — do not follow this document.** It uses a different phrase
+> vocabulary than the app actually implements (e.g. "voice off"/"voice on"
+> instead of "toggle voice", "close application" instead of "close
+> voicebook", compact prompt IDs like "prompt A1" instead of "use prompt a
+> one"). For accurate, up-to-date Dragon MyCommands setup instructions, see
+> **`Docs/Installation-and-Configuration-Guide.md`**, Section 7. Kept here
+> for historical reference only.
+
 This guide tells you exactly how to create every Dragon command needed to run
 VoiceBook Studio entirely by voice. After completing it, you will be able to
 do everything — navigate panels, manage chapters, write, save, get AI feedback,

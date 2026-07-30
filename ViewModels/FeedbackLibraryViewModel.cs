@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
-using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using VoiceBookStudio.Models;
 using VoiceBookStudio.Services;
-using VoiceBookStudio.Utils;
 
 namespace VoiceBookStudio.ViewModels
 {
@@ -34,7 +32,7 @@ namespace VoiceBookStudio.ViewModels
         public FeedbackEntryViewModel(FeedbackEntry model) { Model = model; }
     }
 
-    public class FeedbackLibraryViewModel : INotifyPropertyChanged
+    public partial class FeedbackLibraryViewModel : ObservableObject
     {
         private readonly FeedbackLibraryService      _service;
         private readonly Action<IEnumerable<string>> _startReading;
@@ -52,48 +50,24 @@ namespace VoiceBookStudio.ViewModels
         // Selection
         // ----------------------------------------------------------------
 
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(HasSelectedEntry))]
+        [NotifyPropertyChangedFor(nameof(SelectedEntryPreview))]
+        [NotifyCanExecuteChangedFor(nameof(ReadEntryCommand))]
+        [NotifyCanExecuteChangedFor(nameof(DeleteEntryCommand))]
         private FeedbackEntryViewModel? _selectedEntry;
-        public FeedbackEntryViewModel? SelectedEntry
-        {
-            get => _selectedEntry;
-            set
-            {
-                if (_selectedEntry == value) return;
-                _selectedEntry = value;
-                Notify();
-                Notify(nameof(HasSelectedEntry));
-                Notify(nameof(SelectedEntryPreview));
-                ((RelayCommand)ReadEntryCommand).RaiseCanExecuteChanged();
-                ((RelayCommand)DeleteEntryCommand).RaiseCanExecuteChanged();
-            }
-        }
 
-        public bool   HasSelectedEntry    => _selectedEntry != null;
-        public string SelectedEntryPreview => _selectedEntry?.PreviewText ?? string.Empty;
+        public bool   HasSelectedEntry     => SelectedEntry != null;
+        public string SelectedEntryPreview => SelectedEntry?.PreviewText ?? string.Empty;
 
         // ----------------------------------------------------------------
         // Category filter
         // ----------------------------------------------------------------
 
+        [ObservableProperty]
         private string _selectedCategory = "All";
-        public string SelectedCategory
-        {
-            get => _selectedCategory;
-            set
-            {
-                if (_selectedCategory == value) return;
-                _selectedCategory = value;
-                Notify();
-                ApplyFilter();
-            }
-        }
 
-        // ----------------------------------------------------------------
-        // Commands
-        // ----------------------------------------------------------------
-
-        public ICommand ReadEntryCommand   { get; }
-        public ICommand DeleteEntryCommand { get; }
+        partial void OnSelectedCategoryChanged(string value) => ApplyFilter();
 
         /// <summary>
         /// Raised for spoken feedback the ViewModel wants announced. MainViewModel
@@ -111,9 +85,6 @@ namespace VoiceBookStudio.ViewModels
         {
             _service      = service;
             _startReading = startReading;
-
-            ReadEntryCommand   = new RelayCommand(ReadEntry,   () => _selectedEntry != null);
-            DeleteEntryCommand = new RelayCommand(DeleteEntry, () => _selectedEntry != null);
 
             LoadEntries();
         }
@@ -212,12 +183,12 @@ namespace VoiceBookStudio.ViewModels
 
         private void ApplyFilter()
         {
-            string? prevId = _selectedEntry?.Model.Id;
+            string? prevId = SelectedEntry?.Model.Id;
             Entries.Clear();
 
-            IEnumerable<FeedbackEntry> source = _selectedCategory == "All"
+            IEnumerable<FeedbackEntry> source = SelectedCategory == "All"
                 ? _allEntries
-                : _allEntries.Where(e => _selectedCategory.StartsWith(e.CategoryLetter));
+                : _allEntries.Where(e => SelectedCategory.StartsWith(e.CategoryLetter));
 
             foreach (var e in source.OrderBy(e => e.CategoryLetter).ThenBy(e => e.CreatedAt))
                 Entries.Add(new FeedbackEntryViewModel(e));
@@ -226,22 +197,26 @@ namespace VoiceBookStudio.ViewModels
                 : Entries.FirstOrDefault(vm => vm.Model.Id == prevId);
         }
 
+        [RelayCommand(CanExecute = nameof(CanModifyEntry))]
         private void ReadEntry()
         {
-            if (_selectedEntry == null) return;
-            _startReading(GetEntryText(_selectedEntry.Model.Id));
+            if (SelectedEntry == null) return;
+            _startReading(GetEntryText(SelectedEntry.Model.Id));
         }
 
+        [RelayCommand(CanExecute = nameof(CanModifyEntry))]
         private void DeleteEntry()
         {
-            if (_selectedEntry == null) return;
-            string id = _selectedEntry.Model.Id;
+            if (SelectedEntry == null) return;
+            string id = SelectedEntry.Model.Id;
             _allEntries.RemoveAll(e => e.Id == id);
             _service.Save(_allEntries);
             RebuildCategories();
             ApplyFilter();
             AnnouncementRequested?.Invoke("Feedback entry deleted.");
         }
+
+        private bool CanModifyEntry() => SelectedEntry != null;
 
         private static IEnumerable<string> SplitIntoChunks(string text, int maxChars)
         {
@@ -269,14 +244,5 @@ namespace VoiceBookStudio.ViewModels
 
             return chunks.Count > 0 ? chunks : new[] { text };
         }
-
-        // ----------------------------------------------------------------
-        // INotifyPropertyChanged
-        // ----------------------------------------------------------------
-
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        private void Notify([CallerMemberName] string? name = null) =>
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }

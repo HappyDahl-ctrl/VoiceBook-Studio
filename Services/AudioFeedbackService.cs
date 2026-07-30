@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Speech.Synthesis;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -118,7 +117,7 @@ namespace VoiceBookStudio.Services
         {
             if (AppSettings.IsJawsDetected) return;
             if (!IsEnabled || _disposed || string.IsNullOrWhiteSpace(text)) return;
-            text = SanitizeForSpeech(text);
+            text = SpeechTextUtils.SanitizeForSpeech(text);
             if (_azure.IsConfigured)
             {
                 _azure.StopSpeaking();
@@ -218,7 +217,7 @@ namespace VoiceBookStudio.Services
         {
             if (AppSettings.IsJawsDetected) return;
             if (!IsEnabled || _disposed || string.IsNullOrWhiteSpace(text)) return;
-            text = SanitizeForSpeech(text);
+            text = SpeechTextUtils.SanitizeForSpeech(text);
             if (_azure.IsConfigured)
             {
                 await _azure.SpeakAndWaitAsync(text);
@@ -239,7 +238,7 @@ namespace VoiceBookStudio.Services
             if (AppSettings.IsJawsDetected) return;
             if (!IsEnabled || _disposed || string.IsNullOrWhiteSpace(text)) return;
 
-            string[] sentences = SplitIntoSentences(SanitizeForSpeech(text));
+            string[] sentences = SplitIntoSentences(SpeechTextUtils.SanitizeForSpeech(text));
 
             foreach (string sentence in sentences)
             {
@@ -280,7 +279,7 @@ namespace VoiceBookStudio.Services
                 _sapi.SetOutputToDefaultAudioDevice();
                 _sapi.Rate   = _rate;
                 _sapi.Volume = _volume;
-                SelectBestSapiVoice();
+                SpeechTextUtils.SelectBestSapiVoice(_sapi);
                 return _sapi;
             }
         }
@@ -341,67 +340,6 @@ namespace VoiceBookStudio.Services
 
         private static string[] SplitIntoSentences(string text) =>
             Regex.Split(text.Trim(), @"(?<=[.!?])\s+");
-
-        /// <summary>
-        /// Strips characters that cause SAPI to mispronounce or stutter:
-        /// markdown formatting, parentheses, square brackets. Replaces slashes
-        /// with "or" and em-dashes with commas for natural pacing.
-        /// </summary>
-        private static string SanitizeForSpeech(string input)
-        {
-            if (string.IsNullOrEmpty(input)) return input;
-
-            // Dashes used as separators → comma (natural SAPI pause)
-            input = Regex.Replace(input, @"\s+[-–—]+\s+", ", ");
-
-            // Forward slash → "or"
-            input = input.Replace("/", " or ");
-
-            // Strip markdown formatting characters
-            input = input.Replace("#", "")
-                         .Replace("*", "")
-                         .Replace("_", "")
-                         .Replace("`", "")
-                         .Replace("~", "");
-
-            // Strip parentheses and square brackets — keep inner content
-            input = Regex.Replace(input, @"[\(\)\[\]]", "");
-
-            // Collapse runs of whitespace created by stripping
-            input = Regex.Replace(input, @"  +", " ");
-
-            return input.Trim();
-        }
-
-        /// <summary>
-        /// Picks the best available SAPI voice in priority order:
-        ///   1. Any voice containing "Natural" (Windows 11 neural offline voices)
-        ///   2. Aria, Jenny, Guy, Davis  (neural voices by name)
-        ///   3. Zira (cleaner female standard voice)
-        ///   4. Default voice
-        /// </summary>
-        private void SelectBestSapiVoice()
-        {
-            if (_sapi == null) return;
-            var voices = _sapi.GetInstalledVoices()
-                              .Where(v => v.Enabled)
-                              .Select(v => v.VoiceInfo.Name)
-                              .ToList();
-            if (voices.Count == 0) return;
-
-            string[] priorities =
-            [
-                "Natural", "Aria", "Jenny", "Guy", "Davis", "Jane",
-                "Jason", "Zira", "Hazel", "Susan"
-            ];
-
-            foreach (var pref in priorities)
-            {
-                var match = voices.FirstOrDefault(
-                    v => v.Contains(pref, StringComparison.OrdinalIgnoreCase));
-                if (match != null) { _sapi.SelectVoice(match); return; }
-            }
-        }
 
         public void Dispose()
         {

@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using VoiceBookStudio.Models;
 using VoiceBookStudio.Services;
 using VoiceBookStudio.Utils;
@@ -28,9 +27,9 @@ namespace VoiceBookStudio.ViewModels
         public PromptItemViewModel(PromptItem model) { Model = model; }
     }
 
-    public class PromptLibraryViewModel : INotifyPropertyChanged
+    public partial class PromptLibraryViewModel : ObservableObject
     {
-        private readonly PromptLibraryService      _service;
+        private readonly PromptLibraryService _service;
 
         private List<PromptItemViewModel> _allPrompts = new();
 
@@ -45,41 +44,22 @@ namespace VoiceBookStudio.ViewModels
         // Selection
         // ----------------------------------------------------------------
 
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(UsePromptCommand))]
         private PromptItemViewModel? _selectedPrompt;
-        public PromptItemViewModel? SelectedPrompt
-        {
-            get => _selectedPrompt;
-            set
-            {
-                if (_selectedPrompt == value) return;
-                _selectedPrompt = value;
-                Notify();
-                ((RelayCommand)UsePromptCommand).RaiseCanExecuteChanged();
-            }
-        }
 
         // ----------------------------------------------------------------
         // Category filter
         // ----------------------------------------------------------------
 
+        [ObservableProperty]
         private string _selectedCategory = "All";
-        public string SelectedCategory
-        {
-            get => _selectedCategory;
-            set
-            {
-                if (_selectedCategory == value) return;
-                _selectedCategory = value;
-                Notify();
-                ApplyFilter();
-            }
-        }
+
+        partial void OnSelectedCategoryChanged(string value) => ApplyFilter();
 
         // ----------------------------------------------------------------
-        // Commands + event
+        // Events
         // ----------------------------------------------------------------
-
-        public ICommand UsePromptCommand { get; }
 
         public event EventHandler<string>? PromptSelected;
 
@@ -96,10 +76,7 @@ namespace VoiceBookStudio.ViewModels
 
         public PromptLibraryViewModel(PromptLibraryService service)
         {
-            _service   = service;
-
-            UsePromptCommand = new RelayCommand(UsePrompt, () => _selectedPrompt != null);
-
+            _service = service;
             LoadPrompts();
         }
 
@@ -221,12 +198,12 @@ namespace VoiceBookStudio.ViewModels
 
         private void ApplyFilter()
         {
-            PromptItemViewModel? prev = _selectedPrompt;
+            PromptItemViewModel? prev = SelectedPrompt;
             Prompts.Clear();
 
-            IEnumerable<PromptItemViewModel> source = _selectedCategory == "All"
+            IEnumerable<PromptItemViewModel> source = SelectedCategory == "All"
                 ? _allPrompts
-                : _allPrompts.Where(p => string.Equals(p.Category, _selectedCategory,
+                : _allPrompts.Where(p => string.Equals(p.Category, SelectedCategory,
                                              StringComparison.OrdinalIgnoreCase));
 
             foreach (var p in source)
@@ -235,21 +212,15 @@ namespace VoiceBookStudio.ViewModels
             SelectedPrompt = Prompts.Contains(prev!) ? prev : null;
         }
 
+        [RelayCommand(CanExecute = nameof(CanUsePrompt))]
         private void UsePrompt()
         {
-            if (_selectedPrompt == null) return;
-            AppSettings.LastUsedPromptId = _selectedPrompt.Number;
-            PromptSelected?.Invoke(this, _selectedPrompt.Model.Content);
-            AnnouncementRequested?.Invoke($"Prompt loaded: {_selectedPrompt.Title}");
+            if (SelectedPrompt == null) return;
+            AppSettings.LastUsedPromptId = SelectedPrompt.Number;
+            PromptSelected?.Invoke(this, SelectedPrompt.Model.Content);
+            AnnouncementRequested?.Invoke($"Prompt loaded: {SelectedPrompt.Title}");
         }
 
-        // ----------------------------------------------------------------
-        // INotifyPropertyChanged
-        // ----------------------------------------------------------------
-
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        private void Notify([CallerMemberName] string? name = null) =>
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        private bool CanUsePrompt() => SelectedPrompt != null;
     }
 }

@@ -1,19 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using VoiceBookStudio.Models;
 using VoiceBookStudio.Services;
-using VoiceBookStudio.Utils;
 
 namespace VoiceBookStudio.ViewModels
 {
-    public class ResponseCardViewModel : INotifyPropertyChanged
+    public partial class ResponseCardViewModel : ObservableObject
     {
-        private readonly ResponseCardService       _service;
+        private readonly ResponseCardService _service;
 
         private List<ResponseCard> _allCards = new();
 
@@ -31,46 +29,26 @@ namespace VoiceBookStudio.ViewModels
         // Selected card
         // ----------------------------------------------------------------
 
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(PreviewText))]
+        [NotifyCanExecuteChangedFor(nameof(InsertCardCommand))]
+        [NotifyCanExecuteChangedFor(nameof(DeleteCardCommand))]
         private ResponseCard? _selectedCard;
-        public ResponseCard? SelectedCard
-        {
-            get => _selectedCard;
-            set
-            {
-                if (_selectedCard == value) return;
-                _selectedCard = value;
-                Notify();
-                Notify(nameof(PreviewText));
-                ((RelayCommand)InsertCardCommand).RaiseCanExecuteChanged();
-                ((RelayCommand)DeleteCardCommand).RaiseCanExecuteChanged();
-            }
-        }
 
-        public string PreviewText => _selectedCard?.Content ?? string.Empty;
+        public string PreviewText => SelectedCard?.Content ?? string.Empty;
 
         // ----------------------------------------------------------------
         // Category filter
         // ----------------------------------------------------------------
 
+        [ObservableProperty]
         private string _selectedCategory = "All";
-        public string SelectedCategory
-        {
-            get => _selectedCategory;
-            set
-            {
-                if (_selectedCategory == value) return;
-                _selectedCategory = value;
-                Notify();
-                ApplyFilter();
-            }
-        }
+
+        partial void OnSelectedCategoryChanged(string value) => ApplyFilter();
 
         // ----------------------------------------------------------------
-        // Commands + event
+        // Events
         // ----------------------------------------------------------------
-
-        public ICommand InsertCardCommand { get; }
-        public ICommand DeleteCardCommand { get; }
 
         public event EventHandler<ResponseCard>? InsertCardRequested;
 
@@ -87,11 +65,7 @@ namespace VoiceBookStudio.ViewModels
 
         public ResponseCardViewModel(ResponseCardService service)
         {
-            _service  = service;
-
-            InsertCardCommand = new RelayCommand(InsertCard, () => _selectedCard != null);
-            DeleteCardCommand = new RelayCommand(DeleteCard, () => _selectedCard != null);
-
+            _service = service;
             LoadCards();
         }
 
@@ -265,12 +239,12 @@ namespace VoiceBookStudio.ViewModels
 
         private void ApplyFilter()
         {
-            ResponseCard? prev = _selectedCard;
+            ResponseCard? prev = SelectedCard;
             Cards.Clear();
 
-            IEnumerable<ResponseCard> source = _selectedCategory == "All"
+            IEnumerable<ResponseCard> source = SelectedCategory == "All"
                 ? _allCards
-                : _allCards.Where(c => string.Equals(c.Category, _selectedCategory,
+                : _allCards.Where(c => string.Equals(c.Category, SelectedCategory,
                                             StringComparison.OrdinalIgnoreCase));
 
             foreach (var c in source)
@@ -279,18 +253,20 @@ namespace VoiceBookStudio.ViewModels
             SelectedCard = Cards.Contains(prev!) ? prev : null;
         }
 
+        [RelayCommand(CanExecute = nameof(CanModifyCard))]
         private void InsertCard()
         {
-            if (_selectedCard == null) return;
-            InsertCardRequested?.Invoke(this, _selectedCard);
+            if (SelectedCard == null) return;
+            InsertCardRequested?.Invoke(this, SelectedCard);
         }
 
+        [RelayCommand(CanExecute = nameof(CanModifyCard))]
         private void DeleteCard()
         {
-            if (_selectedCard == null) return;
-            string title = _selectedCard.Title;
-            _allCards.Remove(_selectedCard);
-            Cards.Remove(_selectedCard);
+            if (SelectedCard == null) return;
+            string title = SelectedCard.Title;
+            _allCards.Remove(SelectedCard);
+            Cards.Remove(SelectedCard);
             SelectedCard = null;
             RebuildCategories();
             ApplyFilter();
@@ -298,19 +274,12 @@ namespace VoiceBookStudio.ViewModels
             AnnouncementRequested?.Invoke($"Card deleted: {title}");
         }
 
+        private bool CanModifyCard() => SelectedCard != null;
+
         private void SaveCards() => _service.Save(_allCards);
 
         private static string TitleCase(string s) =>
             string.IsNullOrEmpty(s) ? s :
             char.ToUpper(s[0]) + s[1..];
-
-        // ----------------------------------------------------------------
-        // INotifyPropertyChanged
-        // ----------------------------------------------------------------
-
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        private void Notify([CallerMemberName] string? name = null) =>
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }

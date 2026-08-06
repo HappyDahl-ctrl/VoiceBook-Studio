@@ -1,7 +1,5 @@
 using System;
-using System.Linq;
 using System.Speech.Synthesis;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using VoiceBookStudio.Utils;
@@ -53,7 +51,7 @@ namespace VoiceBookStudio.Services
             _sapi.Rate   = 1;
             _sapi.Volume = 90;
 
-            SelectBestSapiVoice();
+            SpeechTextUtils.SelectBestSapiVoice(_sapi);
             _azure.Configure();
         }
 
@@ -95,7 +93,7 @@ namespace VoiceBookStudio.Services
         public void Speak(string text)
         {
             if (_jawsDetected || _disposed || string.IsNullOrWhiteSpace(text)) return;
-            text = SanitizeForSpeech(text);
+            text = SpeechTextUtils.SanitizeForSpeech(text);
             StopSpeaking();
             ActuallySpeak(text);
         }
@@ -111,7 +109,7 @@ namespace VoiceBookStudio.Services
         {
             if (priority == AnnouncementPriority.Silent) return;
             if (_jawsDetected || _disposed || string.IsNullOrWhiteSpace(message)) return;
-            message = SanitizeForSpeech(message);
+            message = SpeechTextUtils.SanitizeForSpeech(message);
             if (priority == AnnouncementPriority.Critical)
                 StopSpeaking();
             ActuallySpeak(message);
@@ -128,7 +126,7 @@ namespace VoiceBookStudio.Services
         public void SpeakSync(string text)
         {
             if (_jawsDetected || _disposed || string.IsNullOrWhiteSpace(text)) return;
-            text = SanitizeForSpeech(text);
+            text = SpeechTextUtils.SanitizeForSpeech(text);
             if (_azure.IsConfigured)
             {
                 // Azure is async-only; fall back to SAPI for the goodbye so
@@ -137,7 +135,7 @@ namespace VoiceBookStudio.Services
                 try
                 {
                     sapi.SetOutputToDefaultAudioDevice();
-                    SelectBestSapiVoice(sapi);
+                    SpeechTextUtils.SelectBestSapiVoice(sapi);
                     sapi.Speak(text);
                 }
                 catch { /* non-fatal — process is exiting */ }
@@ -163,7 +161,7 @@ namespace VoiceBookStudio.Services
         public async Task SpeakAndWaitAsync(string text)
         {
             if (_jawsDetected || _disposed || string.IsNullOrWhiteSpace(text)) return;
-            text = SanitizeForSpeech(text);
+            text = SpeechTextUtils.SanitizeForSpeech(text);
 
             if (_azure.IsConfigured)
             {
@@ -205,61 +203,6 @@ namespace VoiceBookStudio.Services
                 _azure.Speak(text);
             else
                 _sapi.SpeakAsync(text);
-        }
-
-        /// <summary>
-        /// Strips characters that cause SAPI to mispronounce or stutter:
-        /// markdown formatting, parentheses, square brackets. Replaces slashes
-        /// with "or" and em-dashes with commas for natural pacing.
-        /// </summary>
-        private static string SanitizeForSpeech(string input)
-        {
-            if (string.IsNullOrEmpty(input)) return input;
-
-            // Dashes used as separators → comma (natural SAPI pause)
-            input = Regex.Replace(input, @"\s+[-–—]+\s+", ", ");
-
-            // Forward slash → "or"
-            input = input.Replace("/", " or ");
-
-            // Strip markdown formatting characters
-            input = input.Replace("#", "")
-                         .Replace("*", "")
-                         .Replace("_", "")
-                         .Replace("`", "")
-                         .Replace("~", "");
-
-            // Strip parentheses and square brackets — keep inner content
-            input = Regex.Replace(input, @"[\(\)\[\]]", "");
-
-            // Collapse runs of whitespace created by stripping
-            input = Regex.Replace(input, @"  +", " ");
-
-            return input.Trim();
-        }
-
-        private void SelectBestSapiVoice() => SelectBestSapiVoice(_sapi);
-
-        private static void SelectBestSapiVoice(SpeechSynthesizer synth)
-        {
-            var voices = synth.GetInstalledVoices()
-                              .Where(v => v.Enabled)
-                              .Select(v => v.VoiceInfo.Name)
-                              .ToList();
-            if (voices.Count == 0) return;
-
-            string[] priorities =
-            [
-                "Natural", "Aria", "Jenny", "Guy", "Davis", "Jane",
-                "Jason", "Zira", "Hazel", "Susan"
-            ];
-
-            foreach (var pref in priorities)
-            {
-                var match = voices.FirstOrDefault(
-                    v => v.Contains(pref, StringComparison.OrdinalIgnoreCase));
-                if (match != null) { synth.SelectVoice(match); return; }
-            }
         }
 
         public void Dispose()

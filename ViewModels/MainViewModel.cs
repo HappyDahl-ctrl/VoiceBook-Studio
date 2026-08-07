@@ -49,6 +49,7 @@ namespace VoiceBookStudio.ViewModels
         private readonly AppSoundService           _sounds;
         private readonly ResponseCardService       _responseCardService;
         private readonly FeedbackLibraryService    _feedbackLibraryService;
+        private readonly ChatHistoryService        _chatHistoryService;
 
         private string? _currentFilePath;
 
@@ -66,6 +67,9 @@ namespace VoiceBookStudio.ViewModels
 
         /// <summary>Bound to the Feedback tab in the AI panel.</summary>
         public FeedbackLibraryViewModel FeedbackLibVM { get; }
+
+        /// <summary>Bound to the chat history list in the AI Assistant panel. Project-scoped.</summary>
+        public ChatHistoryViewModel ChatHistoryVM { get; }
 
         // ----------------------------------------------------------------
         // Constructor
@@ -116,6 +120,10 @@ namespace VoiceBookStudio.ViewModels
                 _feedbackLibraryService,
                 items => StartLibraryReading(items));
             FeedbackLibVM.AnnouncementRequested += msg => LiveAnnounce(msg);
+
+            // Chat history — project-scoped, same pattern as Cards/Feedback above.
+            _chatHistoryService = new VoiceBookStudio.Services.ChatHistoryService();
+            ChatHistoryVM = new ChatHistoryViewModel(_chatHistoryService);
 
             // Auto-save every 30 seconds — only fires when there are unsaved changes.
             _autoSaveTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(30) };
@@ -1961,6 +1969,8 @@ namespace VoiceBookStudio.ViewModels
             ResponseCardVM.Reload();
             _feedbackLibraryService.SetProjectFolder(projectFolderPath);
             FeedbackLibVM.Reload();
+            _chatHistoryService.SetProjectFolder(projectFolderPath);
+            ChatHistoryVM.Reload();
         }
 
         private void LoadChapters()

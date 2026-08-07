@@ -97,5 +97,16 @@ namespace VoiceBookStudio.Services
         public string Category { get; set; } = string.Empty;
         public string Title    { get; set; } = string.Empty;
         public string Content  { get; set; } = string.Empty;
+
+        /// <summary>"Fiction", "Non-fiction", or "Both" — drives the Prompts tab genre filter.</summary>
+        public string Genre { get; set; } = "Both";
+
+        /// <summary>
+        /// Null for general writing-assistant prompts. For prompts that request editorial
+        /// feedback, one of: "comprehensive" | "pacing" | "dialogue" | "style" | "structure" | "book".
+        /// Matches AiService's feedbackType keys and routes the response to auto-save in the
+        /// Feedback tab instead of just living in chat history.
+        /// </summary>
+        public string? FeedbackKind { get; set; } = null;
     }
 }

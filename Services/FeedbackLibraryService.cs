@@ -63,6 +63,7 @@ namespace VoiceBookStudio.Services
                     e.Id             ??= string.Empty;
                     e.CategoryLetter ??= "A";
                     e.ChapterTitle   ??= string.Empty;
+                    e.Title          ??= string.Empty;
                     e.Text           ??= string.Empty;
                 }
                 return entries;
@@ -80,7 +81,7 @@ namespace VoiceBookStudio.Services
 
         /// <summary>Creates a new entry with the correct letter and next sequential number.</summary>
         public FeedbackEntry CreateEntry(string feedbackType, string chapterTitle, string text,
-                                          List<FeedbackEntry> existing)
+                                          List<FeedbackEntry> existing, string title = "")
         {
             var (letter, _) = TypeMap.GetValueOrDefault(feedbackType.ToLower(), ("A", "Comprehensive"));
             int nextNum = existing.Count(e => e.CategoryLetter == letter) + 1;
@@ -89,6 +90,7 @@ namespace VoiceBookStudio.Services
                 Id             = $"{letter}{nextNum}",
                 CategoryLetter = letter,
                 ChapterTitle   = chapterTitle,
+                Title          = title,
                 CreatedAt      = DateTime.Now,
                 Text           = text
             };

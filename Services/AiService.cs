@@ -158,6 +158,38 @@ namespace VoiceBookStudio.Services
         }
 
         /// <summary>
+        /// Asks Claude for a short, specific title summarizing a response, so saved Cards and
+        /// Feedback entries are labeled with what they're actually about instead of a generic
+        /// name. scopeLabel identifies what the response covers (a chapter title, or "the whole
+        /// book") and is used as the fallback if title generation fails or returns nothing usable.
+        /// </summary>
+        public async Task<string> GenerateShortTitleAsync(string responseText, string scopeLabel)
+        {
+            try
+            {
+                string prompt = $"""
+                    Write a short, specific title (3 to 8 words, no ending punctuation, no quotation
+                    marks) that summarizes what the following AI response is about. It will label a
+                    saved item about {scopeLabel}, so make it useful for finding this again later —
+                    name the actual topic, not a generic label like "AI Response" or "Feedback".
+
+                    RESPONSE:
+                    {responseText}
+
+                    Return only the title, nothing else.
+                    """;
+
+                string raw   = await CallClaudeAsync(prompt, maxTokens: 40);
+                string title = raw.Trim().Trim('"', '“', '”');
+                return string.IsNullOrWhiteSpace(title) ? scopeLabel : title;
+            }
+            catch
+            {
+                return scopeLabel;
+            }
+        }
+
+        /// <summary>
         /// Detects natural chapter breaks in a block of plain text (e.g. from a .docx import).
         /// Returns a list of suggested chapters with titles and content, even when the source
         /// has no headings. Falls back to a single chapter if parsing fails.

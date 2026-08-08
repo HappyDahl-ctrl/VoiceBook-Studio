@@ -97,7 +97,7 @@ namespace VoiceBookStudio.ViewModels
             PromptLibVM = new PromptLibraryViewModel(
                 new VoiceBookStudio.Services.PromptLibraryService());
 
-            // When the user picks a prompt, load it into the chat box and switch to Chat.
+            // When the user picks a prompt, load it into the chat box and focus it.
             PromptLibVM.PromptSelected += (_, content) =>
             {
                 ChatInputText = content;
@@ -124,6 +124,14 @@ namespace VoiceBookStudio.ViewModels
             // Chat history — project-scoped, same pattern as Cards/Feedback above.
             _chatHistoryService = new VoiceBookStudio.Services.ChatHistoryService();
             ChatHistoryVM = new ChatHistoryViewModel(_chatHistoryService);
+
+            // Selecting a past exchange shows its response in the same AI response box
+            // the live chat uses, so Save as Card / Insert work on it unchanged.
+            ChatHistoryVM.ExchangeSelected += exchange =>
+            {
+                AiFeedbackText = exchange.AiResponse;
+                SetStatus($"Viewing a past exchange from {exchange.CreatedAt:MMMM d, h:mm tt}.");
+            };
 
             // Auto-save every 30 seconds — only fires when there are unsaved changes.
             _autoSaveTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(30) };
@@ -335,8 +343,10 @@ namespace VoiceBookStudio.ViewModels
         public event EventHandler<int>? FocusPanelRequested;
 
         /// <summary>
-        /// Raised when the AI panel should switch to a named tab.
-        /// Payload: "Chat", "Prompts", or "Cards".
+        /// Raised when the Library panel should switch to a named tab, or when the
+        /// AI response should just become visible. Payload: "Prompts", "Cards",
+        /// "Feedback" (switches the Library TabControl), or "Chat" (focuses the
+        /// chat input in the always-visible bottom panel — no tab to switch to).
         /// </summary>
         public event EventHandler<string>? SwitchAiTabRequested;
 
@@ -1697,6 +1707,7 @@ namespace VoiceBookStudio.ViewModels
 
                 _sounds.Play(AppSound.AiResponded);
                 AiFeedbackText = response;
+                ChatHistoryVM.Append(msg, response);
                 SetStatus("Claude responded. Use Insert buttons to add text to your chapter.");
                 LiveAnnounce("Claude responded. Review the response, then use Insert buttons to add it to your chapter, or say Insert at cursor.");
                 _tutorialActionSink?.Invoke("sendchat");
@@ -2298,10 +2309,9 @@ namespace VoiceBookStudio.ViewModels
 
         public void TryOpenChat()
         {
-            SwitchAiTabRequested?.Invoke(this, "Chat");
             FocusPanel3();
-            SetStatus("Chat tab opened.");
-            LiveAnnounce("Chat tab.");
+            SetStatus("Chat input focused.");
+            LiveAnnounce("Chat input focused.");
         }
 
 
@@ -2440,7 +2450,6 @@ namespace VoiceBookStudio.ViewModels
         {
             if (string.IsNullOrWhiteSpace(text)) return;
             ChatInputText = text;
-            SwitchAiTabRequested?.Invoke(this, "Chat");
             FocusPanelRequested?.Invoke(this, 3);
             _currentPanel = 3;
             if (SendChatCommand.CanExecute(null))
@@ -2463,7 +2472,6 @@ namespace VoiceBookStudio.ViewModels
 
             if (parts.Count == 0) parts = new List<string> { AiFeedbackText };
 
-            SwitchAiTabRequested?.Invoke(this, "Chat");
             StartLibraryReading(parts);
             SetStatus("Reading AI response.");
         }

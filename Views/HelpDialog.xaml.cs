@@ -159,10 +159,11 @@ namespace VoiceBookStudio.Views
             "Your key is stored securely in the Windows registry.\n" +
             "Get a key at console.anthropic.com.",
 
-            // 2. Three Panels
-            "NAVIGATING THE THREE PANELS\n" +
+            // 2. Panels
+            "NAVIGATING THE PANELS\n" +
             "============================\n\n" +
-            "VoiceBook Studio has three panels side by side:\n\n" +
+            "VoiceBook Studio has three panels side by side, plus an AI Assistant\n" +
+            "chat panel along the bottom of the window:\n\n" +
             "PANEL 1 — CHAPTER MANAGER  (F1 or Ctrl+1)\n" +
             "Lists all your chapters and sections.\n" +
             "Use the buttons here to add, rename, delete, and reorder chapters.\n\n" +
@@ -170,9 +171,15 @@ namespace VoiceBookStudio.Views
             "Where you type or dictate your book.\n" +
             "Dragon NaturallySpeaking dictates naturally into this field.\n" +
             "Press Escape or F1 to leave the editor and return to the chapter list.\n\n" +
-            "PANEL 3 — AI ASSISTANT  (F3 or Ctrl+3)\n" +
-            "Chat with Claude, run writing analysis, use prompts and cards.\n" +
-            "The Chat input box also works as a voice command router.\n\n" +
+            "LIBRARY PANEL  (right side, no dedicated keyboard shortcut yet)\n" +
+            "Prompts, Cards, and Feedback tabs. Browse categorized writing prompts,\n" +
+            "your saved response cards, and your saved feedback. Tab to it from the\n" +
+            "editor, or click or Dragon-click into it directly — it has its own tab\n" +
+            "strip once focused.\n\n" +
+            "AI ASSISTANT CHAT  (bottom of the window, F3 or Ctrl+3)\n" +
+            "Chat with Claude and browse your chat history for this project. The\n" +
+            "Chat input box also works as a voice command router. Save a response\n" +
+            "as a card from here at any time.\n\n" +
             "SWITCHING PANELS\n" +
             "Press F1, F2, or F3 — works from anywhere, including inside the editor.\n" +
             "Alternatively: Ctrl+1, Ctrl+2, or Ctrl+3.\n" +

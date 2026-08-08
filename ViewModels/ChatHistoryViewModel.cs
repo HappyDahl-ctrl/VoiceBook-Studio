@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -39,6 +40,17 @@ namespace VoiceBookStudio.ViewModels
         private ChatExchangeViewModel? _selectedExchange;
 
         public bool HasSelectedExchange => SelectedExchange != null;
+
+        partial void OnSelectedExchangeChanged(ChatExchangeViewModel? value)
+        {
+            if (value != null)
+                ExchangeSelected?.Invoke(value.Model);
+        }
+
+        /// <summary>Raised when the user selects a past exchange, so MainViewModel can show
+        /// its response in the same AI response box the live chat uses — Save as Card and
+        /// Insert then act on it exactly as they would a fresh response.</summary>
+        public event Action<ChatExchange>? ExchangeSelected;
 
         public ChatHistoryViewModel(ChatHistoryService service)
         {

@@ -81,9 +81,8 @@ namespace VoiceBookStudio.Views
             ViewModel.FocusChatInputRequested        += (_, _) => ChatInputBox.Focus();
             ViewModel.FocusAndClearChatInputRequested += (_, _) =>
             {
-                // Switch to the Chat tab so the input box is visible, clear any
-                // previous text, then focus — ready for Dragon to type a command.
-                AiTabControl.SelectedIndex = 0;
+                // Chat input lives in its own always-visible panel now, so there's
+                // no tab to switch to first — just clear and focus it.
                 ChatInputBox.Clear();
                 ChatInputBox.Focus();
             };
@@ -402,13 +401,19 @@ namespace VoiceBookStudio.Views
 
         private void OnSwitchAiTabRequested(object? sender, string tabName)
         {
-            AiTabControl.SelectedIndex = tabName switch
+            // "Chat" is no longer a Library tab — it's the always-visible bottom
+            // panel, so there's nothing to switch to; just focus its input instead.
+            if (tabName == "Chat") { ChatInputBox.Focus(); return; }
+
+            int? index = tabName switch
             {
-                "Prompts"  => 1,
-                "Cards"    => 2,
-                "Feedback" => 3,
-                _          => 0
+                "Prompts"  => 0,
+                "Cards"    => 1,
+                "Feedback" => 2,
+                _          => null
             };
+            if (index.HasValue)
+                LibraryTabControl.SelectedIndex = index.Value;
         }
 
         // ----------------------------------------------------------------

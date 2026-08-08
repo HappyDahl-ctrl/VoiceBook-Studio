@@ -204,6 +204,10 @@ namespace VoiceBookStudio.Views
                         ViewModel.TryAnnounceApplicationStatus();
                         e.Handled = e.SuppressKeyPress = true;
                         return;
+                    case WinForms.Keys.F11:
+                        ViewModel.FocusPanel4();
+                        e.Handled = e.SuppressKeyPress = true;
+                        return;
                     // ScrollLock: toggle app mic on/off. Simultaneously mutes/unmutes Dragon.
                     case WinForms.Keys.Scroll:
                         Dispatcher.Invoke(() => ViewModel.ToggleMicCommand.Execute(null));
@@ -363,7 +367,8 @@ namespace VoiceBookStudio.Views
             if (none)
             {
                 // NOTE: F1 intentionally NOT captured — JAWS uses F1 for contextual help on the focused control.
-                // Use Ctrl+1 / Ctrl+2 / Ctrl+3 for panel focus (user manual section 14).
+                // NOTE: F10 intentionally NOT used — WPF reserves it to activate the menu bar.
+                // Use Ctrl+1 / Ctrl+2 / Ctrl+3 / Ctrl+4 for panel focus (user manual section 14).
                 if (e.Key == Key.F2)     { ViewModel.FocusPanel2();                  e.Handled = true; return; }
                 if (e.Key == Key.F3)     { ViewModel.FocusPanel3();                  e.Handled = true; return; }
                 if (e.Key == Key.F4)     { ViewModel.TryReadParagraph();             e.Handled = true; return; }
@@ -372,6 +377,7 @@ namespace VoiceBookStudio.Views
                 if (e.Key == Key.F7)     { ViewModel.TrySelectPreviousChapter();     e.Handled = true; return; }
                 if (e.Key == Key.F8)     { ViewModel.TryReadChapter();               e.Handled = true; return; }
                 if (e.Key == Key.F9)     { ViewModel.TryAnnounceApplicationStatus(); e.Handled = true; return; }
+                if (e.Key == Key.F11)    { ViewModel.FocusPanel4();                  e.Handled = true; return; }
                 // ScrollLock: toggle app mic on/off. Simultaneously mutes/unmutes Dragon.
                 if (e.Key == Key.Scroll) { ViewModel.ToggleMicCommand.Execute(null); e.Handled = true; return; }
             }
@@ -381,6 +387,7 @@ namespace VoiceBookStudio.Views
                 if (e.Key == Key.D1 || e.Key == Key.NumPad1) { ViewModel.FocusPanel1();     e.Handled = true; return; }
                 if (e.Key == Key.D2 || e.Key == Key.NumPad2) { ViewModel.FocusPanel2();     e.Handled = true; return; }
                 if (e.Key == Key.D3 || e.Key == Key.NumPad3) { ViewModel.FocusPanel3();     e.Handled = true; return; }
+                if (e.Key == Key.D4 || e.Key == Key.NumPad4) { ViewModel.FocusPanel4();     e.Handled = true; return; }
                 if (e.Key == Key.F4)                          { ViewModel.TryStopReading(); e.Handled = true; return; }
 
                 // Signal tutorial "save" action on every Ctrl+S regardless of project state.
@@ -393,9 +400,10 @@ namespace VoiceBookStudio.Views
         {
             switch (panelNumber)
             {
-                case 1: ChapterListBox.Focus(); break;
-                case 2: _editorRtb?.Focus();   break;
-                case 3: ChatInputBox.Focus();   break;
+                case 1: ChapterListBox.Focus();   break;
+                case 2: _editorRtb?.Focus();     break;
+                case 3: ChatInputBox.Focus();     break;
+                case 4: LibraryTabControl.Focus(); break;
             }
         }
 

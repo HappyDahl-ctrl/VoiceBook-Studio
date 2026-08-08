@@ -94,10 +94,10 @@ namespace VoiceBookStudio.Services
                 "what can i do", "help me", "voice commands",
 
                 // Panel navigation
-                "panel one", "panel two", "panel three",
-                "go to panel one", "go to panel two", "go to panel three",
-                "panel 1", "panel 2", "panel 3",
-                "go to panel 1", "go to panel 2", "go to panel 3",
+                "panel one", "panel two", "panel three", "panel four",
+                "go to panel one", "go to panel two", "go to panel three", "go to panel four",
+                "panel 1", "panel 2", "panel 3", "panel 4",
+                "go to panel 1", "go to panel 2", "go to panel 3", "go to panel 4",
 
                 // Tutorial navigation
                 "next", "previous", "repeat", "exit tutorial", "start tutorial",
@@ -159,6 +159,7 @@ namespace VoiceBookStudio.Services
 
                 // Tab / panel navigation
                 "go to chat", "chat tab", "switch to chat", "open chat", "chat",
+                "go to library", "open library", "library panel", "library",
                 "open prompt library", "show prompts",
                 "open response cards", "show response cards", "cards",
 

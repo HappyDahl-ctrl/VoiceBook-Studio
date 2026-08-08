@@ -336,9 +336,9 @@ namespace VoiceBookStudio.ViewModels
         public event EventHandler<InsertTextArgs>? InsertTextRequested;
 
         /// <summary>
-        /// Raised by FocusPanel1/2/3 so the View can move keyboard focus to the
+        /// Raised by FocusPanel1/2/3/4 so the View can move keyboard focus to the
         /// correct panel without the ViewModel touching UI objects directly.
-        /// Payload is the panel number (1, 2, or 3).
+        /// Payload is the panel number (1, 2, 3, or 4).
         /// </summary>
         public event EventHandler<int>? FocusPanelRequested;
 
@@ -430,8 +430,9 @@ namespace VoiceBookStudio.ViewModels
             finally { _isReadingActive = false; }
         }
 
-        // Current panel — 1=Chapters, 2=Editor, 3=AI. Updated on every panel switch
-        // so "what can I say here" always gives context-relevant help.
+        // Current panel — 1=Chapters, 2=Editor, 3=AI Assistant chat, 4=Library.
+        // Updated on every panel switch so "what can I say here" always gives
+        // context-relevant help.
         private int _currentPanel = 1;
 
         // ----------------------------------------------------------------
@@ -466,6 +467,16 @@ namespace VoiceBookStudio.ViewModels
             SetStatus("AI Assistant panel focused.");
             LiveAnnounce("AI Assistant panel.");
             _tutorialActionSink?.Invoke("panel3");
+        }
+
+        /// <summary>Say "Panel 4" or "Go to library" to move focus here.</summary>
+        public void FocusPanel4()
+        {
+            _currentPanel = 4;
+            FocusPanelRequested?.Invoke(this, 4);
+            SetStatus("Library panel focused.");
+            LiveAnnounce("Library panel. Prompts, Cards, and Feedback tabs.");
+            _tutorialActionSink?.Invoke("panel4");
         }
 
         /// <summary>

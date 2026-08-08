@@ -50,6 +50,12 @@ namespace VoiceBookStudio.Services
                 return true;
             }
 
+            if (cmd is "panel 4" or "go to panel 4" or "panel four" or "go to panel four")
+            {
+                _vm.FocusPanel4();
+                return true;
+            }
+
             // Natural-language panel navigation aliases (matches Dragon XML command names)
             if (cmd is "go to chapters" or "go to chapter list")
             {
@@ -66,6 +72,12 @@ namespace VoiceBookStudio.Services
             if (cmd is "go to assistant" or "open assistant panel")
             {
                 _vm.FocusPanel3();
+                return true;
+            }
+
+            if (cmd is "go to library" or "open library" or "library panel" or "library")
+            {
+                _vm.FocusPanel4();
                 return true;
             }
 

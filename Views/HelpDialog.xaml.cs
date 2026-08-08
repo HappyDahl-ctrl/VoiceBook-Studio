@@ -164,26 +164,29 @@ namespace VoiceBookStudio.Views
             "============================\n\n" +
             "VoiceBook Studio has three panels side by side, plus an AI Assistant\n" +
             "chat panel along the bottom of the window:\n\n" +
-            "PANEL 1 — CHAPTER MANAGER  (F1 or Ctrl+1)\n" +
+            "PANEL 1 — CHAPTER MANAGER  (Ctrl+1)\n" +
             "Lists all your chapters and sections.\n" +
-            "Use the buttons here to add, rename, delete, and reorder chapters.\n\n" +
+            "Use the buttons here to add, rename, delete, and reorder chapters.\n" +
+            "Note: F1 does NOT focus this panel — F1 is reserved for JAWS's own\n" +
+            "contextual help on whatever control you're on. Use Ctrl+1, or say\n" +
+            "\"Panel 1\" or \"Go to chapters\".\n\n" +
             "PANEL 2 — WRITING EDITOR  (F2 or Ctrl+2)\n" +
             "Where you type or dictate your book.\n" +
             "Dragon NaturallySpeaking dictates naturally into this field.\n" +
-            "Press Escape or F1 to leave the editor and return to the chapter list.\n\n" +
-            "LIBRARY PANEL  (right side, no dedicated keyboard shortcut yet)\n" +
+            "Press Escape to leave the editor and return to the chapter list.\n\n" +
+            "LIBRARY PANEL  (right side — F11 or Ctrl+4)\n" +
             "Prompts, Cards, and Feedback tabs. Browse categorized writing prompts,\n" +
-            "your saved response cards, and your saved feedback. Tab to it from the\n" +
-            "editor, or click or Dragon-click into it directly — it has its own tab\n" +
-            "strip once focused.\n\n" +
+            "your saved response cards, and your saved feedback. Say \"Panel 4\" or\n" +
+            "\"Go to library\" — it has its own tab strip once focused.\n\n" +
             "AI ASSISTANT CHAT  (bottom of the window, F3 or Ctrl+3)\n" +
             "Chat with Claude and browse your chat history for this project. The\n" +
             "Chat input box also works as a voice command router. Save a response\n" +
             "as a card from here at any time.\n\n" +
             "SWITCHING PANELS\n" +
-            "Press F1, F2, or F3 — works from anywhere, including inside the editor.\n" +
-            "Alternatively: Ctrl+1, Ctrl+2, or Ctrl+3.\n" +
-            "Dragon users: say \"Press F1\", \"Press F2\", or \"Press F3\".\n\n" +
+            "Press F2, F3, or F11 — works from anywhere, including inside the editor.\n" +
+            "Panel 1 is Ctrl+1 only (no F-key, since F1 belongs to JAWS).\n" +
+            "Alternatively: Ctrl+1, Ctrl+2, Ctrl+3, or Ctrl+4.\n" +
+            "Dragon users: say \"Panel 1\", \"Panel 2\", \"Panel 3\", or \"Panel 4\".\n\n" +
             "TAB ORDER\n" +
             "Pressing Tab moves through controls in each panel in logical order.\n" +
             "JAWS reads each control's name and help text as you tab to it.",
@@ -375,9 +378,10 @@ namespace VoiceBookStudio.Views
             "  Ctrl+Shift+S     Save As\n" +
             "  Ctrl+I           Import Word Document (.docx)\n\n" +
             "PANEL NAVIGATION\n" +
-            "  F1  or  Ctrl+1   Chapter Manager (Panel 1)\n" +
+            "  Ctrl+1           Chapter Manager (Panel 1) — no F-key; F1 is JAWS's own help key\n" +
             "  F2  or  Ctrl+2   Writing Editor  (Panel 2)\n" +
             "  F3  or  Ctrl+3   AI Assistant    (Panel 3)\n" +
+            "  F11 or  Ctrl+4   Library         (Panel 4)\n" +
             "  Escape           Leave editor, return to Chapter Manager\n\n" +
             "CHAPTERS\n" +
             "  Ctrl+A           Add Chapter\n" +
@@ -396,8 +400,9 @@ namespace VoiceBookStudio.Views
             "  1 through 9      Open that help topic\n" +
             "  Escape           Back to topic list or close\n\n" +
             "DRAGON NATURALLYSPEAKING (say these phrases)\n" +
-            "  \"Press F1\"             Go to Chapter Manager\n" +
+            "  \"Panel 1\"              Go to Chapter Manager (no F-key for this one)\n" +
             "  \"Press F3\"             Go to AI Assistant\n" +
+            "  \"Press F11\"            Go to Library\n" +
             "  \"Press Escape\"         Leave editor\n" +
             "  \"Press Control S\"      Save project\n" +
             "  \"Press Control A\"      Add chapter\n" +

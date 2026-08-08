@@ -14,11 +14,16 @@ namespace VoiceBookStudio.ViewModels
     {
         public PromptItem Model { get; }
 
-        public string Number   => Model.Id;
-        public string Title    => Model.Title;
-        public string Category => Model.Category;
+        public string  Number       => Model.Id;
+        public string  Title        => Model.Title;
+        public string  Category     => Model.Category;
+        public string  Genre        => Model.Genre;
+        public bool    IsFeedback   => !string.IsNullOrEmpty(Model.FeedbackKind);
+        public string? FeedbackKind => Model.FeedbackKind;
 
-        public string DisplayLabel => $"{Model.Id} — {Model.Title}";
+        public string DisplayLabel => IsFeedback
+            ? $"{Model.Id} — {Model.Title} — Feedback"
+            : $"{Model.Id} — {Model.Title}";
 
         public string Preview => Model.Content.Length > 60
             ? Model.Content[..60] + "…"
@@ -39,6 +44,7 @@ namespace VoiceBookStudio.ViewModels
 
         public ObservableCollection<PromptItemViewModel> Prompts    { get; } = new();
         public ObservableCollection<string>              Categories { get; } = new();
+        public ObservableCollection<string>              Genres     { get; } = new() { "All", "Fiction", "Non-fiction" };
 
         // ----------------------------------------------------------------
         // Selection
@@ -56,6 +62,15 @@ namespace VoiceBookStudio.ViewModels
         private string _selectedCategory = "All";
 
         partial void OnSelectedCategoryChanged(string value) => ApplyFilter();
+
+        [ObservableProperty]
+        private string _selectedGenre = "All";
+
+        partial void OnSelectedGenreChanged(string value)
+        {
+            RebuildCategories();
+            ApplyFilter();
+        }
 
         // ----------------------------------------------------------------
         // Events
@@ -147,7 +162,8 @@ namespace VoiceBookStudio.ViewModels
         /// Adds a new prompt to the library and persists.
         /// Returns the auto-generated ID.
         /// </summary>
-        public string AddPrompt(string categoryLetter, string categoryName, string title, string content)
+        public string AddPrompt(string categoryLetter, string categoryName, string title, string content,
+                                 string genre = "Both")
         {
             string id = _service.NextIdForLetter(categoryLetter);
             var newItem = new PromptItem
@@ -155,7 +171,8 @@ namespace VoiceBookStudio.ViewModels
                 Id       = id,
                 Category = categoryName,
                 Title    = title,
-                Content  = content
+                Content  = content,
+                Genre    = genre
             };
             _service.AddAndSave(newItem);
             _allPrompts.Add(new PromptItemViewModel(newItem));
@@ -183,17 +200,26 @@ namespace VoiceBookStudio.ViewModels
             ApplyFilter();
         }
 
+        /// <summary>Prompts matching the selected genre. "Both"-genre prompts show under any genre filter.</summary>
+        private IEnumerable<PromptItemViewModel> GenreFiltered() =>
+            SelectedGenre == "All"
+                ? _allPrompts
+                : _allPrompts.Where(p => string.Equals(p.Genre, "Both", StringComparison.OrdinalIgnoreCase) ||
+                                          string.Equals(p.Genre, SelectedGenre, StringComparison.OrdinalIgnoreCase));
+
         private void RebuildCategories()
         {
+            string prevCategory = SelectedCategory;
             Categories.Clear();
             Categories.Add("All");
-            foreach (string cat in _allPrompts
+            foreach (string cat in GenreFiltered()
                          .Select(p => p.Category)
                          .Distinct(StringComparer.OrdinalIgnoreCase)
                          .OrderBy(c => c))
             {
                 Categories.Add(cat);
             }
+            SelectedCategory = Categories.Contains(prevCategory) ? prevCategory : "All";
         }
 
         private void ApplyFilter()
@@ -201,10 +227,10 @@ namespace VoiceBookStudio.ViewModels
             PromptItemViewModel? prev = SelectedPrompt;
             Prompts.Clear();
 
-            IEnumerable<PromptItemViewModel> source = SelectedCategory == "All"
-                ? _allPrompts
-                : _allPrompts.Where(p => string.Equals(p.Category, SelectedCategory,
-                                             StringComparison.OrdinalIgnoreCase));
+            IEnumerable<PromptItemViewModel> source = GenreFiltered();
+            if (SelectedCategory != "All")
+                source = source.Where(p => string.Equals(p.Category, SelectedCategory,
+                                                StringComparison.OrdinalIgnoreCase));
 
             foreach (var p in source)
                 Prompts.Add(p);

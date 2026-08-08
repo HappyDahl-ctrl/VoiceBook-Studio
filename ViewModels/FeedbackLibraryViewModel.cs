@@ -14,8 +14,9 @@ namespace VoiceBookStudio.ViewModels
     {
         public FeedbackEntry Model { get; }
 
-        public string DisplayLabel =>
-            $"{Model.Id ?? "?"} — {Model.ChapterTitle ?? "Unknown chapter"}";
+        public string DisplayLabel => string.IsNullOrWhiteSpace(Model.Title)
+            ? $"{Model.Id ?? "?"} — {Model.ChapterTitle ?? "Unknown chapter"}"
+            : $"{Model.Id ?? "?"} — {Model.Title}";
 
         public string DateDisplay =>
             Model.CreatedAt.ToString("MMMM d yyyy, h:mm tt");
@@ -96,9 +97,9 @@ namespace VoiceBookStudio.ViewModels
         public void Reload() => LoadEntries();
 
         /// <summary>Called by MainViewModel after every feedback run to auto-persist.</summary>
-        public void AddEntry(string feedbackType, string chapterTitle, string text)
+        public void AddEntry(string feedbackType, string chapterTitle, string text, string title = "")
         {
-            var entry = _service.CreateEntry(feedbackType, chapterTitle, text, _allEntries);
+            var entry = _service.CreateEntry(feedbackType, chapterTitle, text, _allEntries, title);
             _allEntries.Add(entry);
             _service.Save(_allEntries);
             RebuildCategories();

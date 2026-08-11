@@ -32,6 +32,22 @@ namespace VoiceBookStudio.ViewModels
         }
     }
 
+    /// <summary>
+    /// Carries the original passage to find (identified by Claude) and the text to replace
+    /// it with. The ViewModel has already confirmed Target exists in the chapter content
+    /// before raising this, so the View only needs to locate and swap it in the editor.
+    /// </summary>
+    public sealed class ReplaceTextArgs : EventArgs
+    {
+        public string Target      { get; }
+        public string Replacement { get; }
+        public ReplaceTextArgs(string target, string replacement)
+        {
+            Target      = target;
+            Replacement = replacement;
+        }
+    }
+
     // ----------------------------------------------------------------
     // ViewModel
     // ----------------------------------------------------------------
@@ -217,6 +233,7 @@ namespace VoiceBookStudio.ViewModels
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(RunAiFeedbackCommand))]
         [NotifyCanExecuteChangedFor(nameof(SendChatCommand))]
+        [NotifyPropertyChangedFor(nameof(WordCountDisplay))]
         private bool _isWholeBookSelected;
 
         /// <summary>
@@ -239,6 +256,7 @@ namespace VoiceBookStudio.ViewModels
         [NotifyCanExecuteChangedFor(nameof(InsertAtCursorCommand))]
         [NotifyCanExecuteChangedFor(nameof(InsertAtStartCommand))]
         [NotifyCanExecuteChangedFor(nameof(InsertAtEndCommand))]
+        [NotifyCanExecuteChangedFor(nameof(ReplaceInChapterCommand))]
         [NotifyCanExecuteChangedFor(nameof(ChangeChapterTypeCommand))]
         private ChapterViewModel? _selectedChapter;
 
@@ -252,6 +270,7 @@ namespace VoiceBookStudio.ViewModels
         [NotifyCanExecuteChangedFor(nameof(InsertAtCursorCommand))]
         [NotifyCanExecuteChangedFor(nameof(InsertAtStartCommand))]
         [NotifyCanExecuteChangedFor(nameof(InsertAtEndCommand))]
+        [NotifyCanExecuteChangedFor(nameof(ReplaceInChapterCommand))]
         [NotifyCanExecuteChangedFor(nameof(SaveAsCardCommand))]
         [NotifyPropertyChangedFor(nameof(HasAiResponse))]
         private string _aiFeedbackText = "Select a chapter and run an AI analysis to see feedback here.";
@@ -294,9 +313,9 @@ namespace VoiceBookStudio.ViewModels
             SelectedChapter == null ? "No chapter selected" : SelectedChapter.Title;
 
         public string WordCountDisplay =>
-            SelectedChapter == null
-                ? "Words: 0"
-                : $"Words: {SelectedChapter.WordCount:N0}";
+            IsWholeBookSelected  ? $"Words: {WholeBook.WordCount:N0}" :
+            SelectedChapter == null ? "Words: 0" :
+            $"Words: {SelectedChapter.WordCount:N0}";
 
         public string AiStatusDisplay =>
             IsApiKeySet ? "AI: Ready" : "AI: Not configured";
@@ -336,9 +355,15 @@ namespace VoiceBookStudio.ViewModels
         public event EventHandler<InsertTextArgs>? InsertTextRequested;
 
         /// <summary>
-        /// Raised by FocusPanel1/2/3 so the View can move keyboard focus to the
+        /// Raised once the ViewModel has confirmed the target passage exists in the current
+        /// chapter text, so the View can locate it in the editor and swap in the replacement.
+        /// </summary>
+        public event EventHandler<ReplaceTextArgs>? ReplaceTextRequested;
+
+        /// <summary>
+        /// Raised by FocusPanel1/2/3/4 so the View can move keyboard focus to the
         /// correct panel without the ViewModel touching UI objects directly.
-        /// Payload is the panel number (1, 2, or 3).
+        /// Payload is the panel number (1, 2, 3, or 4).
         /// </summary>
         public event EventHandler<int>? FocusPanelRequested;
 
@@ -430,8 +455,9 @@ namespace VoiceBookStudio.ViewModels
             finally { _isReadingActive = false; }
         }
 
-        // Current panel — 1=Chapters, 2=Editor, 3=AI. Updated on every panel switch
-        // so "what can I say here" always gives context-relevant help.
+        // Current panel — 1=Chapters, 2=Editor, 3=AI Assistant chat, 4=Library.
+        // Updated on every panel switch so "what can I say here" always gives
+        // context-relevant help.
         private int _currentPanel = 1;
 
         // ----------------------------------------------------------------
@@ -466,6 +492,16 @@ namespace VoiceBookStudio.ViewModels
             SetStatus("AI Assistant panel focused.");
             LiveAnnounce("AI Assistant panel.");
             _tutorialActionSink?.Invoke("panel3");
+        }
+
+        /// <summary>Say "Panel 4" or "Go to library" to move focus here.</summary>
+        public void FocusPanel4()
+        {
+            _currentPanel = 4;
+            FocusPanelRequested?.Invoke(this, 4);
+            SetStatus("Library panel focused.");
+            LiveAnnounce("Library panel. Prompts, Cards, and Feedback tabs.");
+            _tutorialActionSink?.Invoke("panel4");
         }
 
         /// <summary>
@@ -1493,11 +1529,11 @@ namespace VoiceBookStudio.ViewModels
         public void SelectWholeBook()
         {
             FlushEditorToChapter();
-            IsWholeBookSelected = true;
             WholeBook.Refresh(Chapters);
+            IsWholeBookSelected = true;
             SelectedChapter = null;
-            SetStatus("Whole Book — read-only view of all chapters in order.");
-            LiveAnnounce("Whole Book. Read only.");
+            SetStatus($"Whole Book — read-only view of all chapters in order. {WholeBook.WordCount:N0} words.");
+            LiveAnnounce($"Whole Book. Read only. {WholeBook.WordCount:N0} words.");
         }
 
         public void OnEditorTextChanged(string newText)
@@ -1771,6 +1807,53 @@ namespace VoiceBookStudio.ViewModels
             !string.IsNullOrWhiteSpace(AiFeedbackText) &&
             AiFeedbackText != "Select a chapter and run an AI analysis to see feedback here.";
 
+        /// <summary>
+        /// Replaces a passage in the chapter with the current AI response, without requiring
+        /// the writer to select or copy/paste anything. Asks Claude to identify which original
+        /// passage the response is meant to replace (e.g. "rewrite paragraph 4", "punch up the
+        /// opening line"), confirms that passage actually exists in the chapter, then hands off
+        /// to the View to perform the swap in the editor.
+        /// </summary>
+        [RelayCommand(CanExecute = nameof(CanInsert))]
+        private async Task ReplaceInChapterAsync()
+        {
+            if (SelectedChapter == null || string.IsNullOrWhiteSpace(AiFeedbackText)) return;
+
+            try
+            {
+                IsBusy = true;
+                SetStatus("Finding the passage to replace…");
+                LiveAnnounce("Asking Claude to find the passage to replace. Please wait.");
+
+                string? target = await _aiService.FindReplacementTargetAsync(
+                    SelectedChapter.Content, AiFeedbackText);
+
+                if (target == null ||
+                    !VoiceBookStudio.Utils.TextLocator.TryFind(SelectedChapter.Content, target, out _, out _))
+                {
+                    SetStatus("Couldn't identify a single passage to replace. Try an Insert " +
+                              "button instead, or ask Claude to name the passage more specifically.");
+                    LiveAnnounce("Couldn't find a matching passage to replace. Try one of the Insert buttons instead.");
+                    return;
+                }
+
+                ReplaceTextRequested?.Invoke(this, new ReplaceTextArgs(target, AiFeedbackText.Trim()));
+
+                _sounds.Play(AppSound.TextInserted);
+                SetStatus("AI response replaced the matching passage in your chapter.");
+                LiveAnnounce("Replaced the matching passage in your chapter.");
+            }
+            catch (Exception ex)
+            {
+                ShowError("Replace Error", ex.Message);
+                LiveAnnounce("Replace failed. " + ex.Message);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
         // ----------------------------------------------------------------
         // Save as Card command
         // ----------------------------------------------------------------
@@ -1798,6 +1881,7 @@ namespace VoiceBookStudio.ViewModels
             ResponseCardVM.AddCard(card);
             SwitchAiTabRequested?.Invoke(this, "Cards");
             SetStatus($"Card saved: {dlg.CardTitle}");
+            _tutorialActionSink?.Invoke("savecard");
         }
 
         // ----------------------------------------------------------------
@@ -2251,14 +2335,24 @@ namespace VoiceBookStudio.ViewModels
                      "Analyse full book. Comprehensive feedback. Pacing feedback. Dialogue feedback. " +
                      "Style feedback. Structure feedback. " +
                      "Send, or Send message, to send the chat. " +
-                     "Insert at cursor. Insert at start. Insert at end. " +
+                     "Insert at cursor. Insert at start. Insert at end. Replace in chapter. " +
                      "Save response card, or Save card. " +
                      "Open prompt library. Open response cards. " +
                      "Type any command in the chat box and press Enter. Examples: " +
                      "Add chapter. Save project. Rename chapter. Export PDF. Panel one. " +
                      "Or type any question for Claude and press Enter.",
 
-                _ => "Global commands: Panel one. Panel two. Panel three. " +
+                4 => "Library panel. Prompts, Cards, and Feedback tabs. " +
+                     "Prompt categories, or Read prompt categories, to hear what's in your prompt library. " +
+                     "Read prompt A, followed by any category letter, to hear every prompt in that category. " +
+                     "Card categories, or Read card categories, to hear your saved response cards. " +
+                     "Insert card one, through insert card twenty, or Insert card A1, to add a card to your chapter. " +
+                     "Feedback library, or What's in my feedback library, to review saved AI feedback. " +
+                     "Delete feedback entry to remove the selected one. " +
+                     "Word count, Chapter word count, or Book word count. " +
+                     "Global commands: Panel one, two, or three. Save.",
+
+                _ => "Global commands: Panel one. Panel two. Panel three. Panel four. " +
                      "Save. New project. Open project. Import document. Export Word. Export PDF. " +
                      "Feedback. Book analysis. Toggle voice. Set API key. Start tutorial."
             };
@@ -2293,6 +2387,12 @@ namespace VoiceBookStudio.ViewModels
         {
             if (InsertAtEndCommand.CanExecute(null))
                 InsertAtEndCommand.Execute(null);
+        }
+
+        public void TryReplaceInChapter()
+        {
+            if (ReplaceInChapterCommand.CanExecute(null))
+                ReplaceInChapterCommand.Execute(null);
         }
 
         public void TryExportDocx()
@@ -2386,8 +2486,46 @@ namespace VoiceBookStudio.ViewModels
 
         public void TryAnnounceChapterTitle()
         {
+            if (IsWholeBookSelected)
+            {
+                WholeBook.Refresh(Chapters);
+                string wbMsg = $"Whole Book. {WholeBook.WordCount:N0} words.";
+                SetStatus(wbMsg);
+                LiveAnnounce(wbMsg);
+                return;
+            }
+
             if (!HasSelectedChapter) { AnnounceNotAvailable("No chapter is open."); return; }
             string msg = $"Current chapter: {SelectedChapter!.Title}. {SelectedChapter.WordCount} words.";
+            SetStatus(msg);
+            LiveAnnounce(msg);
+        }
+
+        /// <summary>
+        /// Speaks the word count for whatever is currently active — the open chapter, or the
+        /// Whole Book entry. WordCountDisplay's live region is intentionally silent on every
+        /// keystroke (see MainWindow.xaml), so this on-demand announcement — plus the one
+        /// spoken right after chapter/whole-book selection — is how word count reaches the
+        /// user by voice without interrupting them mid-edit.
+        /// </summary>
+        public void TryAnnounceWordCount()
+        {
+            if (IsWholeBookSelected) TryAnnounceBookWordCount();
+            else                     TryAnnounceChapterWordCount();
+        }
+
+        public void TryAnnounceChapterWordCount()
+        {
+            if (!HasSelectedChapter) { AnnounceNotAvailable("No chapter is open."); return; }
+            string msg = $"{SelectedChapter!.Title}: {SelectedChapter.WordCount:N0} words.";
+            SetStatus(msg);
+            LiveAnnounce(msg);
+        }
+
+        public void TryAnnounceBookWordCount()
+        {
+            WholeBook.Refresh(Chapters);
+            string msg = $"Whole book: {WholeBook.WordCount:N0} words.";
             SetStatus(msg);
             LiveAnnounce(msg);
         }

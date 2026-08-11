@@ -94,10 +94,10 @@ namespace VoiceBookStudio.Services
                 "what can i do", "help me", "voice commands",
 
                 // Panel navigation
-                "panel one", "panel two", "panel three",
-                "go to panel one", "go to panel two", "go to panel three",
-                "panel 1", "panel 2", "panel 3",
-                "go to panel 1", "go to panel 2", "go to panel 3",
+                "panel one", "panel two", "panel three", "panel four",
+                "go to panel one", "go to panel two", "go to panel three", "go to panel four",
+                "panel 1", "panel 2", "panel 3", "panel 4",
+                "go to panel 1", "go to panel 2", "go to panel 3", "go to panel 4",
 
                 // Tutorial navigation
                 "next", "previous", "repeat", "exit tutorial", "start tutorial",
@@ -150,6 +150,8 @@ namespace VoiceBookStudio.Services
                 "insert at the start", "insert at the beginning",
                 "insert at end", "insert at the end",
                 "append response", "append to chapter",
+                "replace", "replace in chapter", "replace passage",
+                "replace response", "replace text",
 
                 // Export
                 "export word", "export docx", "export manuscript",
@@ -159,6 +161,7 @@ namespace VoiceBookStudio.Services
 
                 // Tab / panel navigation
                 "go to chat", "chat tab", "switch to chat", "open chat", "chat",
+                "go to library", "open library", "library panel", "library",
                 "open prompt library", "show prompts",
                 "open response cards", "show response cards", "cards",
 
@@ -231,6 +234,10 @@ namespace VoiceBookStudio.Services
                 "read chapter", "read current chapter",
                 "read all", "read chapter content", "read chapter title",
                 "chapter title", "what chapter", "current chapter",
+                "word count", "how many words",
+                "chapter word count", "word count for chapter", "word count for this chapter",
+                "book word count", "whole book word count",
+                "word count for book", "word count for whole book", "total word count",
 
                 // Stop reading / silence TTS
                 "stop reading", "stop speech", "stop", "quiet", "silence",

@@ -331,6 +331,8 @@ Create this first — it is the foundation for all Type B commands.
 | Insert at beginning | insert at start |
 | Insert at end | insert at end |
 | Append to chapter | insert at end |
+| Replace in chapter | replace |
+| Replace passage | replace |
 | Read AI response | read response |
 | Read the response | read response |
 | Save response card | save card |

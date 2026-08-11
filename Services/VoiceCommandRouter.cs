@@ -50,6 +50,12 @@ namespace VoiceBookStudio.Services
                 return true;
             }
 
+            if (cmd is "panel 4" or "go to panel 4" or "panel four" or "go to panel four")
+            {
+                _vm.FocusPanel4();
+                return true;
+            }
+
             // Natural-language panel navigation aliases (matches Dragon XML command names)
             if (cmd is "go to chapters" or "go to chapter list")
             {
@@ -66,6 +72,12 @@ namespace VoiceBookStudio.Services
             if (cmd is "go to assistant" or "open assistant panel")
             {
                 _vm.FocusPanel3();
+                return true;
+            }
+
+            if (cmd is "go to library" or "open library" or "library panel" or "library")
+            {
+                _vm.FocusPanel4();
                 return true;
             }
 
@@ -316,6 +328,25 @@ namespace VoiceBookStudio.Services
                 return true;
             }
 
+            if (cmd is "word count" or "how many words")
+            {
+                _vm.TryAnnounceWordCount();
+                return true;
+            }
+
+            if (cmd is "chapter word count" or "word count for chapter" or "word count for this chapter")
+            {
+                _vm.TryAnnounceChapterWordCount();
+                return true;
+            }
+
+            if (cmd is "book word count" or "whole book word count"
+                     or "word count for book" or "word count for whole book" or "total word count")
+            {
+                _vm.TryAnnounceBookWordCount();
+                return true;
+            }
+
             if (cmd is "read paragraph" or "read current paragraph" or "read this paragraph")
             {
                 _vm.TryReadParagraph();
@@ -414,6 +445,13 @@ namespace VoiceBookStudio.Services
                      or "append response" or "append to chapter")
             {
                 _vm.TryInsertAtEnd();
+                return true;
+            }
+
+            if (cmd is "replace" or "replace in chapter" or "replace passage"
+                     or "replace response" or "replace text")
+            {
+                _vm.TryReplaceInChapter();
                 return true;
             }
 

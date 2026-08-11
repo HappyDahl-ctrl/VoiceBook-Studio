@@ -32,6 +32,22 @@ namespace VoiceBookStudio.ViewModels
         }
     }
 
+    /// <summary>
+    /// Carries the original passage to find (identified by Claude) and the text to replace
+    /// it with. The ViewModel has already confirmed Target exists in the chapter content
+    /// before raising this, so the View only needs to locate and swap it in the editor.
+    /// </summary>
+    public sealed class ReplaceTextArgs : EventArgs
+    {
+        public string Target      { get; }
+        public string Replacement { get; }
+        public ReplaceTextArgs(string target, string replacement)
+        {
+            Target      = target;
+            Replacement = replacement;
+        }
+    }
+
     // ----------------------------------------------------------------
     // ViewModel
     // ----------------------------------------------------------------
@@ -239,6 +255,7 @@ namespace VoiceBookStudio.ViewModels
         [NotifyCanExecuteChangedFor(nameof(InsertAtCursorCommand))]
         [NotifyCanExecuteChangedFor(nameof(InsertAtStartCommand))]
         [NotifyCanExecuteChangedFor(nameof(InsertAtEndCommand))]
+        [NotifyCanExecuteChangedFor(nameof(ReplaceInChapterCommand))]
         [NotifyCanExecuteChangedFor(nameof(ChangeChapterTypeCommand))]
         private ChapterViewModel? _selectedChapter;
 
@@ -252,6 +269,7 @@ namespace VoiceBookStudio.ViewModels
         [NotifyCanExecuteChangedFor(nameof(InsertAtCursorCommand))]
         [NotifyCanExecuteChangedFor(nameof(InsertAtStartCommand))]
         [NotifyCanExecuteChangedFor(nameof(InsertAtEndCommand))]
+        [NotifyCanExecuteChangedFor(nameof(ReplaceInChapterCommand))]
         [NotifyCanExecuteChangedFor(nameof(SaveAsCardCommand))]
         [NotifyPropertyChangedFor(nameof(HasAiResponse))]
         private string _aiFeedbackText = "Select a chapter and run an AI analysis to see feedback here.";
@@ -334,6 +352,12 @@ namespace VoiceBookStudio.ViewModels
         // ----------------------------------------------------------------
 
         public event EventHandler<InsertTextArgs>? InsertTextRequested;
+
+        /// <summary>
+        /// Raised once the ViewModel has confirmed the target passage exists in the current
+        /// chapter text, so the View can locate it in the editor and swap in the replacement.
+        /// </summary>
+        public event EventHandler<ReplaceTextArgs>? ReplaceTextRequested;
 
         /// <summary>
         /// Raised by FocusPanel1/2/3/4 so the View can move keyboard focus to the
@@ -1782,6 +1806,53 @@ namespace VoiceBookStudio.ViewModels
             !string.IsNullOrWhiteSpace(AiFeedbackText) &&
             AiFeedbackText != "Select a chapter and run an AI analysis to see feedback here.";
 
+        /// <summary>
+        /// Replaces a passage in the chapter with the current AI response, without requiring
+        /// the writer to select or copy/paste anything. Asks Claude to identify which original
+        /// passage the response is meant to replace (e.g. "rewrite paragraph 4", "punch up the
+        /// opening line"), confirms that passage actually exists in the chapter, then hands off
+        /// to the View to perform the swap in the editor.
+        /// </summary>
+        [RelayCommand(CanExecute = nameof(CanInsert))]
+        private async Task ReplaceInChapterAsync()
+        {
+            if (SelectedChapter == null || string.IsNullOrWhiteSpace(AiFeedbackText)) return;
+
+            try
+            {
+                IsBusy = true;
+                SetStatus("Finding the passage to replace…");
+                LiveAnnounce("Asking Claude to find the passage to replace. Please wait.");
+
+                string? target = await _aiService.FindReplacementTargetAsync(
+                    SelectedChapter.Content, AiFeedbackText);
+
+                if (target == null ||
+                    !VoiceBookStudio.Utils.TextLocator.TryFind(SelectedChapter.Content, target, out _, out _))
+                {
+                    SetStatus("Couldn't identify a single passage to replace. Try an Insert " +
+                              "button instead, or ask Claude to name the passage more specifically.");
+                    LiveAnnounce("Couldn't find a matching passage to replace. Try one of the Insert buttons instead.");
+                    return;
+                }
+
+                ReplaceTextRequested?.Invoke(this, new ReplaceTextArgs(target, AiFeedbackText.Trim()));
+
+                _sounds.Play(AppSound.TextInserted);
+                SetStatus("AI response replaced the matching passage in your chapter.");
+                LiveAnnounce("Replaced the matching passage in your chapter.");
+            }
+            catch (Exception ex)
+            {
+                ShowError("Replace Error", ex.Message);
+                LiveAnnounce("Replace failed. " + ex.Message);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
         // ----------------------------------------------------------------
         // Save as Card command
         // ----------------------------------------------------------------
@@ -2262,7 +2333,7 @@ namespace VoiceBookStudio.ViewModels
                      "Analyse full book. Comprehensive feedback. Pacing feedback. Dialogue feedback. " +
                      "Style feedback. Structure feedback. " +
                      "Send, or Send message, to send the chat. " +
-                     "Insert at cursor. Insert at start. Insert at end. " +
+                     "Insert at cursor. Insert at start. Insert at end. Replace in chapter. " +
                      "Save response card, or Save card. " +
                      "Open prompt library. Open response cards. " +
                      "Type any command in the chat box and press Enter. Examples: " +
@@ -2304,6 +2375,12 @@ namespace VoiceBookStudio.ViewModels
         {
             if (InsertAtEndCommand.CanExecute(null))
                 InsertAtEndCommand.Execute(null);
+        }
+
+        public void TryReplaceInChapter()
+        {
+            if (ReplaceInChapterCommand.CanExecute(null))
+                ReplaceInChapterCommand.Execute(null);
         }
 
         public void TryExportDocx()

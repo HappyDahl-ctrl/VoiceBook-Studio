@@ -150,6 +150,8 @@ namespace VoiceBookStudio.Services
                 "insert at the start", "insert at the beginning",
                 "insert at end", "insert at the end",
                 "append response", "append to chapter",
+                "replace", "replace in chapter", "replace passage",
+                "replace response", "replace text",
 
                 // Export
                 "export word", "export docx", "export manuscript",

@@ -848,14 +848,16 @@
                             AutomationProperties.HelpText="Save the current AI response as a reusable card. Claude labels it with the chapter or whole book it's about. Dragon: say click Save as Card."/>
                 </Border>
 
-                <!-- INSERT buttons — 3 options -->
+                <!-- INSERT / REPLACE buttons -->
                 <Border Grid.Row="3" Background="#E8EAF6" Padding="4,6">
                     <StackPanel>
-                        <TextBlock Text="Insert AI response into chapter:"
+                        <TextBlock Text="Insert or replace text in chapter:"
                                    FontSize="11" FontWeight="Bold" Foreground="#333"
                                    Margin="0,0,0,4"/>
                         <Grid>
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="4"/>
                                 <ColumnDefinition/>
                                 <ColumnDefinition Width="4"/>
                                 <ColumnDefinition/>
@@ -886,6 +888,14 @@
                                     ToolTip="Insert at the end of the chapter"
                                     AutomationProperties.Name="Insert response at chapter end"
                                     AutomationProperties.HelpText="Insert AI response at the end of the chapter. Dragon: say click At End."/>
+                            <Button Grid.Column="6"
+                                    Command="{Binding ReplaceInChapterCommand}"
+                                    Content="Replace..."
+                                    Padding="4,5" FontSize="11"
+                                    TabIndex="86"
+                                    ToolTip="Ask Claude to find the passage this response rewrites and replace it in the chapter"
+                                    AutomationProperties.Name="Replace passage in chapter"
+                                    AutomationProperties.HelpText="Asks Claude to find the passage this response is meant to replace and swaps it in — no need to select or copy/paste. Dragon: say click Replace."/>
                         </Grid>
                     </StackPanel>
                 </Border>
@@ -906,14 +916,14 @@
                              MaxHeight="60"
                              VerticalScrollBarVisibility="Auto"
                              KeyDown="ChatInputBox_KeyDown"
-                             TabIndex="86"
+                             TabIndex="87"
                              AutomationProperties.Name="Chat input field"
                              AutomationProperties.HelpText="Type a question for Claude and press Enter to send. Or type a voice command such as: panel one, save project, feedback, insert at cursor — and press Enter."/>
                     <Button Grid.Column="2"
                             Command="{Binding SendChatCommand}"
                             Content="Send"
                             Padding="10,5"
-                            TabIndex="87"
+                            TabIndex="88"
                             AutomationProperties.Name="Send message to Claude"
                             AutomationProperties.HelpText="Send your question to Claude AI. Dragon: say click Send."/>
                 </Grid>

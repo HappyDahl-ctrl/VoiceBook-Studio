@@ -267,6 +267,13 @@ namespace VoiceBookStudio.Views
             "  At Cursor — where your cursor was when you left the editor\n" +
             "  At Start  — beginning of the chapter\n" +
             "  At End    — end of the chapter\n\n" +
+            "REPLACING TEXT WITH AN AI RESPONSE\n" +
+            "Click Replace to swap a rewritten passage straight into the chapter —\n" +
+            "no need to select or copy/paste anything first. Claude finds the\n" +
+            "original passage your response is meant to replace (e.g. \"rewrite\n" +
+            "paragraph 4\" or \"punch up the opening line\") and swaps it in. If it\n" +
+            "can't confidently identify a single matching passage, it tells you and\n" +
+            "you can use an Insert button instead.\n\n" +
             "SAVING RESPONSES AS CARDS\n" +
             "Click Save as Card after any AI response.\n" +
             "Give it a title and category, then use it from the Cards tab later.",
@@ -309,7 +316,8 @@ namespace VoiceBookStudio.Views
             "INSERT AI RESPONSE\n" +
             "  insert at cursor / insert here\n" +
             "  insert at start / insert at beginning\n" +
-            "  insert at end / append response\n\n" +
+            "  insert at end / append response\n" +
+            "  replace / replace in chapter / replace passage\n\n" +
             "RESPONSE CARDS\n" +
             "  save response card / save card\n" +
             "  insert card one  (or two, three... up to twenty)\n" +

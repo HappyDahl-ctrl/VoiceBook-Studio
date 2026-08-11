@@ -158,6 +158,37 @@ namespace VoiceBookStudio.Services
         }
 
         /// <summary>
+        /// Given a chapter's current full text and a revised passage the writer wants to swap
+        /// in (e.g. from a chat rewrite), asks Claude to identify the original passage being
+        /// replaced and return it copied verbatim from the chapter, so the app can find and
+        /// replace it without the writer having to select or copy/paste anything. Returns null
+        /// if Claude can't confidently identify a single matching original passage.
+        /// </summary>
+        public async Task<string?> FindReplacementTargetAsync(string chapterContent, string revisedText)
+        {
+            string prompt = $$"""
+                A writer is using an AI rewrite to replace part of a chapter. Below is the
+                chapter's full current text, followed by the rewritten passage they want to use
+                instead.
+
+                Identify the exact original passage in the chapter that the rewrite below is
+                meant to replace, and return it copied verbatim, character-for-character, from
+                the chapter text. Return only that passage — no summary, no paraphrase, no
+                quotation marks, no explanation, no markdown. If you cannot confidently identify
+                a single matching original passage, return exactly: NOT_FOUND
+
+                CHAPTER:
+                {{chapterContent}}
+
+                REWRITTEN PASSAGE:
+                {{revisedText}}
+                """;
+
+            string raw = (await CallClaudeAsync(prompt, maxTokens: 2048)).Trim();
+            return (raw.Length == 0 || raw == "NOT_FOUND") ? null : raw;
+        }
+
+        /// <summary>
         /// Asks Claude for a short, specific title summarizing a response, so saved Cards and
         /// Feedback entries are labeled with what they're actually about instead of a generic
         /// name. scopeLabel identifies what the response covers (a chapter title, or "the whole

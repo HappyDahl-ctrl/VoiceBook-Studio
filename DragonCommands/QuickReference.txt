@@ -113,6 +113,9 @@ Say insert at start to insert the AI response at the beginning of the chapter.
 Say insert at beginning to insert the AI response at the beginning of the chapter.
 Say insert at end to insert the AI response at the end of the chapter.
 Say append response to insert the AI response at the end of the chapter.
+Say replace, or replace in chapter, to have Claude find the passage the AI
+response is meant to replace and swap it in directly — no selecting or
+copy/pasting needed.
 
 
 PROMPT LIBRARY

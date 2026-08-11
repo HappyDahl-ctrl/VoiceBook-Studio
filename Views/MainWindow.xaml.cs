@@ -76,6 +76,7 @@ namespace VoiceBookStudio.Views
 
             // ── Wire ViewModel events ───────────────────────────────────────
             ViewModel.InsertTextRequested     += OnInsertTextRequested;
+            ViewModel.ReplaceTextRequested    += OnReplaceTextRequested;
             ViewModel.FocusPanelRequested     += OnFocusPanelRequested;
             ViewModel.SwitchAiTabRequested    += OnSwitchAiTabRequested;
             ViewModel.FocusChatInputRequested        += (_, _) => ChatInputBox.Focus();
@@ -339,6 +340,31 @@ namespace VoiceBookStudio.Views
             _suppressEditorSync        = true;
             _editorRtb.Text            = current.Insert(pos, block);
             _editorRtb.SelectionStart  = pos + block.Length;
+            _editorRtb.SelectionLength = 0;
+            _suppressEditorSync        = false;
+
+            ViewModel.OnEditorTextChanged(_editorRtb.Text);
+            _editorRtb.Focus();
+        }
+
+        // ----------------------------------------------------------------
+        // Replace a passage in the editor with the AI response
+        // ----------------------------------------------------------------
+
+        private void OnReplaceTextRequested(object? sender, ReplaceTextArgs e)
+        {
+            string current = _editorRtb.Text;
+
+            // The ViewModel already confirmed e.Target exists in its copy of the chapter
+            // content, so this should always succeed. If the editor text drifted in the
+            // moment it took Claude to respond (e.g. the writer kept typing), there's
+            // nothing safe to replace — leave the editor untouched.
+            if (!VoiceBookStudio.Utils.TextLocator.TryFind(current, e.Target, out int start, out int length))
+                return;
+
+            _suppressEditorSync        = true;
+            _editorRtb.Text            = current[..start] + e.Replacement + current[(start + length)..];
+            _editorRtb.SelectionStart  = start + e.Replacement.Length;
             _editorRtb.SelectionLength = 0;
             _suppressEditorSync        = false;
 

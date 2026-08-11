@@ -429,6 +429,13 @@ namespace VoiceBookStudio.Services
                 return true;
             }
 
+            if (cmd is "replace" or "replace in chapter" or "replace passage"
+                     or "replace response" or "replace text")
+            {
+                _vm.TryReplaceInChapter();
+                return true;
+            }
+
             // ----------------------------------------------------------------
             // AI response management
             // ----------------------------------------------------------------

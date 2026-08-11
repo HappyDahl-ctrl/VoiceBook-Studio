@@ -273,6 +273,7 @@ After Claude responds:
 | Insert at cursor | Insert the response at your cursor position |
 | Insert at start | Insert at the beginning of the chapter |
 | Insert at end | Insert at the end of the chapter |
+| Replace / Replace in chapter | Have Claude find the passage the response replaces and swap it in directly — no selecting or copy/pasting needed |
 | Save card / Save response card | Save the response to the Card Library |
 | Discard response | Remove the response |
 
@@ -500,6 +501,7 @@ Create Dragon MyCommands that map spoken phrases to keyboard shortcuts or comman
 | Insert at cursor | Insert response at cursor position |
 | Insert at start | Insert at chapter beginning |
 | Insert at end | Insert at chapter end |
+| Replace / Replace in chapter | Find and replace the passage the response rewrites |
 | Save card / Save response card | Save response as a card |
 | Discard response / Clear response | Remove the response |
 

@@ -248,6 +248,15 @@
   </Command>
 
   <Command>
+    <name>replace in chapter</name>
+    <description>Ask Claude to find the passage the AI response replaces and swap it in</description>
+    <steps>
+      <step>PressKey Ctrl+3</step>
+      <step>TypeKeys replace{ENTER}</step>
+    </steps>
+  </Command>
+
+  <Command>
     <name>insert at start</name>
     <description>Insert AI response at start of chapter</description>
     <steps>

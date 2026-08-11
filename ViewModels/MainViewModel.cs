@@ -1881,6 +1881,7 @@ namespace VoiceBookStudio.ViewModels
             ResponseCardVM.AddCard(card);
             SwitchAiTabRequested?.Invoke(this, "Cards");
             SetStatus($"Card saved: {dlg.CardTitle}");
+            _tutorialActionSink?.Invoke("savecard");
         }
 
         // ----------------------------------------------------------------

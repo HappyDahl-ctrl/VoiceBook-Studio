@@ -390,13 +390,14 @@ namespace VoiceBookStudio.ViewModels
         // Step definitions
         //
         // STRUCTURE
-        //   Section 1 — Audio and microphone test        (steps  1–2,  interactive)
-        //   Section 2 — Welcome and orientation          (steps  3–5,  passive)
-        //   Section 3 — Understanding the three panels   (steps  6–9,  mixed)
-        //   Section 4 — Voice command practice           (steps 10–11, passive)
-        //   Section 5 — Your first chapter               (steps 12–15, interactive)
-        //   Section 6 — Practice save                    (step  16,    interactive)
-        //   Section 7 — Tutorial complete                (step  17,    passive)
+        //   Section 1 — Audio and microphone test          (steps  1–2,  interactive)
+        //   Section 2 — Welcome and orientation            (steps  3–5,  passive)
+        //   Section 3 — Understanding the four panels      (steps  6–10, mixed)
+        //   Section 4 — Other voice command overview       (steps 11–12, passive)
+        //   Section 5 — Your first chapter                 (steps 13–16, interactive)
+        //   Section 6 — Claude, the Prompt Library & Cards (steps 17–20, mixed)
+        //   Section 7 — Practice save                      (step  21,    interactive)
+        //   Section 8 — Tutorial complete                  (step  22,    passive)
         // ────────────────────────────────────────────────────────────────
 
         private static TutorialStep[] BuildSteps(bool jawsDetected, bool dragonDetected)
@@ -515,7 +516,7 @@ namespace VoiceBookStudio.ViewModels
                 {
                     Title   = "About VoiceBook Studio",
                     Content =
-                        "VoiceBook Studio has three panels.\n\n" +
+                        "VoiceBook Studio has four panels.\n\n" +
                         "PANEL 1 — Chapter Manager (left side)\n" +
                         "Lists all your book sections in order: front matter, body chapters, " +
                         "back matter. Navigate with the Up and Down arrow keys.\n\n" +
@@ -526,10 +527,16 @@ namespace VoiceBookStudio.ViewModels
                               "dictate, correct with \"Correct that\", and use all Dragon navigation commands."
                             : "Speak into the microphone to dictate, or type normally. " +
                               "The app mic stays on while you write.") + "\n\n" +
-                        "PANEL 3 — AI Assistant (right side)\n" +
-                        "Chat with Claude for feedback, browse 76 writing prompts, and save " +
-                        "useful responses as cards.\n\n" +
-                        "Switch panels by pressing Ctrl+1, Ctrl+2, or Ctrl+3. Or say Panel 1, Panel 2, or Panel 3."
+                        "PANEL 3 — AI Assistant (bottom of the window)\n" +
+                        "Chat with Claude for feedback and rewrites. Insert a response into your " +
+                        "chapter, or say Replace and Claude finds the exact passage it rewrote and " +
+                        "swaps it in for you — no selecting or copy/pasting needed.\n\n" +
+                        "PANEL 4 — Library (right side)\n" +
+                        "Three tabs: Prompts (76 categorized writing prompts you can send straight " +
+                        "to Claude), Cards (AI responses you've saved to reuse), and Feedback " +
+                        "(your saved chapter and book analyses).\n\n" +
+                        "Switch panels by pressing Ctrl+1, Ctrl+2, Ctrl+3, or Ctrl+4/F11. " +
+                        "Or say Panel 1, Panel 2, Panel 3, or Panel 4."
                 },
 
                 // ════════════════════════════════════════════════════════
@@ -544,12 +551,14 @@ namespace VoiceBookStudio.ViewModels
                         "KEYBOARD\n" +
                         "  Ctrl+1  — Chapter Manager\n" +
                         "  F2 or Ctrl+2  — Writing Editor\n" +
-                        "  F3 or Ctrl+3  — AI Assistant\n\n" +
+                        "  F3 or Ctrl+3  — AI Assistant\n" +
+                        "  F11 or Ctrl+4  — Library\n\n" +
                         "VOICE (say any of these)\n" +
                         "  Panel 1    /    Go to panel 1    /    Panel one\n" +
                         "  Panel 2    /    Go to panel 2    /    Panel two\n" +
-                        "  Panel 3    /    Go to panel 3    /    Panel three\n\n" +
-                        "The next three steps ask you to switch to each panel so you can " +
+                        "  Panel 3    /    Go to panel 3    /    Panel three\n" +
+                        "  Panel 4    /    Go to panel 4    /    Panel four    /    Go to library\n\n" +
+                        "The next four steps ask you to switch to each panel so you can " +
                         "confirm the commands work on your machine."
                 },
 
@@ -575,6 +584,19 @@ namespace VoiceBookStudio.ViewModels
                     RequiredAction = "panel3",
                     ActionPrompt   = "Say Panel Three, or press F3 or Ctrl+3",
                     SuccessMessage = "Panel 3 focused.",
+                    IsSkippable    = true
+                },
+
+                new TutorialStep
+                {
+                    Title          = "Switch to the Library — Panel 4",
+                    Content        =
+                        "Now switch to the Library panel — this is where the Prompt Library, " +
+                        "your saved response cards, and your saved feedback all live.\n\n" +
+                        "Say Panel Four, or Go to library — or press F11 or Ctrl+4.",
+                    RequiredAction = "panel4",
+                    ActionPrompt   = "Say Panel Four, or Go to library, or press F11 or Ctrl+4",
+                    SuccessMessage = "Panel 4 focused. That's the Library — Prompts, Cards, and Feedback tabs.",
                     IsSkippable    = true
                 },
 
@@ -609,6 +631,8 @@ namespace VoiceBookStudio.ViewModels
                         "  Export Word      — export as a Word document\n" +
                         "  Export PDF       — export as a PDF\n" +
                         "  Comprehensive feedback — AI analysis of the current chapter\n" +
+                        "  Word count       — hear the word count for whatever is open now\n" +
+                        "  Chapter word count / Book word count — ask for either one specifically\n" +
                         "  What can I say here — hear commands for the current panel\n\n" +
                         (dragonDetected
                             ? "GIVING COMMANDS WITH DRAGON\n" +
@@ -701,7 +725,81 @@ namespace VoiceBookStudio.ViewModels
                 },
 
                 // ════════════════════════════════════════════════════════
-                // SECTION 6 — Practice save  (step 16, interactive)
+                // SECTION 6 — Claude, the Prompt Library & Cards  (steps 17–20)
+                // Comes after a chapter exists so there is real content for Claude
+                // to respond to, and a real response to save as a card.
+                // ════════════════════════════════════════════════════════
+
+                new TutorialStep
+                {
+                    Title   = "Section 6 — Getting Help From Claude",
+                    Content =
+                        "The AI Assistant panel at the bottom of the window is a running chat " +
+                        "with Claude. Anything you type or dictate there, Claude answers with " +
+                        "your open chapter as context.\n\n" +
+                        "GETTING A RESPONSE INTO YOUR CHAPTER\n" +
+                        "Once Claude replies, three Insert buttons add the response at your " +
+                        "cursor, the start, or the end of the chapter.\n\n" +
+                        "A fourth option, Replace, is different: say Replace, or click it, and " +
+                        "Claude finds the exact original passage its response was meant to " +
+                        "rewrite — for example if you asked \"rewrite paragraph 4\" — and swaps " +
+                        "it in directly. No selecting text, no copy and paste. If Claude can't " +
+                        "confidently pin down a single passage, it says so instead of guessing, " +
+                        "and you can use an Insert button instead."
+                },
+
+                new TutorialStep
+                {
+                    Title          = "Ask Claude a Question",
+                    Content        =
+                        "Try it now. Go to the AI Assistant panel (Panel 3), then say or type a " +
+                        "question about your chapter — for example \"How can I improve this " +
+                        "opening?\" — and send it.\n\n" +
+                        "Say Send, or Send message — or press Enter in the chat box.\n\n" +
+                        "The tutorial will detect Claude's response and move on automatically.",
+                    RequiredAction = "sendchat",
+                    ActionPrompt   = "Ask Claude something in the chat box, then say Send or press Enter",
+                    SuccessMessage = "Claude responded. You can Insert or Replace it in your chapter any time.",
+                    IsSkippable    = true
+                },
+
+                new TutorialStep
+                {
+                    Title   = "The Prompt Library",
+                    Content =
+                        "You just wrote your own question, but you don't have to start from " +
+                        "blank every time. The Library panel's Prompts tab holds 76 pre-written " +
+                        "prompts organised by category — editing, pacing, dialogue, character " +
+                        "development, openings and endings, and more.\n\n" +
+                        "Say Prompt categories, or Read prompt categories, to hear every " +
+                        "category and how many prompts it has, each labelled with a letter.\n\n" +
+                        "Say Read prompt A — using whichever letter you heard — to hear every " +
+                        "prompt in that category, each labelled like A1, A2, A3.\n\n" +
+                        "Say Use prompt A1, or just Prompt A1, to send that prompt straight " +
+                        "to Claude for your open chapter. You can reach the Prompts tab any " +
+                        "time by saying Panel 4, or Open prompt library."
+                },
+
+                new TutorialStep
+                {
+                    Title          = "Save a Response as a Card",
+                    Content        =
+                        "Claude's response from a moment ago is still showing in the AI panel. " +
+                        "When a response is worth reusing — a note on your character's voice, a " +
+                        "phrasing you like — save it as a card instead of losing it.\n\n" +
+                        "Say Save card, or Save response card — or click Save as Card.\n\n" +
+                        "A small dialog asks for a title and a category, then saves it to the " +
+                        "Library panel's Cards tab. From there, say Card categories to browse " +
+                        "them, or Insert card A1 to drop any saved card straight into your " +
+                        "chapter later — in any project, any time.",
+                    RequiredAction = "savecard",
+                    ActionPrompt   = "Say Save card, or click Save as Card, and complete the dialog",
+                    SuccessMessage = "Card saved. You can reuse it from the Cards tab any time.",
+                    IsSkippable    = true
+                },
+
+                // ════════════════════════════════════════════════════════
+                // SECTION 7 — Practice save  (step 21, interactive)
                 // Save comes after the project is created so there is something to save.
                 // ════════════════════════════════════════════════════════
 
@@ -720,7 +818,7 @@ namespace VoiceBookStudio.ViewModels
                 },
 
                 // ════════════════════════════════════════════════════════
-                // SECTION 7 — Completion  (step 17, passive)
+                // SECTION 8 — Completion  (step 22, passive)
                 // ════════════════════════════════════════════════════════
 
                 new TutorialStep
@@ -732,11 +830,17 @@ namespace VoiceBookStudio.ViewModels
                         "  Ctrl+1            — Chapter Manager\n" +
                         "  F2 / Ctrl+2      — Writing Editor\n" +
                         "  F3 / Ctrl+3      — AI Assistant\n" +
+                        "  F11 / Ctrl+4     — Library (Prompts, Cards, Feedback)\n" +
                         "  Ctrl+S           — Save\n" +
                         "  Ctrl+A           — Add chapter\n" +
                         "  Ctrl+N           — New project\n" +
                         "  Ctrl+I           — Import Word document\n" +
                         "  Ctrl+F           — Run comprehensive AI feedback\n\n" +
+                        "  Send             — send your chat message to Claude\n" +
+                        "  Insert at cursor / Insert at start / Insert at end — add a response to your chapter\n" +
+                        "  Replace          — swap a response straight into the passage it rewrote\n" +
+                        "  Save card        — keep a response for later, in the Cards tab\n" +
+                        "  Word count / Chapter word count / Book word count\n\n" +
                         "Say What can I say here at any time to hear context-sensitive commands.\n\n" +
                         "Say Start tutorial at any time to run this tutorial again."
                 }

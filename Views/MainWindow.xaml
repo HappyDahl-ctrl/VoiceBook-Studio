@@ -461,11 +461,18 @@
                                AutomationProperties.LiveSetting="Polite"/>
                 </Border>
 
+                <!--
+                     No LiveSetting here on purpose: WordCountDisplay changes on every
+                     keystroke, and a Polite live region would have JAWS announce "Words: N"
+                     after nearly everything typed. The word count is instead spoken
+                     deliberately — right after chapter/whole-book selection, and on the
+                     "word count" voice command (MainViewModel.TryAnnounceWordCount) — while
+                     still being readable here on demand via Tab/arrow navigation.
+                -->
                 <TextBlock Grid.Row="1"
                            Text="{Binding WordCountDisplay}"
                            Margin="10,4" FontSize="12" Foreground="#555"
-                           AutomationProperties.Name="{Binding WordCountDisplay}"
-                           AutomationProperties.LiveSetting="Polite"/>
+                           AutomationProperties.Name="{Binding WordCountDisplay}"/>
 
                 <!--
                      WindowsFormsHost hosts a WinForms RichTextBox which exposes the full
@@ -942,10 +949,10 @@
             </StatusBarItem>
             <Separator/>
             <StatusBarItem HorizontalAlignment="Right">
+                <!-- No LiveSetting — see the matching word count TextBlock in the editor panel. -->
                 <TextBlock Text="{Binding WordCountDisplay}"
                            FontSize="12" Margin="0,0,8,0"
-                           AutomationProperties.Name="{Binding WordCountDisplay}"
-                           AutomationProperties.LiveSetting="Polite"/>
+                           AutomationProperties.Name="{Binding WordCountDisplay}"/>
             </StatusBarItem>
         </StatusBar>
     </Grid>

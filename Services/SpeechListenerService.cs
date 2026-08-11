@@ -234,6 +234,10 @@ namespace VoiceBookStudio.Services
                 "read chapter", "read current chapter",
                 "read all", "read chapter content", "read chapter title",
                 "chapter title", "what chapter", "current chapter",
+                "word count", "how many words",
+                "chapter word count", "word count for chapter", "word count for this chapter",
+                "book word count", "whole book word count",
+                "word count for book", "word count for whole book", "total word count",
 
                 // Stop reading / silence TTS
                 "stop reading", "stop speech", "stop", "quiet", "silence",

@@ -17,14 +17,19 @@ namespace VoiceBookStudio.ViewModels
         [ObservableProperty]
         private string _content = string.Empty;
 
+        /// <summary>Sum of every chapter's word count, kept in sync by Refresh().</summary>
+        [ObservableProperty]
+        private int _wordCount;
+
         /// <summary>
         /// Rebuilds Content by concatenating every chapter's text in list order,
-        /// preceded by the chapter title as a heading line.
+        /// preceded by the chapter title as a heading line, and recomputes WordCount.
         /// </summary>
         public void Refresh(IEnumerable<ChapterViewModel> chapters)
         {
             var sb = new StringBuilder();
-            bool first = true;
+            bool first     = true;
+            int  totalWords = 0;
             foreach (var c in chapters)
             {
                 if (string.IsNullOrEmpty(c.Content)) continue;
@@ -35,9 +40,11 @@ namespace VoiceBookStudio.ViewModels
                     sb.AppendLine();
                 }
                 sb.Append(c.Content);
+                totalWords += c.WordCount;
                 first = false;
             }
-            Content = sb.ToString();
+            Content   = sb.ToString();
+            WordCount = totalWords;
         }
     }
 }

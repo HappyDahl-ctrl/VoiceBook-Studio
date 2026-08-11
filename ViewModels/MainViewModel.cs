@@ -233,6 +233,7 @@ namespace VoiceBookStudio.ViewModels
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(RunAiFeedbackCommand))]
         [NotifyCanExecuteChangedFor(nameof(SendChatCommand))]
+        [NotifyPropertyChangedFor(nameof(WordCountDisplay))]
         private bool _isWholeBookSelected;
 
         /// <summary>
@@ -312,9 +313,9 @@ namespace VoiceBookStudio.ViewModels
             SelectedChapter == null ? "No chapter selected" : SelectedChapter.Title;
 
         public string WordCountDisplay =>
-            SelectedChapter == null
-                ? "Words: 0"
-                : $"Words: {SelectedChapter.WordCount:N0}";
+            IsWholeBookSelected  ? $"Words: {WholeBook.WordCount:N0}" :
+            SelectedChapter == null ? "Words: 0" :
+            $"Words: {SelectedChapter.WordCount:N0}";
 
         public string AiStatusDisplay =>
             IsApiKeySet ? "AI: Ready" : "AI: Not configured";
@@ -1528,11 +1529,11 @@ namespace VoiceBookStudio.ViewModels
         public void SelectWholeBook()
         {
             FlushEditorToChapter();
-            IsWholeBookSelected = true;
             WholeBook.Refresh(Chapters);
+            IsWholeBookSelected = true;
             SelectedChapter = null;
-            SetStatus("Whole Book — read-only view of all chapters in order.");
-            LiveAnnounce("Whole Book. Read only.");
+            SetStatus($"Whole Book — read-only view of all chapters in order. {WholeBook.WordCount:N0} words.");
+            LiveAnnounce($"Whole Book. Read only. {WholeBook.WordCount:N0} words.");
         }
 
         public void OnEditorTextChanged(string newText)
@@ -2340,7 +2341,17 @@ namespace VoiceBookStudio.ViewModels
                      "Add chapter. Save project. Rename chapter. Export PDF. Panel one. " +
                      "Or type any question for Claude and press Enter.",
 
-                _ => "Global commands: Panel one. Panel two. Panel three. " +
+                4 => "Library panel. Prompts, Cards, and Feedback tabs. " +
+                     "Prompt categories, or Read prompt categories, to hear what's in your prompt library. " +
+                     "Read prompt A, followed by any category letter, to hear every prompt in that category. " +
+                     "Card categories, or Read card categories, to hear your saved response cards. " +
+                     "Insert card one, through insert card twenty, or Insert card A1, to add a card to your chapter. " +
+                     "Feedback library, or What's in my feedback library, to review saved AI feedback. " +
+                     "Delete feedback entry to remove the selected one. " +
+                     "Word count, Chapter word count, or Book word count. " +
+                     "Global commands: Panel one, two, or three. Save.",
+
+                _ => "Global commands: Panel one. Panel two. Panel three. Panel four. " +
                      "Save. New project. Open project. Import document. Export Word. Export PDF. " +
                      "Feedback. Book analysis. Toggle voice. Set API key. Start tutorial."
             };
@@ -2474,8 +2485,46 @@ namespace VoiceBookStudio.ViewModels
 
         public void TryAnnounceChapterTitle()
         {
+            if (IsWholeBookSelected)
+            {
+                WholeBook.Refresh(Chapters);
+                string wbMsg = $"Whole Book. {WholeBook.WordCount:N0} words.";
+                SetStatus(wbMsg);
+                LiveAnnounce(wbMsg);
+                return;
+            }
+
             if (!HasSelectedChapter) { AnnounceNotAvailable("No chapter is open."); return; }
             string msg = $"Current chapter: {SelectedChapter!.Title}. {SelectedChapter.WordCount} words.";
+            SetStatus(msg);
+            LiveAnnounce(msg);
+        }
+
+        /// <summary>
+        /// Speaks the word count for whatever is currently active — the open chapter, or the
+        /// Whole Book entry. WordCountDisplay's live region is intentionally silent on every
+        /// keystroke (see MainWindow.xaml), so this on-demand announcement — plus the one
+        /// spoken right after chapter/whole-book selection — is how word count reaches the
+        /// user by voice without interrupting them mid-edit.
+        /// </summary>
+        public void TryAnnounceWordCount()
+        {
+            if (IsWholeBookSelected) TryAnnounceBookWordCount();
+            else                     TryAnnounceChapterWordCount();
+        }
+
+        public void TryAnnounceChapterWordCount()
+        {
+            if (!HasSelectedChapter) { AnnounceNotAvailable("No chapter is open."); return; }
+            string msg = $"{SelectedChapter!.Title}: {SelectedChapter.WordCount:N0} words.";
+            SetStatus(msg);
+            LiveAnnounce(msg);
+        }
+
+        public void TryAnnounceBookWordCount()
+        {
+            WholeBook.Refresh(Chapters);
+            string msg = $"Whole book: {WholeBook.WordCount:N0} words.";
             SetStatus(msg);
             LiveAnnounce(msg);
         }

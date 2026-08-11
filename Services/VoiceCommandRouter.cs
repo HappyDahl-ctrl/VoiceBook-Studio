@@ -328,6 +328,25 @@ namespace VoiceBookStudio.Services
                 return true;
             }
 
+            if (cmd is "word count" or "how many words")
+            {
+                _vm.TryAnnounceWordCount();
+                return true;
+            }
+
+            if (cmd is "chapter word count" or "word count for chapter" or "word count for this chapter")
+            {
+                _vm.TryAnnounceChapterWordCount();
+                return true;
+            }
+
+            if (cmd is "book word count" or "whole book word count"
+                     or "word count for book" or "word count for whole book" or "total word count")
+            {
+                _vm.TryAnnounceBookWordCount();
+                return true;
+            }
+
             if (cmd is "read paragraph" or "read current paragraph" or "read this paragraph")
             {
                 _vm.TryReadParagraph();

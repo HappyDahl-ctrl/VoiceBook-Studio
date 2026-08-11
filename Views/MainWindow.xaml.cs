@@ -447,7 +447,15 @@ namespace VoiceBookStudio.Views
                 _          => null
             };
             if (index.HasValue)
+            {
                 LibraryTabControl.SelectedIndex = index.Value;
+
+                // Without this, "open prompt library" / "show response cards" etc. would
+                // switch the tab visually but leave keyboard/JAWS focus wherever it was
+                // (e.g. the chat box) — a hands-free user would hear nothing change and
+                // Tab would still walk the old panel. Matches FocusPanel4's own behavior.
+                LibraryTabControl.Focus();
+            }
         }
 
         // ----------------------------------------------------------------

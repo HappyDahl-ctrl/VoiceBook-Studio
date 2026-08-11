@@ -292,10 +292,16 @@ namespace VoiceBookStudio.Views
             "   Type or dictate a command into the chat box.\n" +
             "   Press Enter to run it.\n\n" +
             "NAVIGATION\n" +
-            "  panel one / panel two / panel three\n" +
+            "  panel one / panel two / panel three / panel four\n" +
+            "  go to library / open library\n" +
             "  go to chat / chat tab\n" +
             "  open prompt library / show prompts\n" +
             "  open response cards / cards\n\n" +
+            "READING & WORD COUNT\n" +
+            "  read chapter title / current chapter\n" +
+            "  word count / how many words\n" +
+            "  chapter word count\n" +
+            "  book word count / whole book word count\n\n" +
             "PROJECT\n" +
             "  new project / browse for project\n" +
             "  save / save project / save now\n\n" +

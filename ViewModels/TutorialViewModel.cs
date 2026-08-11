@@ -532,7 +532,7 @@ namespace VoiceBookStudio.ViewModels
                         "chapter, or say Replace and Claude finds the exact passage it rewrote and " +
                         "swaps it in for you — no selecting or copy/pasting needed.\n\n" +
                         "PANEL 4 — Library (right side)\n" +
-                        "Three tabs: Prompts (76 categorized writing prompts you can send straight " +
+                        "Three tabs: Prompts (81 categorized writing prompts you can send straight " +
                         "to Claude), Cards (AI responses you've saved to reuse), and Feedback " +
                         "(your saved chapter and book analyses).\n\n" +
                         "Switch panels by pressing Ctrl+1, Ctrl+2, Ctrl+3, or Ctrl+4/F11. " +
@@ -768,7 +768,7 @@ namespace VoiceBookStudio.ViewModels
                     Title   = "The Prompt Library",
                     Content =
                         "You just wrote your own question, but you don't have to start from " +
-                        "blank every time. The Library panel's Prompts tab holds 76 pre-written " +
+                        "blank every time. The Library panel's Prompts tab holds 81 pre-written " +
                         "prompts organised by category — editing, pacing, dialogue, character " +
                         "development, openings and endings, and more.\n\n" +
                         "Say Prompt categories, or Read prompt categories, to hear every " +

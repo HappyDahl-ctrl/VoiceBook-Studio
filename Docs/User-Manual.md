@@ -25,6 +25,7 @@ Designed for: JAWS · Dragon NaturallySpeaking · JSay · Windows built-in voice
 16. Voice Command Reference
 17. Keyboard Shortcut Reference
 18. Sounds Reference
+19. Appendix (Section Types, File Locations)
 
 ---
 
@@ -229,7 +230,7 @@ Three tabs, reached either by navigating within Panel 4 once focused, or directl
 
 | Tab | What it holds | Reach it directly by saying |
 |---|---|---|
-| Prompts | 76 pre-written writing prompts organised by category — see Section 8 | "Open prompt library" or "Show prompts" |
+| Prompts | 81 pre-written writing prompts organised by category — see Section 8 | "Open prompt library" or "Show prompts" |
 | Cards | AI responses you've saved to reuse — see Section 9 | "Open response cards" or "Cards" |
 | Feedback | Every AI feedback report, saved automatically — see Section 10 | "Open feedback library" |
 
@@ -604,7 +605,7 @@ Create Dragon MyCommands that map spoken phrases to keyboard shortcuts or comman
 |---|---|
 | Open prompt library | Jump to Prompts tab (Panel 4) |
 | Prompt categories / What prompts do I have | Hear categories |
-| Read prompt A (through J) | Hear all prompts in a category |
+| Read prompt A (through K) | Hear all prompts in a category |
 | Use prompt A1 / Prompt A1 | Load and send a specific prompt (letter, then number) |
 | Add new prompt | Add a prompt |
 
@@ -712,4 +713,41 @@ F1 is intentionally left unbound — it's reserved for JAWS's own contextual hel
 
 ---
 
-*Say "what can I say here" at any time to hear available commands for the current panel. Say "start tutorial" to open the guided tour. For a condensed one-page reference, see `Docs/Cheat-Sheet.md`.*
+## 19. Appendix
+
+### Section Types Reference
+
+Every chapter or section you add is one of 14 types, grouped into front matter, body, and back matter. The section group order (front → body → back) is always preserved regardless of how you reorder within a group.
+
+| Section type | Group | Typical purpose |
+|---|---|---|
+| Title Page | Front matter | Book title, author, series info |
+| Copyright | Front matter | Legal/copyright notice |
+| Dedication | Front matter | Dedication to person or persons |
+| Epigraph | Front matter | Opening quote |
+| Table of Contents | Front matter | Chapter listing |
+| Foreword | Front matter | Introductory note by another author |
+| Preface | Front matter | Author's note on the book's origins |
+| Introduction | Front matter | Introduction to content |
+| Prologue | Front matter | Scene-setting narrative before Chapter 1 |
+| Chapter | Body | Main narrative chapters |
+| Epilogue | Back matter | Narrative scene after the story ends |
+| Afterword | Back matter | Author's reflection after the story |
+| Appendix | Back matter | Supplementary material |
+| About the Author | Back matter | Author biography |
+
+### File Locations
+
+| Item | Location |
+|---|---|
+| Project files | Wherever you saved them (`.vbk`) |
+| Response cards | `%APPDATA%\VoiceBookStudio\ResponseCards\cards.json` |
+| Saved AI feedback | `%APPDATA%\VoiceBookStudio\Feedback\feedback.json` |
+| Chat history | `%APPDATA%\VoiceBookStudio\ChatHistory\history.json` |
+| App settings (default project folder, first-launch state) | `%APPDATA%\VoiceBookStudio\settings.json` |
+| Anthropic API key | `HKEY_CURRENT_USER\SOFTWARE\VoiceBookStudio` (Windows Registry, encrypted at rest with DPAPI — not a plain file, not the Windows Credential Store) |
+| Writing prompts (shipped with the app) | `Data\PromptLibrary\prompts.json` in the install folder |
+
+---
+
+*Say "what can I say here" at any time to hear available commands for the current panel. Say "start tutorial" to open the guided tour. For a condensed one-page reference, see `Docs/Cheat-Sheet.md`. For a deeper JAWS settings and keystroke walkthrough, see `Docs/JAWS-Settings-Guide.md`.*

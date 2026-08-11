@@ -7,8 +7,10 @@ For use with JAWS, Dragon NaturallySpeaking, or Windows Speech Recognition
 This is a legacy v1.0.0 document that no longer matches the app: it
 references F1/F2/F3 panel keys (now Ctrl+1/2/3), a "My Documents\VoiceBook
 Projects\" default save location (the app has no such hardcoded default —
-you set one in Settings or are prompted each time), and a 75-prompt library
-(actual count is 76). For accurate, current instructions see
+you set one in Settings or are prompted each time), a 75-prompt library
+(actual count is 81 across 11 categories), and a 3-panel layout (the app
+now has 4 panels — Library is its own panel, not a tab inside AI Assistant).
+For accurate, current instructions see
 Docs/Installation-and-Configuration-Guide.md and Docs/User-Manual.md in the
 repository root. Kept here for historical reference only.
 

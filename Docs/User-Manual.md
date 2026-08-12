@@ -240,7 +240,7 @@ Saying any of the three commands above switches straight to that tab and moves k
 
 ### A Note on Panel-Switching While Dictating
 
-F2, F3, and F11 work everywhere — including while your cursor is actively inside the Writing Editor mid-dictation — because they're wired at both the app level and the editor level. Ctrl+1 through Ctrl+4 only work when focus is *outside* the editor (chapter list, chat box, Library panel). This is why Panel 1 (Chapter Manager) has no dedicated F-key of its own: to jump back to it while dictating, press **Escape** instead, which always returns focus to Panel 1 regardless of where you are.
+F2, F3, and F11 work everywhere — including while your cursor is actively inside the Writing Editor mid-dictation — because they're wired at both the app level and the editor level. Ctrl+1 through Ctrl+4 only work when focus is *outside* the editor (chapter list, chat box, Library panel). This is why Panel 1 (Chapter Manager) has no dedicated F-key of its own: to jump back to it while dictating, press **Escape** instead. Escape is wired specifically to the editor for this purpose — pressed while the Writing Editor has focus, it always jumps straight back to Panel 1. It has no effect in the other panels; from Panel 3 or Panel 4, use Ctrl+1 or say "panel one" instead.
 
 ---
 

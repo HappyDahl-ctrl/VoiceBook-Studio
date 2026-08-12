@@ -566,13 +566,17 @@ namespace VoiceBookStudio.ViewModels
                         "  Ctrl+1  — Chapter Manager\n" +
                         "  F2 or Ctrl+2  — Writing Editor\n" +
                         "  F3 or Ctrl+3  — AI Assistant\n" +
-                        "  F11 or Ctrl+4  — Library\n\n" +
+                        "  F11 or Ctrl+4  — Library\n" +
+                        "  Escape  — from inside the Writing Editor, always jumps straight back " +
+                        "to the Chapter Manager. It only does this while the editor has focus; " +
+                        "elsewhere it does not switch panels.\n\n" +
                         "VOICE (say any of these)\n" +
                         "  Panel 1    /    Go to panel 1    /    Panel one\n" +
                         "  Panel 2    /    Go to panel 2    /    Panel two\n" +
                         "  Panel 3    /    Go to panel 3    /    Panel three\n" +
                         "  Panel 4    /    Go to panel 4    /    Panel four    /    Go to library\n\n" +
-                        "Try any one of them now — the tutorial will detect it and move on."
+                        "Press Next when you're ready to try it — the next step will wait for you " +
+                        "to actually switch panels and detect it automatically."
                 },
 
                 new TutorialStep

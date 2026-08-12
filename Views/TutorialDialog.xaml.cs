@@ -38,17 +38,22 @@ namespace VoiceBookStudio.Views
                 vm.PropertyChanged += OnVmPropertyChanged;
                 vm.RepeatRequested += () => AnnounceCurrentStepToJaws(vm);
 
-                // Re-show the tutorial dialog after the import flow completes.
-                // The import path hides us to avoid a WPF modal conflict with the
-                // file picker and chapter-confirmation dialogs; StepAdvanced fires
-                // once projectopened is detected and HandleAction auto-advances.
+                // Reclaim window focus every time a step advances.
+                // Action-detected steps (e.g. "switch to any panel") route through
+                // MainViewModel, which sets Win32 keyboard focus on the main window —
+                // that also activates it, stealing focus from this non-modal dialog.
+                // Once the action is registered and the step moves on, pull focus back
+                // here so N/P/R/S/Escape keep working without the user having to click
+                // back into this window. Also re-shows the dialog after the import flow,
+                // which hides it to avoid a WPF modal conflict with the file picker and
+                // chapter-confirmation dialogs.
                 vm.StepAdvanced += () =>
                 {
-                    if (!_hiddenForImport) return;
+                    bool wasHiddenForImport = _hiddenForImport;
                     _hiddenForImport = false;
                     Dispatcher.BeginInvoke(() =>
                     {
-                        Show();
+                        if (wasHiddenForImport) Show();
                         Activate();
                         StepContent.Focus();
                     });

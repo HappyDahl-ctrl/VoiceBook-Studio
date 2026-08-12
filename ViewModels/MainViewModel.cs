@@ -506,7 +506,9 @@ namespace VoiceBookStudio.ViewModels
             _currentPanel = 4;
             FocusPanelRequested?.Invoke(this, 4);
             SetStatus("Library panel focused.");
-            LiveAnnounce("Library panel. Prompts, Cards, and Feedback tabs.");
+            LiveAnnounce("Library panel. Three tabs: Prompts, Cards, and Feedback — arrow left and " +
+                         "right to switch between them, or jump directly by saying open prompt " +
+                         "library, open response cards, or open feedback library.");
             _tutorialActionSink?.Invoke("panel4");
         }
 
@@ -544,7 +546,8 @@ namespace VoiceBookStudio.ViewModels
         {
             SwitchAiTabRequested?.Invoke(this, "Prompts");
             SetStatus("Prompts tab opened.");
-            LiveAnnounce("Prompts tab.");
+            LiveAnnounce("Prompts tab. Say prompt categories to hear what's here, or read prompt " +
+                         "followed by a letter to hear a category. Say use prompt, then an ID like A1, to send one to Claude.");
         }
 
         public void TryUsePromptById(string promptId)
@@ -593,7 +596,8 @@ namespace VoiceBookStudio.ViewModels
         {
             SwitchAiTabRequested?.Invoke(this, "Cards");
             SetStatus("Response cards tab opened.");
-            LiveAnnounce("Response cards tab.");
+            LiveAnnounce("Response cards tab. Say card categories to hear what's saved, " +
+                         "or insert card followed by an ID like A1 to add one to your chapter.");
         }
 
         public void TryReadCardCategories()
@@ -623,7 +627,8 @@ namespace VoiceBookStudio.ViewModels
         {
             SwitchAiTabRequested?.Invoke(this, "Feedback");
             SetStatus("Feedback library tab opened.");
-            LiveAnnounce("Feedback library.");
+            LiveAnnounce("Feedback library. Every AI analysis is saved here automatically. " +
+                         "Say feedback categories to browse, or read my pacing feedback for a specific type.");
         }
 
         public void TryReadFeedbackCategories()
@@ -785,7 +790,7 @@ namespace VoiceBookStudio.ViewModels
 
                     if (welcomeVm.StartRequested)
                     {
-                        // Launch the full interactive tutorial (17-step TutorialDialog).
+                        // Launch the full interactive tutorial (18-step TutorialDialog).
                         // FirstLaunchComplete is set only when the user finishes or
                         // explicitly skips within the tutorial (TutorialViewModel.TutorialCompleted).
                         StartTutorial();

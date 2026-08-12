@@ -89,7 +89,7 @@ On first launch, a Welcome dialog opens automatically. It speaks a greeting that
 
 Two choices:
 
-- **Start Guided Tour** — a 22-step interactive tutorial that walks through every panel, writing your first chapter, getting a response from Claude, using the Prompt Library, and saving a response card
+- **Start Guided Tour** — a 18-step interactive tutorial that walks through every panel, writing your first chapter, getting a response from Claude, using the Prompt Library, and saving a response card
 - **Skip Tour** — go straight to the main window (the Welcome dialog will offer the tour again next launch, since it was skipped rather than completed)
 
 The tour can be started again at any time by saying "start tutorial" or from Help → Welcome / Tutorial.
@@ -643,7 +643,7 @@ Create Dragon MyCommands that map spoken phrases to keyboard shortcuts or comman
 | Set project folder | Choose default save folder |
 | Toggle voice | Toggle app TTS on or off (not relevant when JAWS is running) |
 | Configure voice | Open the Configure Voice (Azure TTS) dialog |
-| Start tutorial | Open the 22-step guided tutorial |
+| Start tutorial | Open the 18-step guided tutorial |
 | Open welcome | Reopen the Welcome dialog (Start Guided Tour / Skip Tour) |
 
 ### App

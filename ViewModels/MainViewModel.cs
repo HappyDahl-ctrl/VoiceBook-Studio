@@ -1623,11 +1623,22 @@ namespace VoiceBookStudio.ViewModels
                 _sounds.Play(AppSound.AiResponded);
                 AiFeedbackText = feedback.RawText;
 
-                // Auto-save to feedback library (silent, no user action required)
-                FeedbackLibVM.AddEntry(feedbackType, chapterForFeedback, feedback.RawText);
+                // Auto-save to feedback library (silent, no user action required). Kept in
+                // its own try/catch so a save failure (disk full, permissions, etc.) can't
+                // masquerade as an AI failure and overwrite the response that DID succeed.
+                try
+                {
+                    string title = await _aiService.GenerateShortTitleAsync(feedback.RawText, chapterForFeedback);
+                    FeedbackLibVM.AddEntry(feedbackType, chapterForFeedback, feedback.RawText, title);
+                    SetStatus("AI analysis complete. Feedback saved to library. Use the Insert buttons to add it to your chapter.");
+                    LiveAnnounce("Analysis complete. Feedback saved to library. Review the feedback panel.");
+                }
+                catch (Exception saveEx)
+                {
+                    SetStatus($"AI analysis complete, but saving to the feedback library failed: {saveEx.Message}");
+                    LiveAnnounce("Analysis complete, but it could not be saved to the feedback library.");
+                }
 
-                SetStatus("AI analysis complete. Feedback saved to library. Use the Insert buttons to add it to your chapter.");
-                LiveAnnounce("Analysis complete. Feedback saved to library. Review the feedback panel.");
                 _tutorialActionSink?.Invoke("feedback");
             }
             catch (Exception ex)
@@ -1682,11 +1693,21 @@ namespace VoiceBookStudio.ViewModels
                 _sounds.Play(AppSound.AiResponded);
                 AiFeedbackText = feedback.RawText;
 
-                // Auto-save book-wide analysis to feedback library as category A (Comprehensive)
-                FeedbackLibVM.AddEntry("book", Project.Title + " (full book)", feedback.RawText);
-
-                SetStatus("Book analysis complete. Feedback saved to library.");
-                LiveAnnounce("Book analysis complete. Feedback saved to library.");
+                // Auto-save book-wide analysis to feedback library as category A (Comprehensive).
+                // Kept in its own try/catch so a save failure can't masquerade as an AI failure
+                // and overwrite the response that DID succeed.
+                try
+                {
+                    string title = await _aiService.GenerateShortTitleAsync(feedback.RawText, Project.Title + " (full book)");
+                    FeedbackLibVM.AddEntry("book", Project.Title + " (full book)", feedback.RawText, title);
+                    SetStatus("Book analysis complete. Feedback saved to library.");
+                    LiveAnnounce("Book analysis complete. Feedback saved to library.");
+                }
+                catch (Exception saveEx)
+                {
+                    SetStatus($"Book analysis complete, but saving to the feedback library failed: {saveEx.Message}");
+                    LiveAnnounce("Book analysis complete, but it could not be saved to the feedback library.");
+                }
             }
             catch (Exception ex)
             {

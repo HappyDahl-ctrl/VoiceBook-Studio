@@ -925,6 +925,29 @@ namespace VoiceBookStudio.ViewModels
                 : string.Empty);
         }
 
+        /// <summary>
+        /// Resolves the folder Open/Save As dialogs should default to for the
+        /// currently open project: an explicit per-project override if one is set
+        /// (Settings → This Project's Save Folder), else the folder the project's
+        /// file already lives in, else the global default project folder.
+        /// </summary>
+        private string ResolveProjectDialogFolder()
+        {
+            if (Project != null)
+            {
+                string projectOverride = VoiceBookStudio.Utils.AppSettings.GetProjectFolderOverride(Project.Id);
+                if (!string.IsNullOrWhiteSpace(projectOverride)) return projectOverride;
+            }
+
+            if (!string.IsNullOrEmpty(_currentFilePath))
+            {
+                string? currentDir = System.IO.Path.GetDirectoryName(_currentFilePath);
+                if (!string.IsNullOrEmpty(currentDir)) return currentDir;
+            }
+
+            return VoiceBookStudio.Utils.AppSettings.DefaultProjectFolder;
+        }
+
         [RelayCommand]
         private async Task OpenProjectAsync()
         {
@@ -935,7 +958,7 @@ namespace VoiceBookStudio.ViewModels
                 Title            = "Open VoiceBook Project",
                 Filter           = ProjectService.FileFilter,
                 DefaultExt       = ProjectService.FileExtension,
-                InitialDirectory = VoiceBookStudio.Utils.AppSettings.DefaultProjectFolder
+                InitialDirectory = ResolveProjectDialogFolder()
             };
 
             if (dialog.ShowDialog() != true) return;
@@ -995,7 +1018,7 @@ namespace VoiceBookStudio.ViewModels
                 Filter           = ProjectService.FileFilter,
                 DefaultExt       = ProjectService.FileExtension,
                 FileName         = Project.Title,
-                InitialDirectory = VoiceBookStudio.Utils.AppSettings.DefaultProjectFolder
+                InitialDirectory = ResolveProjectDialogFolder()
             };
 
             if (dialog.ShowDialog() != true) return;
@@ -1334,10 +1357,11 @@ namespace VoiceBookStudio.ViewModels
 
             var dlg = new SaveFileDialog
             {
-                Title      = "Export Manuscript as Word Document",
-                Filter     = "Word Document (*.docx)|*.docx",
-                DefaultExt = ".docx",
-                FileName   = Project.Title
+                Title            = "Export Manuscript as Word Document",
+                Filter           = "Word Document (*.docx)|*.docx",
+                DefaultExt       = ".docx",
+                FileName         = Project.Title,
+                InitialDirectory = VoiceBookStudio.Utils.AppSettings.DefaultExportFolder
             };
             if (dlg.ShowDialog() != true) return;
 
@@ -1383,10 +1407,11 @@ namespace VoiceBookStudio.ViewModels
 
             var dlg = new SaveFileDialog
             {
-                Title      = "Export Manuscript as PDF",
-                Filter     = "PDF Document (*.pdf)|*.pdf",
-                DefaultExt = ".pdf",
-                FileName   = Project.Title
+                Title            = "Export Manuscript as PDF",
+                Filter           = "PDF Document (*.pdf)|*.pdf",
+                DefaultExt       = ".pdf",
+                FileName         = Project.Title,
+                InitialDirectory = VoiceBookStudio.Utils.AppSettings.DefaultExportFolder
             };
             if (dlg.ShowDialog() != true) return;
 
@@ -1924,7 +1949,7 @@ namespace VoiceBookStudio.ViewModels
         [RelayCommand]
         private void OpenSettings()
         {
-            var dlg = new Views.SettingsDialog(_systemAnnouncements)
+            var dlg = new Views.SettingsDialog(_systemAnnouncements, Project)
             {
                 Owner = System.Windows.Application.Current.MainWindow
             };
@@ -1951,6 +1976,26 @@ namespace VoiceBookStudio.ViewModels
                 VoiceBookStudio.Utils.AppSettings.DefaultProjectFolder = dlg.SelectedPath;
                 VoiceBookStudio.Utils.AppSettings.SaveJsonSettings();
                 string msg = $"Default project folder set to: {dlg.SelectedPath}";
+                SetStatus(msg);
+                LiveAnnounce(msg);
+            }
+        }
+
+        /// <summary>Opens the folder picker for exports directly (voice command: "set export folder").</summary>
+        public void TryOpenExportFolderPicker()
+        {
+            using var dlg = new System.Windows.Forms.FolderBrowserDialog
+            {
+                Description         = "Choose the default folder for exported Word and PDF files",
+                ShowNewFolderButton = true,
+                SelectedPath        = VoiceBookStudio.Utils.AppSettings.DefaultExportFolder
+            };
+
+            if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                VoiceBookStudio.Utils.AppSettings.DefaultExportFolder = dlg.SelectedPath;
+                VoiceBookStudio.Utils.AppSettings.SaveJsonSettings();
+                string msg = $"Default export folder set to: {dlg.SelectedPath}";
                 SetStatus(msg);
                 LiveAnnounce(msg);
             }

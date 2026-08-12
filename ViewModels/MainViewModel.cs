@@ -439,10 +439,16 @@ namespace VoiceBookStudio.ViewModels
 
             try
             {
+                // On-demand narration deliberately speaks even while JAWS is running (see
+                // SystemAnnouncementService.SpeakOnDemandAsync) — the lead-in makes it
+                // unambiguous that the app's own voice, not JAWS, is about to read aloud.
+                if (VoiceBookStudio.Utils.AppSettings.IsJawsDetected)
+                    await _systemAnnouncements.SpeakOnDemandAsync("Reading aloud. Say stop to end.");
+
                 while (_readingQueue.Count > 0 && !token.IsCancellationRequested)
                 {
                     string item = _readingQueue[0];
-                    await _systemAnnouncements.SpeakAndWaitAsync(item);
+                    await _systemAnnouncements.SpeakOnDemandAsync(item);
                     if (!token.IsCancellationRequested)
                     {
                         _readingQueue.RemoveAt(0);
@@ -1609,14 +1615,14 @@ namespace VoiceBookStudio.ViewModels
                     // Whole Book selected — use the full concatenated manuscript as context.
                     // Refresh first in case chapters were edited since the selection was made.
                     WholeBook.Refresh(Chapters);
-                    feedback = await _aiService.GetFeedbackAsync(
-                        WholeBook.Content, feedbackType, bookContext: null);
+                    feedback = await RunWithStillWorkingCueAsync(() => _aiService.GetFeedbackAsync(
+                        WholeBook.Content, feedbackType, bookContext: null));
                     chapterForFeedback = "Whole Book";
                 }
                 else
                 {
-                    feedback = await _aiService.GetFeedbackAsync(
-                        SelectedChapter!.Content, feedbackType, BuildBookContext());
+                    feedback = await RunWithStillWorkingCueAsync(() => _aiService.GetFeedbackAsync(
+                        SelectedChapter!.Content, feedbackType, BuildBookContext()));
                     chapterForFeedback = SelectedChapter.Title;
                 }
 
@@ -1656,6 +1662,40 @@ namespace VoiceBookStudio.ViewModels
 
         private bool CanRunAi() => SelectedChapter != null || IsWholeBookSelected;
 
+        /// <summary>
+        /// Wraps a long-running Claude API call so the user hears a periodic "still
+        /// working" cue if it takes a while, instead of silence with no indication
+        /// anything is happening. Fires roughly every 12 seconds; stops the instant
+        /// the operation finishes, succeeds, or throws.
+        /// </summary>
+        private async Task<T> RunWithStillWorkingCueAsync<T>(Func<Task<T>> operation)
+        {
+            using var cts = new System.Threading.CancellationTokenSource();
+            var cueTask = StillWorkingCueLoopAsync(cts.Token);
+            try
+            {
+                return await operation();
+            }
+            finally
+            {
+                cts.Cancel();
+                await cueTask;
+            }
+        }
+
+        private async Task StillWorkingCueLoopAsync(System.Threading.CancellationToken token)
+        {
+            try
+            {
+                while (true)
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(12), token);
+                    LiveAnnounce("Still working. Please wait.");
+                }
+            }
+            catch (OperationCanceledException) { }
+        }
+
         // ----------------------------------------------------------------
         // Book-wide feedback (all chapters as primary content)
         // ----------------------------------------------------------------
@@ -1688,7 +1728,8 @@ namespace VoiceBookStudio.ViewModels
                 SetStatus(msg);
                 LiveAnnounce("Analysing your full manuscript. This may take a moment.");
 
-                var feedback = await _aiService.GetBookFeedbackAsync(fullContent, Project.Title);
+                var feedback = await RunWithStillWorkingCueAsync(() =>
+                    _aiService.GetBookFeedbackAsync(fullContent, Project.Title));
 
                 _sounds.Play(AppSound.AiResponded);
                 AiFeedbackText = feedback.RawText;
@@ -1784,8 +1825,8 @@ namespace VoiceBookStudio.ViewModels
 
                 if (IsWholeBookSelected) WholeBook.Refresh(Chapters);
                 string? chatContext = IsWholeBookSelected ? WholeBook.Content : SelectedChapter?.Content;
-                string response = await _aiService.ChatAsync(
-                    msg, chatContext, IsWholeBookSelected ? null : BuildBookContext());
+                string response = await RunWithStillWorkingCueAsync(() => _aiService.ChatAsync(
+                    msg, chatContext, IsWholeBookSelected ? null : BuildBookContext()));
 
                 _sounds.Play(AppSound.AiResponded);
                 AiFeedbackText = response;

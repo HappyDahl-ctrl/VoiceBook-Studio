@@ -1628,7 +1628,7 @@ namespace VoiceBookStudio.ViewModels
                 {
                     feedback = await RunWithStillWorkingCueAsync(() => _aiService.GetFeedbackAsync(
                         SelectedChapter!.Content, feedbackType, BuildBookContext()));
-                    chapterForFeedback = SelectedChapter.Title;
+                    chapterForFeedback = SelectedChapter!.Title;
                 }
 
                 _sounds.Play(AppSound.AiResponded);

@@ -575,7 +575,8 @@ namespace VoiceBookStudio.ViewModels
                         "  Panel 2    /    Go to panel 2    /    Panel two\n" +
                         "  Panel 3    /    Go to panel 3    /    Panel three\n" +
                         "  Panel 4    /    Go to panel 4    /    Panel four    /    Go to library\n\n" +
-                        "Try any one of them now — the tutorial will detect it and move on."
+                        "Press Next when you're ready to try it — the next step will wait for you " +
+                        "to actually switch panels and detect it automatically."
                 },
 
                 new TutorialStep

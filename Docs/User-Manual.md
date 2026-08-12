@@ -333,11 +333,17 @@ See the Panel 3 section above (Section 3) for the full Insert-vs-Replace breakdo
 
 | Say | Action |
 |---|---|
-| Read response | Read Claude's response aloud |
+| Read response | Read Claude's response aloud (or press **Space** while focus is on the response text) |
+| Stop / Pause | Stop the reading |
+| Resume reading | Continue from where reading left off |
 | Insert at cursor / Insert at start / Insert at end | Add the response to your chapter at that position |
 | Replace / Replace in chapter | Have Claude find the passage the response rewrites and swap it in directly |
 | Save card / Save response card | Save the response to the Card Library |
 | Discard response | Remove the response |
+
+**Reading a response works even while JAWS is running.** Everywhere else in the app, JAWS is the only voice — but reading a response, a chapter, or a Library entry aloud on request is a deliberate exception: JAWS's own reading commands aren't built for one long, resumable block of app-generated text with real stop/resume, so the app's own voice handles this one thing instead. You'll hear a short "Reading aloud" lead-in so it's always clear which voice is talking; everything else in the app stays JAWS's job as usual.
+
+**While an AI request is in progress**, if it takes more than a few seconds you'll hear a periodic "Still working" reminder so it never reads as the app having frozen.
 
 ---
 
@@ -438,6 +444,14 @@ Say "set API key" to enter your Anthropic API key. Required for all AI features.
 ### Default Project Folder
 
 Say "set project folder" to choose where new projects are saved. Leave blank to be asked each time.
+
+### This Project's Save Folder
+
+While a project is open, Settings has a second folder option just for it — an override that points that specific project's Open and Save As dialogs at a different folder than the default above (useful if that book lives in a synced or shared folder). Leave it blank to fall back to the default project folder, or wherever the project's file already lives.
+
+### Default Export Folder
+
+Say "set export folder" or set it from Settings to choose where Export Word and Export PDF save to by default. Leave blank to use whatever folder Windows last remembers.
 
 ### Configure Voice (Azure TTS)
 
@@ -591,7 +605,9 @@ Create Dragon MyCommands that map spoken phrases to keyboard shortcuts or comman
 | Book analysis / Whole book / Analyse book | Full manuscript analysis |
 | Send / Send message / Ask Claude | Send chat input |
 | Ask assistant [your question] | Send a question straight to Claude in one phrase |
-| Read response | Read Claude's response aloud |
+| Read response | Read Claude's response aloud (or press Space with focus on the response) |
+| Stop / Pause | Stop reading |
+| Resume reading | Continue reading from where it left off |
 | Insert at cursor | Insert response at cursor position |
 | Insert at start | Insert response at chapter beginning |
 | Insert at end | Insert response at chapter end |
@@ -640,7 +656,8 @@ Create Dragon MyCommands that map spoken phrases to keyboard shortcuts or comman
 |---|---|
 | Set API key | Enter Anthropic API key |
 | Open settings | Open settings dialog |
-| Set project folder | Choose default save folder |
+| Set project folder | Choose default project folder |
+| Set export folder | Choose default folder for exported Word/PDF files |
 | Toggle voice | Toggle app TTS on or off (not relevant when JAWS is running) |
 | Configure voice | Open the Configure Voice (Azure TTS) dialog |
 | Start tutorial | Open the 18-step guided tutorial |

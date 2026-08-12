@@ -71,9 +71,15 @@ F1 and F10 are deliberately unbound (F1 = JAWS's own help; F10 = WPF menu bar).
 "send" · "ask assistant [your question]"
 
 **Using a response**
+"read response" (or press Space) · "stop" / "pause" · "resume reading" ·
 "insert at cursor" · "insert at start" · "insert at end" ·
 "replace" — swaps a rewrite straight into the passage it replaces, no
 selecting or copy/paste · "save card" · "discard response"
+
+Reading a response speaks even with JAWS running — a deliberate, narrow
+exception (see User-Manual.md Section 7) with a "Reading aloud" lead-in so
+it's always clear which voice is talking. A slow AI request gets a periodic
+"Still working" cue so it never reads as frozen.
 
 **Prompt Library** (Panel 4)
 "open prompt library" · "prompt categories" · "read prompt A" ·

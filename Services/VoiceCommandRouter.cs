@@ -553,6 +553,13 @@ namespace VoiceBookStudio.Services
                 return true;
             }
 
+            if (cmd is "set export folder" or "change export folder"
+                     or "default export folder")
+            {
+                _vm.TryOpenExportFolderPicker();
+                return true;
+            }
+
             // ----------------------------------------------------------------
             // Application status and lifecycle
             // ----------------------------------------------------------------

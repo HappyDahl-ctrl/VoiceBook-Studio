@@ -839,8 +839,9 @@
                          FontSize="12"
                          Background="#FAFAFA"
                          TabIndex="81"
+                         PreviewKeyDown="AiFeedbackBox_PreviewKeyDown"
                          AutomationProperties.Name="AI response text"
-                         AutomationProperties.HelpText="Claude's response appears here — from a live chat message or a selected chat history item. Use Insert buttons below to add it to your chapter, or Save as Card to keep it for later."
+                         AutomationProperties.HelpText="Claude's response appears here. Press Space to have it read aloud, or say Stop to end. Use Insert buttons below to add it to your chapter, or Save as Card to keep it for later."
                          AutomationProperties.LiveSetting="Polite"/>
 
                 <!-- Save as Card button -->

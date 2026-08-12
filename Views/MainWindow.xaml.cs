@@ -485,6 +485,19 @@ namespace VoiceBookStudio.Views
         }
 
         // ----------------------------------------------------------------
+        // AI response text — Space bar reads it aloud
+        // ----------------------------------------------------------------
+
+        private void AiFeedbackBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Space && Keyboard.Modifiers == ModifierKeys.None)
+            {
+                ViewModel.TryReadAiResponse();
+                e.Handled = true;
+            }
+        }
+
+        // ----------------------------------------------------------------
         // Menu handlers
         // ----------------------------------------------------------------
 

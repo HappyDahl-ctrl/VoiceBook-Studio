@@ -25,6 +25,7 @@ Designed for: JAWS · Dragon NaturallySpeaking · JSay · Windows built-in voice
 16. Voice Command Reference
 17. Keyboard Shortcut Reference
 18. Sounds Reference
+19. Appendix (Section Types, File Locations)
 
 ---
 
@@ -88,7 +89,7 @@ On first launch, a Welcome dialog opens automatically. It speaks a greeting that
 
 Two choices:
 
-- **Start Guided Tour** — a 22-step interactive tutorial that walks through every panel, writing your first chapter, getting a response from Claude, using the Prompt Library, and saving a response card
+- **Start Guided Tour** — a 18-step interactive tutorial that walks through every panel, writing your first chapter, getting a response from Claude, using the Prompt Library, and saving a response card
 - **Skip Tour** — go straight to the main window (the Welcome dialog will offer the tour again next launch, since it was skipped rather than completed)
 
 The tour can be started again at any time by saying "start tutorial" or from Help → Welcome / Tutorial.
@@ -229,7 +230,7 @@ Three tabs, reached either by navigating within Panel 4 once focused, or directl
 
 | Tab | What it holds | Reach it directly by saying |
 |---|---|---|
-| Prompts | 76 pre-written writing prompts organised by category — see Section 8 | "Open prompt library" or "Show prompts" |
+| Prompts | 81 pre-written writing prompts organised by category — see Section 8 | "Open prompt library" or "Show prompts" |
 | Cards | AI responses you've saved to reuse — see Section 9 | "Open response cards" or "Cards" |
 | Feedback | Every AI feedback report, saved automatically — see Section 10 | "Open feedback library" |
 
@@ -332,11 +333,17 @@ See the Panel 3 section above (Section 3) for the full Insert-vs-Replace breakdo
 
 | Say | Action |
 |---|---|
-| Read response | Read Claude's response aloud |
+| Read response | Read Claude's response aloud (or press **Space** while focus is on the response text) |
+| Stop / Pause | Stop the reading |
+| Resume reading | Continue from where reading left off |
 | Insert at cursor / Insert at start / Insert at end | Add the response to your chapter at that position |
 | Replace / Replace in chapter | Have Claude find the passage the response rewrites and swap it in directly |
 | Save card / Save response card | Save the response to the Card Library |
 | Discard response | Remove the response |
+
+**Reading a response works even while JAWS is running.** Everywhere else in the app, JAWS is the only voice — but reading a response, a chapter, or a Library entry aloud on request is a deliberate exception: JAWS's own reading commands aren't built for one long, resumable block of app-generated text with real stop/resume, so the app's own voice handles this one thing instead. You'll hear a short "Reading aloud" lead-in so it's always clear which voice is talking; everything else in the app stays JAWS's job as usual.
+
+**While an AI request is in progress**, if it takes more than a few seconds you'll hear a periodic "Still working" reminder so it never reads as the app having frozen.
 
 ---
 
@@ -437,6 +444,14 @@ Say "set API key" to enter your Anthropic API key. Required for all AI features.
 ### Default Project Folder
 
 Say "set project folder" to choose where new projects are saved. Leave blank to be asked each time.
+
+### This Project's Save Folder
+
+While a project is open, Settings has a second folder option just for it — an override that points that specific project's Open and Save As dialogs at a different folder than the default above (useful if that book lives in a synced or shared folder). Leave it blank to fall back to the default project folder, or wherever the project's file already lives.
+
+### Default Export Folder
+
+Say "set export folder" or set it from Settings to choose where Export Word and Export PDF save to by default. Leave blank to use whatever folder Windows last remembers.
 
 ### Configure Voice (Azure TTS)
 
@@ -590,7 +605,9 @@ Create Dragon MyCommands that map spoken phrases to keyboard shortcuts or comman
 | Book analysis / Whole book / Analyse book | Full manuscript analysis |
 | Send / Send message / Ask Claude | Send chat input |
 | Ask assistant [your question] | Send a question straight to Claude in one phrase |
-| Read response | Read Claude's response aloud |
+| Read response | Read Claude's response aloud (or press Space with focus on the response) |
+| Stop / Pause | Stop reading |
+| Resume reading | Continue reading from where it left off |
 | Insert at cursor | Insert response at cursor position |
 | Insert at start | Insert response at chapter beginning |
 | Insert at end | Insert response at chapter end |
@@ -604,7 +621,7 @@ Create Dragon MyCommands that map spoken phrases to keyboard shortcuts or comman
 |---|---|
 | Open prompt library | Jump to Prompts tab (Panel 4) |
 | Prompt categories / What prompts do I have | Hear categories |
-| Read prompt A (through J) | Hear all prompts in a category |
+| Read prompt A (through K) | Hear all prompts in a category |
 | Use prompt A1 / Prompt A1 | Load and send a specific prompt (letter, then number) |
 | Add new prompt | Add a prompt |
 
@@ -639,10 +656,11 @@ Create Dragon MyCommands that map spoken phrases to keyboard shortcuts or comman
 |---|---|
 | Set API key | Enter Anthropic API key |
 | Open settings | Open settings dialog |
-| Set project folder | Choose default save folder |
+| Set project folder | Choose default project folder |
+| Set export folder | Choose default folder for exported Word/PDF files |
 | Toggle voice | Toggle app TTS on or off (not relevant when JAWS is running) |
 | Configure voice | Open the Configure Voice (Azure TTS) dialog |
-| Start tutorial | Open the 22-step guided tutorial |
+| Start tutorial | Open the 18-step guided tutorial |
 | Open welcome | Reopen the Welcome dialog (Start Guided Tour / Skip Tour) |
 
 ### App
@@ -712,4 +730,41 @@ F1 is intentionally left unbound — it's reserved for JAWS's own contextual hel
 
 ---
 
-*Say "what can I say here" at any time to hear available commands for the current panel. Say "start tutorial" to open the guided tour. For a condensed one-page reference, see `Docs/Cheat-Sheet.md`.*
+## 19. Appendix
+
+### Section Types Reference
+
+Every chapter or section you add is one of 14 types, grouped into front matter, body, and back matter. The section group order (front → body → back) is always preserved regardless of how you reorder within a group.
+
+| Section type | Group | Typical purpose |
+|---|---|---|
+| Title Page | Front matter | Book title, author, series info |
+| Copyright | Front matter | Legal/copyright notice |
+| Dedication | Front matter | Dedication to person or persons |
+| Epigraph | Front matter | Opening quote |
+| Table of Contents | Front matter | Chapter listing |
+| Foreword | Front matter | Introductory note by another author |
+| Preface | Front matter | Author's note on the book's origins |
+| Introduction | Front matter | Introduction to content |
+| Prologue | Front matter | Scene-setting narrative before Chapter 1 |
+| Chapter | Body | Main narrative chapters |
+| Epilogue | Back matter | Narrative scene after the story ends |
+| Afterword | Back matter | Author's reflection after the story |
+| Appendix | Back matter | Supplementary material |
+| About the Author | Back matter | Author biography |
+
+### File Locations
+
+| Item | Location |
+|---|---|
+| Project files | Wherever you saved them (`.vbk`) |
+| Response cards | `%APPDATA%\VoiceBookStudio\ResponseCards\cards.json` |
+| Saved AI feedback | `%APPDATA%\VoiceBookStudio\Feedback\feedback.json` |
+| Chat history | `%APPDATA%\VoiceBookStudio\ChatHistory\history.json` |
+| App settings (default project folder, first-launch state) | `%APPDATA%\VoiceBookStudio\settings.json` |
+| Anthropic API key | `HKEY_CURRENT_USER\SOFTWARE\VoiceBookStudio` (Windows Registry, encrypted at rest with DPAPI — not a plain file, not the Windows Credential Store) |
+| Writing prompts (shipped with the app) | `Data\PromptLibrary\prompts.json` in the install folder |
+
+---
+
+*Say "what can I say here" at any time to hear available commands for the current panel. Say "start tutorial" to open the guided tour. For a condensed one-page reference, see `Docs/Cheat-Sheet.md`. For a deeper JAWS settings and keystroke walkthrough, see `Docs/JAWS-Settings-Guide.md`.*

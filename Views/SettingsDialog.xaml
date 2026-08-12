@@ -4,18 +4,19 @@
         Title="VoiceBook Studio — Settings"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
-        Width="540" Height="300"
+        SizeToContent="Height"
+        Width="560"
         AutomationProperties.Name="Settings dialog"
-        AutomationProperties.HelpText="Configure default project folder and other settings. The current folder path is read aloud when this dialog opens.">
+        AutomationProperties.HelpText="Configure the default project folder, the default export folder, and this project's own save folder. Settings are read aloud when this dialog opens.">
 
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>   <!-- Heading -->
-            <RowDefinition Height="*"/>      <!-- Settings area -->
+            <RowDefinition Height="Auto"/>   <!-- Settings area -->
             <RowDefinition Height="Auto"/>   <!-- Buttons -->
         </Grid.RowDefinitions>
 
-        <!-- Live region — code-behind sets Text in Window_Loaded to announce the dialog to JAWS. -->
+        <!-- Live region — code-behind sets Text in OnContentRendered to announce the dialog to JAWS. -->
         <TextBlock x:Name="AnnouncementRegion"
                    AutomationProperties.LiveSetting="Assertive"
                    Text="" Height="0" Focusable="False"
@@ -33,6 +34,7 @@
             <!-- Default Project Folder -->
             <GroupBox Header="Default Project Folder"
                       Padding="10,8"
+                      Margin="0,0,0,14"
                       AutomationProperties.Name="Default project folder settings"
                       AutomationProperties.HelpText="New projects will be saved here automatically without prompting. Leave blank to be asked each time.">
                 <StackPanel>
@@ -66,7 +68,7 @@
                                 Padding="10,5"
                                 TabIndex="2"
                                 Click="BrowseButton_Click"
-                                AutomationProperties.Name="Browse"
+                                AutomationProperties.Name="Browse for default project folder"
                                 AutomationProperties.HelpText="Open folder picker to select the default project folder. Dragon: say click Browse."/>
 
                         <Button Grid.Column="4"
@@ -75,7 +77,7 @@
                                 Padding="10,5"
                                 TabIndex="3"
                                 Click="ClearButton_Click"
-                                AutomationProperties.Name="Clear"
+                                AutomationProperties.Name="Clear default project folder"
                                 AutomationProperties.HelpText="Remove the default folder setting. Dragon: say click Clear."/>
                     </Grid>
 
@@ -85,6 +87,111 @@
                                TextWrapping="Wrap"
                                Text="Folder structure: [Default Folder]\[ProjectName]\[ProjectName].vbk with a Chapters\ subfolder inside."
                                AutomationProperties.Name="Folder structure: default folder, then project name folder, then project name dot vbk file, with a Chapters subfolder inside."/>
+                </StackPanel>
+            </GroupBox>
+
+            <!-- Default Export Folder -->
+            <GroupBox Header="Default Export Folder"
+                      Padding="10,8"
+                      Margin="0,0,0,14"
+                      AutomationProperties.Name="Default export folder settings"
+                      AutomationProperties.HelpText="Exported Word and PDF files will default to this folder. Leave blank to use whatever folder Windows last remembers.">
+                <StackPanel>
+                    <TextBlock Text="Export Word and Export PDF will open here by default. Leave blank to use whatever folder Windows last remembers."
+                               FontSize="12" Foreground="#555"
+                               TextWrapping="Wrap"
+                               Margin="0,0,0,10"/>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBox Grid.Column="0"
+                                 x:Name="ExportFolderPathBox"
+                                 IsReadOnly="True"
+                                 FontSize="12"
+                                 Padding="6,4"
+                                 VerticalContentAlignment="Center"
+                                 TabIndex="4"
+                                 AutomationProperties.Name="Default export folder path"
+                                 AutomationProperties.HelpText="The current default export folder. Use the Browse button to change it."/>
+
+                        <Button Grid.Column="2"
+                                x:Name="BrowseExportButton"
+                                Content="Browse..."
+                                Padding="10,5"
+                                TabIndex="5"
+                                Click="BrowseExportButton_Click"
+                                AutomationProperties.Name="Browse for default export folder"
+                                AutomationProperties.HelpText="Open folder picker to select the default export folder. Dragon: say click Browse."/>
+
+                        <Button Grid.Column="4"
+                                x:Name="ClearExportButton"
+                                Content="Clear"
+                                Padding="10,5"
+                                TabIndex="6"
+                                Click="ClearExportButton_Click"
+                                AutomationProperties.Name="Clear default export folder"
+                                AutomationProperties.HelpText="Remove the default export folder setting. Dragon: say click Clear."/>
+                    </Grid>
+                </StackPanel>
+            </GroupBox>
+
+            <!-- This Project's Save Folder -->
+            <GroupBox x:Name="ProjectFolderGroup"
+                      Padding="10,8"
+                      AutomationProperties.HelpText="An optional folder just for the project that's currently open, overriding the default project folder for its Open and Save As dialogs.">
+                <GroupBox.Header>
+                    <TextBlock x:Name="ProjectFolderHeader" Text="This Project's Save Folder"/>
+                </GroupBox.Header>
+                <StackPanel>
+                    <TextBlock Text="Overrides the default project folder above, just for this project's Open and Save As dialogs. Useful if this book lives somewhere different, like a synced or shared folder."
+                               FontSize="12" Foreground="#555"
+                               TextWrapping="Wrap"
+                               Margin="0,0,0,10"/>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBox Grid.Column="0"
+                                 x:Name="ProjectFolderPathBox"
+                                 IsReadOnly="True"
+                                 FontSize="12"
+                                 Padding="6,4"
+                                 VerticalContentAlignment="Center"
+                                 TabIndex="7"
+                                 AutomationProperties.Name="This project's save folder path"
+                                 AutomationProperties.HelpText="The current save folder override for this project. Use the Browse button to change it."/>
+
+                        <Button Grid.Column="2"
+                                x:Name="BrowseProjectButton"
+                                Content="Browse..."
+                                Padding="10,5"
+                                TabIndex="8"
+                                Click="BrowseProjectButton_Click"
+                                AutomationProperties.Name="Browse for this project's save folder"
+                                AutomationProperties.HelpText="Open folder picker to select a save folder just for this project. Dragon: say click Browse."/>
+
+                        <Button Grid.Column="4"
+                                x:Name="ClearProjectButton"
+                                Content="Clear"
+                                Padding="10,5"
+                                TabIndex="9"
+                                Click="ClearProjectButton_Click"
+                                AutomationProperties.Name="Clear this project's save folder"
+                                AutomationProperties.HelpText="Remove this project's folder override. Dragon: say click Clear."/>
+                    </Grid>
                 </StackPanel>
             </GroupBox>
 
@@ -101,7 +208,7 @@
                     IsDefault="True"
                     Padding="14,6"
                     Margin="0,0,8,0"
-                    TabIndex="4"
+                    TabIndex="10"
                     Click="SaveButton_Click"
                     AutomationProperties.Name="Save Settings"
                     AutomationProperties.HelpText="Save all changes and close. Dragon: say click Save Settings."/>
@@ -110,7 +217,7 @@
                     Content="Cancel"
                     IsCancel="True"
                     Padding="14,6"
-                    TabIndex="5"
+                    TabIndex="11"
                     AutomationProperties.Name="Cancel"
                     AutomationProperties.HelpText="Close without saving changes. Dragon: say click Cancel."/>
         </StackPanel>

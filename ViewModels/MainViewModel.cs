@@ -439,10 +439,16 @@ namespace VoiceBookStudio.ViewModels
 
             try
             {
+                // On-demand narration deliberately speaks even while JAWS is running (see
+                // SystemAnnouncementService.SpeakOnDemandAsync) — the lead-in makes it
+                // unambiguous that the app's own voice, not JAWS, is about to read aloud.
+                if (VoiceBookStudio.Utils.AppSettings.IsJawsDetected)
+                    await _systemAnnouncements.SpeakOnDemandAsync("Reading aloud. Say stop to end.");
+
                 while (_readingQueue.Count > 0 && !token.IsCancellationRequested)
                 {
                     string item = _readingQueue[0];
-                    await _systemAnnouncements.SpeakAndWaitAsync(item);
+                    await _systemAnnouncements.SpeakOnDemandAsync(item);
                     if (!token.IsCancellationRequested)
                     {
                         _readingQueue.RemoveAt(0);
@@ -500,7 +506,9 @@ namespace VoiceBookStudio.ViewModels
             _currentPanel = 4;
             FocusPanelRequested?.Invoke(this, 4);
             SetStatus("Library panel focused.");
-            LiveAnnounce("Library panel. Prompts, Cards, and Feedback tabs.");
+            LiveAnnounce("Library panel. Three tabs: Prompts, Cards, and Feedback — arrow left and " +
+                         "right to switch between them, or jump directly by saying open prompt " +
+                         "library, open response cards, or open feedback library.");
             _tutorialActionSink?.Invoke("panel4");
         }
 
@@ -538,7 +546,8 @@ namespace VoiceBookStudio.ViewModels
         {
             SwitchAiTabRequested?.Invoke(this, "Prompts");
             SetStatus("Prompts tab opened.");
-            LiveAnnounce("Prompts tab.");
+            LiveAnnounce("Prompts tab. Say prompt categories to hear what's here, or read prompt " +
+                         "followed by a letter to hear a category. Say use prompt, then an ID like A1, to send one to Claude.");
         }
 
         public void TryUsePromptById(string promptId)
@@ -587,7 +596,8 @@ namespace VoiceBookStudio.ViewModels
         {
             SwitchAiTabRequested?.Invoke(this, "Cards");
             SetStatus("Response cards tab opened.");
-            LiveAnnounce("Response cards tab.");
+            LiveAnnounce("Response cards tab. Say card categories to hear what's saved, " +
+                         "or insert card followed by an ID like A1 to add one to your chapter.");
         }
 
         public void TryReadCardCategories()
@@ -617,7 +627,8 @@ namespace VoiceBookStudio.ViewModels
         {
             SwitchAiTabRequested?.Invoke(this, "Feedback");
             SetStatus("Feedback library tab opened.");
-            LiveAnnounce("Feedback library.");
+            LiveAnnounce("Feedback library. Every AI analysis is saved here automatically. " +
+                         "Say feedback categories to browse, or read my pacing feedback for a specific type.");
         }
 
         public void TryReadFeedbackCategories()
@@ -779,7 +790,7 @@ namespace VoiceBookStudio.ViewModels
 
                     if (welcomeVm.StartRequested)
                     {
-                        // Launch the full interactive tutorial (17-step TutorialDialog).
+                        // Launch the full interactive tutorial (18-step TutorialDialog).
                         // FirstLaunchComplete is set only when the user finishes or
                         // explicitly skips within the tutorial (TutorialViewModel.TutorialCompleted).
                         StartTutorial();
@@ -925,6 +936,29 @@ namespace VoiceBookStudio.ViewModels
                 : string.Empty);
         }
 
+        /// <summary>
+        /// Resolves the folder Open/Save As dialogs should default to for the
+        /// currently open project: an explicit per-project override if one is set
+        /// (Settings → This Project's Save Folder), else the folder the project's
+        /// file already lives in, else the global default project folder.
+        /// </summary>
+        private string ResolveProjectDialogFolder()
+        {
+            if (Project != null)
+            {
+                string projectOverride = VoiceBookStudio.Utils.AppSettings.GetProjectFolderOverride(Project.Id);
+                if (!string.IsNullOrWhiteSpace(projectOverride)) return projectOverride;
+            }
+
+            if (!string.IsNullOrEmpty(_currentFilePath))
+            {
+                string? currentDir = System.IO.Path.GetDirectoryName(_currentFilePath);
+                if (!string.IsNullOrEmpty(currentDir)) return currentDir;
+            }
+
+            return VoiceBookStudio.Utils.AppSettings.DefaultProjectFolder;
+        }
+
         [RelayCommand]
         private async Task OpenProjectAsync()
         {
@@ -935,7 +969,7 @@ namespace VoiceBookStudio.ViewModels
                 Title            = "Open VoiceBook Project",
                 Filter           = ProjectService.FileFilter,
                 DefaultExt       = ProjectService.FileExtension,
-                InitialDirectory = VoiceBookStudio.Utils.AppSettings.DefaultProjectFolder
+                InitialDirectory = ResolveProjectDialogFolder()
             };
 
             if (dialog.ShowDialog() != true) return;
@@ -995,7 +1029,7 @@ namespace VoiceBookStudio.ViewModels
                 Filter           = ProjectService.FileFilter,
                 DefaultExt       = ProjectService.FileExtension,
                 FileName         = Project.Title,
-                InitialDirectory = VoiceBookStudio.Utils.AppSettings.DefaultProjectFolder
+                InitialDirectory = ResolveProjectDialogFolder()
             };
 
             if (dialog.ShowDialog() != true) return;
@@ -1334,10 +1368,11 @@ namespace VoiceBookStudio.ViewModels
 
             var dlg = new SaveFileDialog
             {
-                Title      = "Export Manuscript as Word Document",
-                Filter     = "Word Document (*.docx)|*.docx",
-                DefaultExt = ".docx",
-                FileName   = Project.Title
+                Title            = "Export Manuscript as Word Document",
+                Filter           = "Word Document (*.docx)|*.docx",
+                DefaultExt       = ".docx",
+                FileName         = Project.Title,
+                InitialDirectory = VoiceBookStudio.Utils.AppSettings.DefaultExportFolder
             };
             if (dlg.ShowDialog() != true) return;
 
@@ -1383,10 +1418,11 @@ namespace VoiceBookStudio.ViewModels
 
             var dlg = new SaveFileDialog
             {
-                Title      = "Export Manuscript as PDF",
-                Filter     = "PDF Document (*.pdf)|*.pdf",
-                DefaultExt = ".pdf",
-                FileName   = Project.Title
+                Title            = "Export Manuscript as PDF",
+                Filter           = "PDF Document (*.pdf)|*.pdf",
+                DefaultExt       = ".pdf",
+                FileName         = Project.Title,
+                InitialDirectory = VoiceBookStudio.Utils.AppSettings.DefaultExportFolder
             };
             if (dlg.ShowDialog() != true) return;
 
@@ -1584,25 +1620,36 @@ namespace VoiceBookStudio.ViewModels
                     // Whole Book selected — use the full concatenated manuscript as context.
                     // Refresh first in case chapters were edited since the selection was made.
                     WholeBook.Refresh(Chapters);
-                    feedback = await _aiService.GetFeedbackAsync(
-                        WholeBook.Content, feedbackType, bookContext: null);
+                    feedback = await RunWithStillWorkingCueAsync(() => _aiService.GetFeedbackAsync(
+                        WholeBook.Content, feedbackType, bookContext: null));
                     chapterForFeedback = "Whole Book";
                 }
                 else
                 {
-                    feedback = await _aiService.GetFeedbackAsync(
-                        SelectedChapter!.Content, feedbackType, BuildBookContext());
+                    feedback = await RunWithStillWorkingCueAsync(() => _aiService.GetFeedbackAsync(
+                        SelectedChapter!.Content, feedbackType, BuildBookContext()));
                     chapterForFeedback = SelectedChapter.Title;
                 }
 
                 _sounds.Play(AppSound.AiResponded);
                 AiFeedbackText = feedback.RawText;
 
-                // Auto-save to feedback library (silent, no user action required)
-                FeedbackLibVM.AddEntry(feedbackType, chapterForFeedback, feedback.RawText);
+                // Auto-save to feedback library (silent, no user action required). Kept in
+                // its own try/catch so a save failure (disk full, permissions, etc.) can't
+                // masquerade as an AI failure and overwrite the response that DID succeed.
+                try
+                {
+                    string title = await _aiService.GenerateShortTitleAsync(feedback.RawText, chapterForFeedback);
+                    FeedbackLibVM.AddEntry(feedbackType, chapterForFeedback, feedback.RawText, title);
+                    SetStatus("AI analysis complete. Feedback saved to library. Use the Insert buttons to add it to your chapter.");
+                    LiveAnnounce("Analysis complete. Feedback saved to library. Review the feedback panel.");
+                }
+                catch (Exception saveEx)
+                {
+                    SetStatus($"AI analysis complete, but saving to the feedback library failed: {saveEx.Message}");
+                    LiveAnnounce("Analysis complete, but it could not be saved to the feedback library.");
+                }
 
-                SetStatus("AI analysis complete. Feedback saved to library. Use the Insert buttons to add it to your chapter.");
-                LiveAnnounce("Analysis complete. Feedback saved to library. Review the feedback panel.");
                 _tutorialActionSink?.Invoke("feedback");
             }
             catch (Exception ex)
@@ -1619,6 +1666,40 @@ namespace VoiceBookStudio.ViewModels
         }
 
         private bool CanRunAi() => SelectedChapter != null || IsWholeBookSelected;
+
+        /// <summary>
+        /// Wraps a long-running Claude API call so the user hears a periodic "still
+        /// working" cue if it takes a while, instead of silence with no indication
+        /// anything is happening. Fires roughly every 12 seconds; stops the instant
+        /// the operation finishes, succeeds, or throws.
+        /// </summary>
+        private async Task<T> RunWithStillWorkingCueAsync<T>(Func<Task<T>> operation)
+        {
+            using var cts = new System.Threading.CancellationTokenSource();
+            var cueTask = StillWorkingCueLoopAsync(cts.Token);
+            try
+            {
+                return await operation();
+            }
+            finally
+            {
+                cts.Cancel();
+                await cueTask;
+            }
+        }
+
+        private async Task StillWorkingCueLoopAsync(System.Threading.CancellationToken token)
+        {
+            try
+            {
+                while (true)
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(12), token);
+                    LiveAnnounce("Still working. Please wait.");
+                }
+            }
+            catch (OperationCanceledException) { }
+        }
 
         // ----------------------------------------------------------------
         // Book-wide feedback (all chapters as primary content)
@@ -1652,16 +1733,27 @@ namespace VoiceBookStudio.ViewModels
                 SetStatus(msg);
                 LiveAnnounce("Analysing your full manuscript. This may take a moment.");
 
-                var feedback = await _aiService.GetBookFeedbackAsync(fullContent, Project.Title);
+                var feedback = await RunWithStillWorkingCueAsync(() =>
+                    _aiService.GetBookFeedbackAsync(fullContent, Project.Title));
 
                 _sounds.Play(AppSound.AiResponded);
                 AiFeedbackText = feedback.RawText;
 
-                // Auto-save book-wide analysis to feedback library as category A (Comprehensive)
-                FeedbackLibVM.AddEntry("book", Project.Title + " (full book)", feedback.RawText);
-
-                SetStatus("Book analysis complete. Feedback saved to library.");
-                LiveAnnounce("Book analysis complete. Feedback saved to library.");
+                // Auto-save book-wide analysis to feedback library as category A (Comprehensive).
+                // Kept in its own try/catch so a save failure can't masquerade as an AI failure
+                // and overwrite the response that DID succeed.
+                try
+                {
+                    string title = await _aiService.GenerateShortTitleAsync(feedback.RawText, Project.Title + " (full book)");
+                    FeedbackLibVM.AddEntry("book", Project.Title + " (full book)", feedback.RawText, title);
+                    SetStatus("Book analysis complete. Feedback saved to library.");
+                    LiveAnnounce("Book analysis complete. Feedback saved to library.");
+                }
+                catch (Exception saveEx)
+                {
+                    SetStatus($"Book analysis complete, but saving to the feedback library failed: {saveEx.Message}");
+                    LiveAnnounce("Book analysis complete, but it could not be saved to the feedback library.");
+                }
             }
             catch (Exception ex)
             {
@@ -1738,8 +1830,8 @@ namespace VoiceBookStudio.ViewModels
 
                 if (IsWholeBookSelected) WholeBook.Refresh(Chapters);
                 string? chatContext = IsWholeBookSelected ? WholeBook.Content : SelectedChapter?.Content;
-                string response = await _aiService.ChatAsync(
-                    msg, chatContext, IsWholeBookSelected ? null : BuildBookContext());
+                string response = await RunWithStillWorkingCueAsync(() => _aiService.ChatAsync(
+                    msg, chatContext, IsWholeBookSelected ? null : BuildBookContext()));
 
                 _sounds.Play(AppSound.AiResponded);
                 AiFeedbackText = response;
@@ -1924,7 +2016,7 @@ namespace VoiceBookStudio.ViewModels
         [RelayCommand]
         private void OpenSettings()
         {
-            var dlg = new Views.SettingsDialog(_systemAnnouncements)
+            var dlg = new Views.SettingsDialog(_systemAnnouncements, Project)
             {
                 Owner = System.Windows.Application.Current.MainWindow
             };
@@ -1951,6 +2043,26 @@ namespace VoiceBookStudio.ViewModels
                 VoiceBookStudio.Utils.AppSettings.DefaultProjectFolder = dlg.SelectedPath;
                 VoiceBookStudio.Utils.AppSettings.SaveJsonSettings();
                 string msg = $"Default project folder set to: {dlg.SelectedPath}";
+                SetStatus(msg);
+                LiveAnnounce(msg);
+            }
+        }
+
+        /// <summary>Opens the folder picker for exports directly (voice command: "set export folder").</summary>
+        public void TryOpenExportFolderPicker()
+        {
+            using var dlg = new System.Windows.Forms.FolderBrowserDialog
+            {
+                Description         = "Choose the default folder for exported Word and PDF files",
+                ShowNewFolderButton = true,
+                SelectedPath        = VoiceBookStudio.Utils.AppSettings.DefaultExportFolder
+            };
+
+            if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                VoiceBookStudio.Utils.AppSettings.DefaultExportFolder = dlg.SelectedPath;
+                VoiceBookStudio.Utils.AppSettings.SaveJsonSettings();
+                string msg = $"Default export folder set to: {dlg.SelectedPath}";
                 SetStatus(msg);
                 LiveAnnounce(msg);
             }

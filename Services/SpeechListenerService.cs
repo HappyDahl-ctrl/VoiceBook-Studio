@@ -182,6 +182,7 @@ namespace VoiceBookStudio.Services
                 // Project folder
                 "set project folder", "change project folder", "default project folder",
                 "set default folder", "change default folder", "project folder",
+                "set export folder", "change export folder", "default export folder",
 
                 // App voice / TTS
                 "toggle voice", "voice on", "voice off",

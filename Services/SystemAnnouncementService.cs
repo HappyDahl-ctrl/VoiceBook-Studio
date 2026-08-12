@@ -25,8 +25,12 @@ namespace VoiceBookStudio.Services
 
     /// <summary>
     /// Speaks system-level announcements (startup greeting, project events, tutorial steps).
-    /// No-ops entirely once JAWS is detected (see <see cref="SetJawsDetected"/>) — JAWS is
-    /// the sole audio source in that mode, so nothing here may compete with it.
+    /// No-ops once JAWS is detected (see <see cref="SetJawsDetected"/>) for every method
+    /// except <see cref="SpeakOnDemandAsync"/> — JAWS is the sole audio source for
+    /// ambient app state, so nothing else here may compete with it. SpeakOnDemandAsync is
+    /// a deliberate, narrow exception used only to read app-generated content aloud when
+    /// the user explicitly asks for it (an AI response, a chapter, a library entry); see
+    /// its own doc comment for why.
     ///
     /// Uses Azure Neural TTS when configured, otherwise SAPI with best available voice.
     /// </summary>
@@ -156,11 +160,32 @@ namespace VoiceBookStudio.Services
 
         /// <summary>
         /// Speak synchronously and await completion.
-        /// Used for startup announcements. Adds 500 ms pre-speech delay when JAWS active.
+        /// Used for startup announcements. No-op when JAWS is detected.
         /// </summary>
         public async Task SpeakAndWaitAsync(string text)
         {
-            if (_jawsDetected || _disposed || string.IsNullOrWhiteSpace(text)) return;
+            if (_jawsDetected) return;
+            await SpeakAndWaitCoreAsync(text);
+        }
+
+        /// <summary>
+        /// Speaks on-demand narration of app-held content the user explicitly asked to
+        /// hear — an AI response, a chapter, a library entry — via "read response",
+        /// Space bar, or similar. Deliberately bypasses the JAWS silence rule every
+        /// other method on this class enforces: JAWS's own reading commands ("Say All",
+        /// read line) aren't built to read one long, resumable block of app-generated
+        /// text with real stop/resume, so this is a narrow, explicit exception. Every
+        /// other announcement in the app — status changes, navigation, dialogs — stays
+        /// JAWS's job exactly as before. Callers should make it clear via a lead-in
+        /// phrase (see MainViewModel.ContinueReadingAsync) that the app's own voice is
+        /// taking over for this one purpose, so it's never ambiguous which voice is
+        /// speaking.
+        /// </summary>
+        public async Task SpeakOnDemandAsync(string text) => await SpeakAndWaitCoreAsync(text);
+
+        private async Task SpeakAndWaitCoreAsync(string text)
+        {
+            if (_disposed || string.IsNullOrWhiteSpace(text)) return;
             text = SpeechTextUtils.SanitizeForSpeech(text);
 
             if (_azure.IsConfigured)

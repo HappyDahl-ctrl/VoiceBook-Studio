@@ -1,5 +1,6 @@
 using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 
@@ -67,6 +68,39 @@ namespace VoiceBookStudio.Utils
         /// Persisted to %APPDATA%\VoiceBookStudio\settings.json.
         /// </summary>
         public static string DefaultProjectFolder { get; set; } = string.Empty;
+
+        /// <summary>
+        /// User-chosen folder where exported Word/PDF files are saved by default.
+        /// Empty string = not set (export dialogs fall back to whatever folder
+        /// Windows itself last remembers, unaffected by this setting).
+        /// Persisted to %APPDATA%\VoiceBookStudio\settings.json.
+        /// </summary>
+        public static string DefaultExportFolder { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Per-project Open/Save-As folder overrides, keyed by the project's Id
+        /// (as a string). When a project has an entry here, file dialogs for that
+        /// specific project default to this folder instead of DefaultProjectFolder
+        /// or the project's own current file location.
+        /// Persisted to %APPDATA%\VoiceBookStudio\settings.json.
+        /// </summary>
+        public static Dictionary<string, string> ProjectFolderOverrides { get; set; } = new();
+
+        /// <summary>Returns the saved folder override for a project, or empty if none.</summary>
+        public static string GetProjectFolderOverride(Guid projectId) =>
+            ProjectFolderOverrides.TryGetValue(projectId.ToString(), out string? path)
+                ? path
+                : string.Empty;
+
+        /// <summary>Sets or clears (pass empty/whitespace) a project's folder override.</summary>
+        public static void SetProjectFolderOverride(Guid projectId, string folderPath)
+        {
+            string key = projectId.ToString();
+            if (string.IsNullOrWhiteSpace(folderPath))
+                ProjectFolderOverrides.Remove(key);
+            else
+                ProjectFolderOverrides[key] = folderPath;
+        }
 
         /// <summary>
         /// True once the welcome dialog has been shown on the very first launch.
@@ -144,6 +178,17 @@ namespace VoiceBookStudio.Utils
                     DefaultProjectFolder = el.GetString() ?? string.Empty;
                 if (doc.RootElement.TryGetProperty("firstLaunchComplete", out JsonElement flc))
                     FirstLaunchComplete = flc.GetBoolean();
+                if (doc.RootElement.TryGetProperty("defaultExportFolder", out JsonElement def))
+                    DefaultExportFolder = def.GetString() ?? string.Empty;
+
+                if (doc.RootElement.TryGetProperty("projectFolderOverrides", out JsonElement pfo) &&
+                    pfo.ValueKind == JsonValueKind.Object)
+                {
+                    var overrides = new Dictionary<string, string>();
+                    foreach (JsonProperty prop in pfo.EnumerateObject())
+                        overrides[prop.Name] = prop.Value.GetString() ?? string.Empty;
+                    ProjectFolderOverrides = overrides;
+                }
             }
             catch { /* missing or corrupt JSON — use default (empty string) */ }
         }
@@ -161,7 +206,13 @@ namespace VoiceBookStudio.Utils
 
                 var options = new JsonSerializerOptions { WriteIndented = true };
                 string json = JsonSerializer.Serialize(
-                    new { defaultProjectFolder = DefaultProjectFolder, firstLaunchComplete = FirstLaunchComplete }, options);
+                    new
+                    {
+                        defaultProjectFolder   = DefaultProjectFolder,
+                        firstLaunchComplete    = FirstLaunchComplete,
+                        defaultExportFolder    = DefaultExportFolder,
+                        projectFolderOverrides = ProjectFolderOverrides
+                    }, options);
                 File.WriteAllText(path, json);
             }
             catch { /* non-fatal — setting will revert to empty on next launch */ }

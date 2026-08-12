@@ -64,7 +64,7 @@ The app will:
 3. Open the Welcome dialog
 4. Say "VoiceBook Studio ready"
 
-On first launch, choose **Start Guided Tour** to walk through the 17-step interactive tutorial. It covers every feature with voice guidance. Takes about 10 minutes and is strongly recommended.
+On first launch, choose **Start Guided Tour** to walk through the 18-step interactive tutorial. It covers every feature with voice guidance. Takes about 10 minutes and is strongly recommended.
 
 ---
 

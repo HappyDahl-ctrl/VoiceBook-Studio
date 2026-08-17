@@ -264,6 +264,12 @@ namespace VoiceBookStudio.ViewModels
             IsWaitingForAction = false;
             CancelTimeout();
 
+            // Cut off this step's own prompt narration immediately — it may still be
+            // mid-utterance when the action fires (e.g. the user acts on a panel-switch
+            // step before "...or press F2, F3, or F11" finishes), and left running it
+            // plays concurrently with MainViewModel's LiveAnnounce for the action just taken.
+            _announcer.StopSpeaking();
+
             _sounds?.Play(AppSound.TutorialStep);
             string confirmation = step.SuccessMessage ?? "Got it. Moving to the next step.";
 
@@ -466,7 +472,6 @@ namespace VoiceBookStudio.ViewModels
                   "WPF buttons require a one-time Dragon MyCommands configuration before voice-clicking works. " +
                   "See the Dragon Commands Setup Guide in the Docs folder for instructions."
                 : "GIVING COMMANDS WITH YOUR VOICE\n\n" +
-                  "The microphone is already on. Just speak — no ScrollLock or setup needed.\n\n" +
                   "Say any command out loud and the app will act on it immediately. " +
                   "You can also type commands into the Command box below and press Enter.\n\n" +
                   "Try saying: \"Panel two\", \"Add chapter\", or \"What can I say here\".";
@@ -532,7 +537,11 @@ namespace VoiceBookStudio.ViewModels
                         "  P         — Previous step\n" +
                         "  R         — Repeat current step\n" +
                         "  S         — Skip an action step\n" +
-                        "  Escape    — Exit tutorial"
+                        "  Escape    — Exit tutorial\n\n" +
+                        "A GENERAL TIP\n" +
+                        "Elsewhere in the app, when a dialog opens asking you to type or dictate " +
+                        "something — a project title, a chapter title — press Enter afterward to " +
+                        "confirm it. Speaking or typing the text does not submit it by itself."
                 },
 
                 new TutorialStep
@@ -588,10 +597,10 @@ namespace VoiceBookStudio.ViewModels
                         "to the Chapter Manager. It only does this while the editor has focus; " +
                         "elsewhere it does not switch panels.\n\n" +
                         "VOICE (say any of these)\n" +
-                        "  Panel 1    /    Go to panel 1    /    Panel one\n" +
-                        "  Panel 2    /    Go to panel 2    /    Panel two\n" +
-                        "  Panel 3    /    Go to panel 3    /    Panel three\n" +
-                        "  Panel 4    /    Go to panel 4    /    Panel four    /    Go to library\n\n" +
+                        "  Panel 1  /  Go to panel 1\n" +
+                        "  Panel 2  /  Go to panel 2\n" +
+                        "  Panel 3  /  Go to panel 3\n" +
+                        "  Panel 4  /  Go to panel 4  /  Go to library\n\n" +
                         "Press Next when you're ready to try it — the next step will wait for you " +
                         "to actually switch panels and detect it automatically."
                 },

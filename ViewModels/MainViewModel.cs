@@ -180,7 +180,14 @@ namespace VoiceBookStudio.ViewModels
             if (string.IsNullOrWhiteSpace(msg)) return;
             AnnouncementRequested?.Invoke(msg, urgent);
             if (!Utils.AppSettings.IsJawsDetected)
+            {
+                // _audio and _systemAnnouncements are independent speech engines that
+                // don't know about each other. Stop any announcer speech in progress
+                // (e.g. the tutorial narrating a step's instructions) before this new
+                // announcement starts on _audio, or the two play concurrently.
+                _systemAnnouncements.StopSpeaking();
                 _audio.Speak(msg);
+            }
         }
 
         // When SelectedChapter is set directly (e.g. voice-nav), mirror it into

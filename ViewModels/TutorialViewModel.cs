@@ -226,7 +226,7 @@ namespace VoiceBookStudio.ViewModels
         {
             _announcer.StopSpeaking();
             if (!CanSkip()) return;
-            _announcer.Speak("Step skipped.");
+            AnnounceTutorialText("Step skipped.");
             CancelTimeout();
             IsWaitingForAction = false;
             if (_currentIndex < _steps.Length - 1)
@@ -280,7 +280,7 @@ namespace VoiceBookStudio.ViewModels
                 // Let the app's own focus-change announcement finish before we speak over it.
                 await _audio.WaitForCurrentSpeechAsync().ConfigureAwait(false);
                 // Speak the success message and wait for it to complete before advancing.
-                await _announcer.SpeakAndWaitAsync(confirmation).ConfigureAwait(false);
+                await _announcer.SpeakOnDemandAsync(confirmation).ConfigureAwait(false);
             }
             catch
             {
@@ -299,6 +299,23 @@ namespace VoiceBookStudio.ViewModels
         private bool CanNext()     => !IsWaitingForAction && _currentIndex < _steps.Length - 1;
         private bool CanPrevious() => _currentIndex > 0;
         private bool CanSkip()     => IsWaitingForAction && _steps[_currentIndex].IsSkippable;
+
+        /// <summary>
+        /// Routes tutorial narration through the correct speech channel.
+        /// Speak() is a no-op when JAWS is detected, so JAWS users hear nothing.
+        /// SpeakOnDemandAsync() bypasses that rule and is the correct channel
+        /// for deliberate tutorial narration regardless of AT state.
+        /// Fire-and-forget here matches the existing Speak() pattern; StopSpeaking()
+        /// called from Next/Previous/Exit cancels any in-flight utterance correctly.
+        /// </summary>
+        private void AnnounceTutorialText(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text)) return;
+            if (_jawsDetected)
+                _ = _announcer.SpeakOnDemandAsync(text);
+            else
+                _announcer.Speak(text);
+        }
 
         private void OnIndexChanged()
         {
@@ -347,7 +364,7 @@ namespace VoiceBookStudio.ViewModels
                 // reading the full content aloud then repeating ActionPrompt caused confusing duplication.
                 // The command instruction must be the last thing spoken so Dragon picks it up cleanly.
                 string prompt = step.ActionPrompt ?? "Complete the action to continue.";
-                _announcer.Speak(
+                AnnounceTutorialText(
                     $"Step {_currentIndex + 1} of {_steps.Length}. {step.Title}. " +
                     $"{prompt}.");
             }
@@ -357,7 +374,7 @@ namespace VoiceBookStudio.ViewModels
                 string closing = isLast
                     ? "Say Exit tutorial to close this window."
                     : "Say Next to continue.";
-                _announcer.Speak(
+                AnnounceTutorialText(
                     $"Step {_currentIndex + 1} of {_steps.Length}. " +
                     $"{step.Title}. {step.Content} " +
                     $"{closing}");

@@ -769,49 +769,17 @@ namespace VoiceBookStudio.ViewModels
                 await Task.Delay(300);
             }
 
-            // First-launch welcome and tutorial flow.
+            // First-launch tutorial flow.
+            // FirstLaunchComplete is set only when the user finishes or explicitly
+            // skips within the tutorial itself (TutorialViewModel.TutorialCompleted).
+            // The tutorial's own Step 1 ("Welcome to VoiceBook Studio") handles
+            // orientation, so no separate WelcomeDialog is shown first — that dialog
+            // was a barrier for a blind user who may press Escape before knowing
+            // what it contains.
             if (!VoiceBookStudio.Utils.AppSettings.FirstLaunchComplete)
             {
                 await Task.Delay(1000);
-
-                try
-                {
-                    var welcomeVm = new WelcomeDialogViewModel(_systemAnnouncements);
-                    var dlg = new Views.WelcomeDialog
-                    {
-                        DataContext = welcomeVm,
-                        Owner       = System.Windows.Application.Current.MainWindow
-                    };
-                    var dlgClosed = new TaskCompletionSource<bool>(
-                        TaskCreationOptions.RunContinuationsAsynchronously);
-                    dlg.Closed += (_, _) => dlgClosed.TrySetResult(true);
-                    dlg.Show();
-                    await dlgClosed.Task;
-
-                    if (welcomeVm.StartRequested)
-                    {
-                        // Launch the full interactive tutorial (18-step TutorialDialog).
-                        // FirstLaunchComplete is set only when the user finishes or
-                        // explicitly skips within the tutorial (TutorialViewModel.TutorialCompleted).
-                        StartTutorial();
-                    }
-                    else
-                    {
-                        // User dismissed the WelcomeDialog without starting the tutorial
-                        // (Skip Tour button, X button, Alt+F4, or owner-window-close cascade).
-                        // Leave FirstLaunchComplete = false so the dialog auto-starts again
-                        // on the next launch, giving them another chance to engage.
-                        FocusPanelRequested?.Invoke(this, 1);
-                        _currentPanel = 1;
-                        string skipMsg = "VoiceBook Studio ready. Panel 1 focused.";
-                        SetStatus(skipMsg);
-                        LiveAnnounce(skipMsg);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    SetStatus($"Welcome dialog could not open: {ex.Message}");
-                }
+                StartTutorial();
             }
         }
 

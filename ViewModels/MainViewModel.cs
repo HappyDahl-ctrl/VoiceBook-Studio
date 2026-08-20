@@ -581,6 +581,7 @@ namespace VoiceBookStudio.ViewModels
             var categories  = PromptLibVM.GetExistingCategories();
             string nextLetter = PromptLibVM.GetNextAvailableLetter();
 
+            LiveAnnounce("Add prompt dialog opened. Enter a category and the prompt text.");
             var dlg = new Views.AddPromptDialog(categories, nextLetter)
             {
                 Owner = System.Windows.Application.Current.MainWindow
@@ -704,6 +705,7 @@ namespace VoiceBookStudio.ViewModels
         public void TryBrowseForProject()
         {
             // Open file dialog to browse for project
+            LiveAnnounce("Opening the file browser. Choose a VoiceBook project file.");
             var dlg = new Microsoft.Win32.OpenFileDialog
             {
                 Title = "Open VoiceBook Project",
@@ -739,8 +741,8 @@ namespace VoiceBookStudio.ViewModels
             catch (Exception ex)
             {
                 _sounds.Play(AppSound.Error);
-                ShowError("Open Failed", ex.Message);
                 LiveAnnounce("Could not open project. " + ex.Message);
+                ShowError("Open Failed", ex.Message);
             }
             finally
             {
@@ -939,6 +941,7 @@ namespace VoiceBookStudio.ViewModels
         {
             if (!await ConfirmDiscardChangesAsync()) return;
 
+            LiveAnnounce("Opening the file browser. Choose a VoiceBook project file.");
             var dialog = new OpenFileDialog
             {
                 Title            = "Open VoiceBook Project",
@@ -968,8 +971,8 @@ namespace VoiceBookStudio.ViewModels
             }
             catch (Exception ex)
             {
-                ShowError("Open Failed", ex.Message);
                 LiveAnnounce("Could not open project. " + ex.Message);
+                ShowError("Open Failed", ex.Message);
             }
             finally
             {
@@ -998,6 +1001,7 @@ namespace VoiceBookStudio.ViewModels
             if (Project == null) return;
             FlushEditorToChapter();
 
+            LiveAnnounce("Opening the file browser. Choose where to save your project.");
             var dialog = new SaveFileDialog
             {
                 Title            = "Save VoiceBook Project",
@@ -1033,8 +1037,8 @@ namespace VoiceBookStudio.ViewModels
             }
             catch (Exception ex)
             {
-                ShowError("Save Failed", ex.Message);
                 LiveAnnounce("Save failed. " + ex.Message);
+                ShowError("Save Failed", ex.Message);
             }
             finally
             {
@@ -1052,6 +1056,7 @@ namespace VoiceBookStudio.ViewModels
             // If no project is open, offer to create one from the document name
             if (Project == null)
             {
+                LiveAnnounce("No project is open. A dialog is asking whether to create a new project from your document — Yes or No.");
                 var create = MessageBox.Show(
                     "No project is open. A new project will be created from your document.\n\n" +
                     "Continue?",
@@ -1060,6 +1065,7 @@ namespace VoiceBookStudio.ViewModels
                 if (create != MessageBoxResult.Yes) return;
             }
 
+            LiveAnnounce("Opening the file browser. Choose a Word document to import.");
             var picker = new OpenFileDialog
             {
                 Title      = "Import Word Document",
@@ -1085,10 +1091,10 @@ namespace VoiceBookStudio.ViewModels
                 if (string.IsNullOrWhiteSpace(fullText))
                 {
                 IsBusy = false;
+                LiveAnnounce("The document is empty.");
                 MessageBox.Show(
                         "The document appears to be empty or could not be read.",
                         "Import Document", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    LiveAnnounce("The document is empty.");
                     return;
                 }
 
@@ -1110,7 +1116,7 @@ namespace VoiceBookStudio.ViewModels
                     SetStatus("Asking Claude to detect chapter breaks…");
                     LiveAnnounce("Asking Claude to detect chapter breaks. This may take a moment.");
 
-                    try   { detected = await _aiService.DetectChaptersAsync(fullText); }
+                    try   { detected = await RunWithStillWorkingCueAsync(() => _aiService.DetectChaptersAsync(fullText)); }
                     catch { detected = null; }
 
                     LiveAnnounce(detected != null && detected.Count > 1
@@ -1139,6 +1145,7 @@ namespace VoiceBookStudio.ViewModels
                 if (detected != null && detected.Count > 1)
                 {
                     // Show confirmation dialog with detected chapters
+                    LiveAnnounce("Reviewing detected chapters. Confirm or edit them in the dialog that just opened.");
                     var confirm = new Views.ChapterConfirmationDialog();
                     confirm.Owner = Application.Current.MainWindow;
                     confirm.SetChapters(detected);
@@ -1170,8 +1177,8 @@ namespace VoiceBookStudio.ViewModels
             catch (Exception ex)
             {
                 IsBusy = false;
-                ShowError("Import Failed", ex.Message);
                 LiveAnnounce("Import failed. " + ex.Message);
+                ShowError("Import Failed", ex.Message);
             }
             finally
             {
@@ -1224,6 +1231,7 @@ namespace VoiceBookStudio.ViewModels
                 if (title == null)
                 {
                     // User pressed Cancel — offer to skip this chapter or stop entirely
+                    LiveAnnounce($"Skip chapter {i + 1} of {total} and continue with the remaining chapters — Yes or No.");
                     var skip = MessageBox.Show(
                         $"Skip chapter {i + 1} of {total} and continue with the remaining chapters?",
                         "Import Document",
@@ -1287,6 +1295,7 @@ namespace VoiceBookStudio.ViewModels
             _tutorialActionSink?.Invoke("addchapter_started");
 
             // Step 1: pick section type
+            LiveAnnounce("Choose a section type — Chapter, Front Matter, or Back Matter — then press OK.");
             var typeDlg = new SectionTypeDialog { Owner = Application.Current.MainWindow };
             if (typeDlg.ShowDialog() != true || typeDlg.SelectedType == null) return;
 
@@ -1325,6 +1334,7 @@ namespace VoiceBookStudio.ViewModels
         {
             if (SelectedChapter == null) return;
 
+            LiveAnnounce("Choose a section type — Chapter, Front Matter, or Back Matter — then press OK.");
             var dlg = new SectionTypeDialog(SelectedChapter.SectionType)
             {
                 Owner = Application.Current.MainWindow
@@ -1352,6 +1362,7 @@ namespace VoiceBookStudio.ViewModels
             FlushEditorToChapter();
             foreach (var cvm in Chapters) cvm.FlushToModel();
 
+            LiveAnnounce("Opening the file browser. Choose where to export the Word document.");
             var dlg = new SaveFileDialog
             {
                 Title            = "Export Manuscript as Word Document",
@@ -1386,8 +1397,8 @@ namespace VoiceBookStudio.ViewModels
             catch (Exception ex)
             {
                 _sounds.Play(AppSound.ExportError);
-                ShowError("Export Failed", ex.Message);
                 LiveAnnounce("Export failed. " + ex.Message);
+                ShowError("Export Failed", ex.Message);
             }
             finally
             {
@@ -1402,6 +1413,7 @@ namespace VoiceBookStudio.ViewModels
             FlushEditorToChapter();
             foreach (var cvm in Chapters) cvm.FlushToModel();
 
+            LiveAnnounce("Opening the file browser. Choose where to export the PDF.");
             var dlg = new SaveFileDialog
             {
                 Title            = "Export Manuscript as PDF",
@@ -1436,8 +1448,8 @@ namespace VoiceBookStudio.ViewModels
             catch (Exception ex)
             {
                 _sounds.Play(AppSound.ExportError);
-                ShowError("Export Failed", ex.Message);
                 LiveAnnounce("Export failed. " + ex.Message);
+                ShowError("Export Failed", ex.Message);
             }
             finally
             {
@@ -1470,6 +1482,7 @@ namespace VoiceBookStudio.ViewModels
             if (SelectedChapter == null || Project == null) return;
 
             string title = SelectedChapter.Title;
+            LiveAnnounce($"Delete chapter {title}? This cannot be undone — Yes or No.");
             var result   = MessageBox.Show(
                 $"Delete chapter \"{title}\"? This cannot be undone.",
                 "Confirm Delete",
@@ -1642,8 +1655,8 @@ namespace VoiceBookStudio.ViewModels
             {
                 string detail = $"{ex.GetType().Name}: {ex.Message}";
                 AiFeedbackText = $"Error: {detail}";
-                ShowError("AI Error", detail);
                 LiveAnnounce("AI analysis failed. " + ex.Message);
+                ShowError("AI Error", detail);
             }
             finally
             {
@@ -1746,8 +1759,8 @@ namespace VoiceBookStudio.ViewModels
                 _sounds.Play(AppSound.AiError);
                 string detail = $"{ex.GetType().Name}: {ex.Message}";
                 AiFeedbackText = $"Error: {detail}";
-                ShowError("AI Error", detail);
                 LiveAnnounce("Book analysis failed. " + ex.Message);
+                ShowError("AI Error", detail);
             }
             finally
             {
@@ -1830,8 +1843,8 @@ namespace VoiceBookStudio.ViewModels
             catch (Exception ex)
             {
                 AiFeedbackText = $"Error: {ex.Message}";
-                ShowError("Chat Error", ex.Message);
                 LiveAnnounce("Chat failed. " + ex.Message);
+                ShowError("Chat Error", ex.Message);
                 FocusChatInputRequested?.Invoke(this, EventArgs.Empty);
             }
             finally
@@ -1923,8 +1936,8 @@ namespace VoiceBookStudio.ViewModels
             }
             catch (Exception ex)
             {
-                ShowError("Replace Error", ex.Message);
                 LiveAnnounce("Replace failed. " + ex.Message);
+                ShowError("Replace Error", ex.Message);
             }
             finally
             {
@@ -1944,6 +1957,7 @@ namespace VoiceBookStudio.ViewModels
                 : AiFeedbackText.Trim();
 
             var existingCategories = ResponseCardVM.GetExistingCategoryNames();
+            LiveAnnounce("Save card dialog opened. Enter a title and category for this response.");
             var dlg = new Views.SaveCardDialog(existingCategories, defaultTitle)
             {
                 Owner = System.Windows.Application.Current.MainWindow
@@ -1983,6 +1997,7 @@ namespace VoiceBookStudio.ViewModels
         [RelayCommand]
         private void SetApiKey()
         {
+            LiveAnnounce("API key dialog opened. Enter your Claude API key.");
             var dialog = new ApiKeyDialog { Owner = Application.Current.MainWindow };
             dialog.ShowDialog();
             IsApiKeySet = ApiKeyService.HasApiKey();
@@ -2017,6 +2032,7 @@ namespace VoiceBookStudio.ViewModels
         /// <summary>Opens the folder picker directly (voice command: "set project folder").</summary>
         public void TryOpenDefaultFolderPicker()
         {
+            LiveAnnounce("Opening the folder browser. Choose the default project folder.");
             using var dlg = new System.Windows.Forms.FolderBrowserDialog
             {
                 Description         = "Choose the default folder where new VoiceBook projects will be saved",
@@ -2037,6 +2053,7 @@ namespace VoiceBookStudio.ViewModels
         /// <summary>Opens the folder picker for exports directly (voice command: "set export folder").</summary>
         public void TryOpenExportFolderPicker()
         {
+            LiveAnnounce("Opening the folder browser. Choose the default export folder.");
             using var dlg = new System.Windows.Forms.FolderBrowserDialog
             {
                 Description         = "Choose the default folder for exported Word and PDF files",
@@ -2315,6 +2332,7 @@ namespace VoiceBookStudio.ViewModels
         {
             if (!IsModified) return true;
 
+            LiveAnnounce("You have unsaved changes. Discard them? Yes or No.");
             var result = MessageBox.Show(
                 "You have unsaved changes. Discard them?",
                 "Unsaved Changes",
@@ -2324,8 +2342,12 @@ namespace VoiceBookStudio.ViewModels
             return await Task.FromResult(result == MessageBoxResult.Yes);
         }
 
-        private static string? PromptText(string title, string prompt, string defaultValue = "")
+        private string? PromptText(string title, string prompt, string defaultValue = "")
         {
+            // InputDialog only sets a UIA live region for JAWS — it has no way to
+            // speak through the app's own voice, so a non-JAWS blind user would
+            // otherwise get no audible cue that a text-entry dialog just opened.
+            LiveAnnounce($"{title}. {prompt}");
             var dialog = new InputDialog(title, prompt, defaultValue);
             return dialog.ShowDialog() == true ? dialog.InputValue : null;
         }

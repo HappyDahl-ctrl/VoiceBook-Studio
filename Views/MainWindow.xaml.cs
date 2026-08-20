@@ -424,6 +424,12 @@ namespace VoiceBookStudio.Views
 
         private void OnFocusPanelRequested(object? sender, int panelNumber)
         {
+            // Activate this window first. Without it, a panel-focus request that
+            // arrives while another non-modal window has OS focus (e.g. the voice
+            // router calling FocusPanel3 while TutorialDialog is active) sets WPF's
+            // logical focus on the target control but leaves real keyboard input
+            // going to the other window — the control below never actually receives it.
+            Activate();
             switch (panelNumber)
             {
                 case 1: ChapterListBox.Focus();   break;

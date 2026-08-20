@@ -350,6 +350,28 @@ namespace VoiceBookStudio.ViewModels
         /// </summary>
         public bool IsMicButtonEnabled => !VoiceBookStudio.Utils.AppSettings.IsDragonRunning;
 
+        /// <summary>
+        /// Raises PropertyChanged for the four status properties above.
+        /// Required because App.xaml.cs constructs this ViewModel — and binds
+        /// the window to it — before the async JAWS/Dragon/JSay detection in
+        /// RunStartupSequenceAsync completes. AppSettings.IsJawsDetected and
+        /// IsDragonRunning are plain static fields with no change notification
+        /// of their own, so the very first binding evaluation reads them while
+        /// still false and never refreshes on its own once detection finishes —
+        /// the status bar is left showing "JAWS: Not detected" even when JAWS
+        /// was in fact detected (and is correctly silencing the app's own
+        /// voice, since that path reads the live flag directly rather than
+        /// through a WPF binding). Call this once detection has written its
+        /// results to AppSettings.
+        /// </summary>
+        public void RefreshAssistiveTechnologyStatus()
+        {
+            OnPropertyChanged(nameof(JawsStatusDisplay));
+            OnPropertyChanged(nameof(DragonStatusDisplay));
+            OnPropertyChanged(nameof(IsDragonRunning));
+            OnPropertyChanged(nameof(IsMicButtonEnabled));
+        }
+
         public string VoiceStatusDisplay =>
             VoiceBookStudio.Utils.AppSettings.IsAzureTtsConfigured
                 ? $"Voice: Azure ({VoiceBookStudio.Utils.AppSettings.AzureVoiceName.Replace("en-US-", "").Replace("Neural", "")})"

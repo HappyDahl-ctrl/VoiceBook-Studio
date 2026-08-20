@@ -1092,7 +1092,37 @@ namespace VoiceBookStudio.ViewModels
                     return;
                 }
 
-                // Auto-create project if needed, now that we know the doc is valid
+                List<DetectedChapter>? detected = null;
+
+                // Detect chapters before prompting for a project title, so that
+                // dialog never pops up silently — the user hears what was found first.
+                // Try heuristic detection first (fast, free, works offline).
+                var detector       = new VoiceBookStudio.Services.ChapterDetectionService();
+                var heuristicHits  = detector.DetectByPatterns(paragraphs);
+                if (heuristicHits.Count >= 2)
+                {
+                    detected = SplitByHeuristicBreaks(paragraphs, heuristicHits);
+                    SetStatus($"Detected {detected.Count} chapters from headings.");
+                    LiveAnnounce($"Detected {detected.Count} chapters in your document.");
+                }
+                else if (_aiService.IsAvailable)
+                {
+                    SetStatus("Asking Claude to detect chapter breaks…");
+                    LiveAnnounce("Asking Claude to detect chapter breaks. This may take a moment.");
+
+                    try   { detected = await _aiService.DetectChaptersAsync(fullText); }
+                    catch { detected = null; }
+
+                    LiveAnnounce(detected != null && detected.Count > 1
+                        ? $"Claude detected {detected.Count} chapters in your document."
+                        : "Could not detect separate chapters. Importing as a single chapter.");
+                }
+                else
+                {
+                    LiveAnnounce("Could not detect separate chapters. Importing as a single chapter.");
+                }
+
+                // Auto-create project if needed, now that detection has run.
                 if (Project == null)
                 {
                     string? projectTitle = PromptText("New Project", "Enter project title:", suggestedName);
@@ -1104,25 +1134,6 @@ namespace VoiceBookStudio.ViewModels
                     _currentFilePath = null;
                     IsModified       = false;
                     LoadChapters();
-                }
-
-                List<DetectedChapter>? detected = null;
-
-                // Try heuristic detection first (fast, free, works offline).
-                var detector       = new VoiceBookStudio.Services.ChapterDetectionService();
-                var heuristicHits  = detector.DetectByPatterns(paragraphs);
-                if (heuristicHits.Count >= 2)
-                {
-                    SetStatus($"Detected {heuristicHits.Count} chapters from headings.");
-                    detected = SplitByHeuristicBreaks(paragraphs, heuristicHits);
-                }
-                else if (_aiService.IsAvailable)
-                {
-                    SetStatus("Asking Claude to detect chapter breaks…");
-                    LiveAnnounce("Asking Claude to detect chapter breaks. This may take a moment.");
-
-                    try   { detected = await _aiService.DetectChaptersAsync(fullText); }
-                    catch { detected = null; }
                 }
 
                 if (detected != null && detected.Count > 1)
@@ -1152,8 +1163,8 @@ namespace VoiceBookStudio.ViewModels
                     ImportAsSingleChapter(fullText, suggestedName);
                 }
 
-                // Notify the tutorial that a project is now open so step 14
-                // ("Complete the Dialog", RequiredAction = "projectopened") can advance.
+                // Notify the tutorial that a project is now open so the
+                // "Complete the Dialog" step (RequiredAction = "projectopened") can advance.
                 _tutorialActionSink?.Invoke("projectopened");
             }
             catch (Exception ex)

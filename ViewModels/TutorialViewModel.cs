@@ -422,19 +422,19 @@ namespace VoiceBookStudio.ViewModels
         // ────────────────────────────────────────────────────────────────
         // Step definitions
         //
-        // STRUCTURE (18 steps total — trimmed from an earlier 22-step version
-        // that drilled panel-switching one panel at a time and had a
-        // "what can I say here" step that just restated a line from the one
-        // before it; both were consolidated without losing coverage)
+        // STRUCTURE (17 steps total — trimmed from an earlier 18-step version
+        // that had a standalone "Navigating Between Panels" reference step
+        // duplicating the Ctrl+1..4 / Panel 1..4 rundown already given at the
+        // end of the four-panel overview; consolidated without losing coverage)
         //
         //   Section 1 — Audio and microphone test          (steps  1–2,  interactive)
         //   Section 2 — Welcome and orientation            (steps  3–5,  passive)
-        //   Section 3 — Understanding the four panels      (steps  6–7,  mixed)
-        //   Section 4 — Other voice command overview       (step   8,    passive)
-        //   Section 5 — Your first chapter                 (steps  9–12, interactive)
-        //   Section 6 — Claude, the Prompt Library & Cards (steps 13–16, mixed)
-        //   Section 7 — Practice save                      (step  17,    interactive)
-        //   Section 8 — Tutorial complete                  (step  18,    passive)
+        //   Section 3 — Panel navigation practice          (step   6,    interactive)
+        //   Section 4 — Other voice command overview       (step   7,    passive)
+        //   Section 5 — Your first chapter                 (steps  8–11, interactive)
+        //   Section 6 — Claude, the Prompt Library & Cards (steps 12–15, mixed)
+        //   Section 7 — Practice save                      (step  16,    interactive)
+        //   Section 8 — Tutorial complete                  (step  17,    passive)
         // ────────────────────────────────────────────────────────────────
 
         private static TutorialStep[] BuildSteps(bool jawsDetected, bool dragonDetected)
@@ -527,7 +527,7 @@ namespace VoiceBookStudio.ViewModels
                 {
                     Title   = "Welcome to VoiceBook Studio",
                     Content =
-                        "Great — audio is confirmed. Here is how the rest of the tutorial works.\n\n" +
+                        "Here is how the rest of the tutorial works.\n\n" +
                         "HOW THE TUTORIAL WORKS\n" +
                         "Most steps ask you to listen, then press Next to continue.\n" +
                         "Some steps ask you to perform an action — the tutorial waits and " +
@@ -575,35 +575,14 @@ namespace VoiceBookStudio.ViewModels
                         "Three tabs: Prompts (81 categorized writing prompts you can send straight " +
                         "to Claude), Cards (AI responses you've saved to reuse), and Feedback " +
                         "(your saved chapter and book analyses).\n\n" +
-                        "Switch panels by pressing Ctrl+1, Ctrl+2, Ctrl+3, or Ctrl+4/F11. " +
-                        "Or say Panel 1, Panel 2, Panel 3, or Panel 4."
+                        "Switch panels by pressing Ctrl+1, Ctrl+2, Ctrl+3, or Ctrl+4/F11, or by saying " +
+                        "Panel 1, Panel 2, Panel 3, or Panel 4. From inside the Writing Editor, Escape " +
+                        "jumps straight back to the Chapter Manager."
                 },
 
                 // ════════════════════════════════════════════════════════
-                // SECTION 3 — Panel navigation practice  (steps 6–7)
+                // SECTION 3 — Panel navigation practice  (step 6)
                 // ════════════════════════════════════════════════════════
-
-                new TutorialStep
-                {
-                    Title   = "Section 3 — Navigating Between Panels",
-                    Content =
-                        "You can switch panels in two ways.\n\n" +
-                        "KEYBOARD\n" +
-                        "  Ctrl+1  — Chapter Manager\n" +
-                        "  F2 or Ctrl+2  — Writing Editor\n" +
-                        "  F3 or Ctrl+3  — AI Assistant\n" +
-                        "  F11 or Ctrl+4  — Library\n" +
-                        "  Escape  — from inside the Writing Editor, always jumps straight back " +
-                        "to the Chapter Manager. It only does this while the editor has focus; " +
-                        "elsewhere it does not switch panels.\n\n" +
-                        "VOICE (say any of these)\n" +
-                        "  Panel 1  /  Go to panel 1\n" +
-                        "  Panel 2  /  Go to panel 2\n" +
-                        "  Panel 3  /  Go to panel 3\n" +
-                        "  Panel 4  /  Go to panel 4  /  Go to library\n\n" +
-                        "Press Next when you're ready to try it — the next step will wait for you " +
-                        "to actually switch panels and detect it automatically."
-                },
 
                 new TutorialStep
                 {
@@ -611,8 +590,7 @@ namespace VoiceBookStudio.ViewModels
                     Content            =
                         "Switch to any panel other than this one — Writing Editor, AI Assistant, " +
                         "or Library.\n\n" +
-                        "Say Panel Two, Panel Three, or Panel Four — or press F2, F3, or F11.\n\n" +
-                        "The tutorial will detect it and move on automatically.",
+                        "Say Panel Two, Panel Three, or Panel Four — or press F2, F3, or F11.",
                     RequiredActionsAny = new[] { "panel2", "panel3", "panel4" },
                     ActionPrompt       = "Say Panel Two, Panel Three, or Panel Four, or press F2, F3, or F11",
                     SuccessMessage     = "Panel switching works. Say Panel One, or press Ctrl+1, any time to " +
@@ -621,7 +599,7 @@ namespace VoiceBookStudio.ViewModels
                 },
 
                 // ════════════════════════════════════════════════════════
-                // SECTION 4 — Other voice commands overview  (step 8, passive)
+                // SECTION 4 — Other voice commands overview  (step 7, passive)
                 // ════════════════════════════════════════════════════════
 
                 new TutorialStep
@@ -656,7 +634,7 @@ namespace VoiceBookStudio.ViewModels
                 },
 
                 // ════════════════════════════════════════════════════════
-                // SECTION 5 — Your first chapter  (steps 9–12)
+                // SECTION 5 — Your first chapter  (steps 8–11)
                 // ════════════════════════════════════════════════════════
 
                 new TutorialStep
@@ -723,7 +701,7 @@ namespace VoiceBookStudio.ViewModels
                 },
 
                 // ════════════════════════════════════════════════════════
-                // SECTION 6 — Claude, the Prompt Library & Cards  (steps 13–16)
+                // SECTION 6 — Claude, the Prompt Library & Cards  (steps 12–15)
                 // Comes after a chapter exists so there is real content for Claude
                 // to respond to, and a real response to save as a card.
                 // ════════════════════════════════════════════════════════
@@ -736,8 +714,10 @@ namespace VoiceBookStudio.ViewModels
                         "with Claude. Anything you type or dictate there, Claude answers with " +
                         "your open chapter as context.\n\n" +
                         "GETTING A RESPONSE INTO YOUR CHAPTER\n" +
-                        "Once Claude replies, three Insert buttons add the response at your " +
-                        "cursor, the start, or the end of the chapter.\n\n" +
+                        "Once Claude replies, three Insert buttons add the response into your " +
+                        "chapter: at cursor — meaning your last position in the editor, even " +
+                        "though you're currently typing here in the chat box — at the start, " +
+                        "or at the end.\n\n" +
                         "A fourth option, Replace, is different: say Replace, or click it, and " +
                         "Claude finds the exact original passage its response was meant to " +
                         "rewrite — for example if you asked \"rewrite paragraph 4\" — and swaps " +
@@ -791,7 +771,7 @@ namespace VoiceBookStudio.ViewModels
                 },
 
                 // ════════════════════════════════════════════════════════
-                // SECTION 7 — Practice save  (step 17, interactive)
+                // SECTION 7 — Practice save  (step 16, interactive)
                 // Save comes after the project is created so there is something to save.
                 // ════════════════════════════════════════════════════════
 
@@ -810,7 +790,7 @@ namespace VoiceBookStudio.ViewModels
                 },
 
                 // ════════════════════════════════════════════════════════
-                // SECTION 8 — Completion  (step 18, passive)
+                // SECTION 8 — Completion  (step 17, passive)
                 // ════════════════════════════════════════════════════════
 
                 new TutorialStep

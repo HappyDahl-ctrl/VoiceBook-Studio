@@ -66,7 +66,7 @@ The main window is divided into four panels plus a status bar. Three panels sit 
 
 The main window opens and JAWS reads it naturally — window title, focused control, status. No startup announcement plays from the app. JAWS is the only voice.
 
-A Welcome dialog opens on first launch (see below).
+On first launch, the 17-step guided tutorial opens directly (see below) — JAWS reads each step as it's reached.
 
 ### When JAWS Is Not Running
 
@@ -80,19 +80,15 @@ The app speaks one startup announcement:
 - A soft falling chime plays
 - The app says *"VoiceBook Studio closing. Goodbye."* (plays only when JAWS is not running)
 
-### First Launch — Welcome Dialog
+### First Launch — The Guided Tour
 
-On first launch, a Welcome dialog opens automatically. It speaks a greeting that reflects what was actually detected:
+On first launch, the 17-step interactive tutorial opens directly — there is no separate Welcome dialog to get through first. It walks through the audio and microphone check, every panel, writing your first chapter, getting a response from Claude, using the Prompt Library, and saving a response card. Step 1 confirms audio is working; Step 3 covers the welcome and orientation content a Welcome dialog would otherwise handle.
 
-- If Dragon is running: the greeting describes how to give voice commands with Dragon
-- If Dragon is not running: the greeting describes the built-in voice recognition
+The tour marks itself complete only when you finish it or explicitly skip within it — closing the window early does not count, and it will still be waiting the same way next launch.
 
-Two choices:
+The tour can be started again at any time by saying "start tutorial."
 
-- **Start Guided Tour** — a 18-step interactive tutorial that walks through every panel, writing your first chapter, getting a response from Claude, using the Prompt Library, and saving a response card
-- **Skip Tour** — go straight to the main window (the Welcome dialog will offer the tour again next launch, since it was skipped rather than completed)
-
-The tour can be started again at any time by saying "start tutorial" or from Help → Welcome / Tutorial.
+There is also a separate Welcome dialog (Start Guided Tour / Skip Tour) that used to gate first launch — it no longer does, but it still exists and can be reopened on demand by saying "open welcome." Use it if you specifically want that shorter greeting screen; it is not part of the normal first-run path anymore.
 
 ---
 
@@ -284,6 +280,10 @@ To hear what you have written, say "read chapter" for the full chapter, or posit
 
 Your word count updates on screen as you type, but is not read aloud on every keystroke — see Section 11 for exactly when and how to hear it.
 
+### Without Dragon, there is no free-text dictation
+
+Everything above requires Dragon (or another Win32-text-layer dictation tool — see below). VoiceBook Studio's own built-in microphone, used when Dragon is not running, only recognizes a fixed, closed set of command phrases — it has no dictation mode and cannot transcribe free-form prose. Without Dragon, you can still drive the entire app hands-free by voice (every command in Section 16 works), but writing the actual chapter text requires typing, or a separate OS-level dictation feature such as Windows Voice Access or Windows Speech Recognition's dictation mode, which types into the editor the same way Dragon does — the editor is built on the standard Win32 text layer, so nothing about it is specific to Dragon.
+
 ---
 
 ## 6. The Whole Book View
@@ -461,6 +461,15 @@ Say "configure voice" or choose Settings → Configure Voice from the menu to se
 
 ## 14. How JAWS Works with This App
 
+### Two independent channels: output and input
+
+Sections 14 and 15 are easy to conflate, so before either one: JAWS and Dragon sit on two separate axes and neither affects the other.
+
+- **Output — who speaks to you.** Decided once, at startup: if JAWS is running, it is the sole voice for the entire app and the app's own voice is silenced completely; if JAWS is not running, the app's own voice takes over instead. This never changes mid-session.
+- **Input — who is listening for a command.** Only relevant when Dragon is running, and it can change from moment to moment: Dragon owns the microphone by default, and ScrollLock toggles the mic between Dragon and the app's own command recognizer (Section 15).
+
+JAWS being on or off has no effect on the ScrollLock/Dragon mic hand-off, and Dragon being on or off has no effect on which voice is reading to you. A JAWS + Dragon user (the most capable no-hands setup) gets JAWS for every announcement, with ScrollLock deciding who's listening at any given moment.
+
 ### What JAWS reads — everything
 
 When JAWS is running, it is the sole audio source for the entire application:
@@ -517,6 +526,8 @@ Press **ScrollLock** once. Dragon's microphone is muted and the app's built-in r
 2. Say "pacing feedback"
 3. Press ScrollLock — Dragon mic restored
 4. Dictate your next paragraph as normal
+
+**Efficient strategy — don't toggle per command.** You don't need to press ScrollLock before and after every single command. Leave the app's mic active for an entire run of commands (panel switches, save, add chapter, feedback requests, anything from the voice command list), and only toggle back to Dragon at the specific moments you need to dictate free text — a project title, a chapter title, a rename, or a question to Claude. Toggle once at the start of a command-heavy stretch, once back when you need to type something, and repeat — not once per command.
 
 ---
 
@@ -660,7 +671,7 @@ Create Dragon MyCommands that map spoken phrases to keyboard shortcuts or comman
 | Set export folder | Choose default folder for exported Word/PDF files |
 | Toggle voice | Toggle app TTS on or off (not relevant when JAWS is running) |
 | Configure voice | Open the Configure Voice (Azure TTS) dialog |
-| Start tutorial | Open the 18-step guided tutorial |
+| Start tutorial | Open the 17-step guided tutorial |
 | Open welcome | Reopen the Welcome dialog (Start Guided Tour / Skip Tour) |
 
 ### App

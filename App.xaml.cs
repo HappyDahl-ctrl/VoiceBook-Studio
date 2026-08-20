@@ -82,6 +82,12 @@ namespace VoiceBookStudio
             audio.SetJawsDetected(jawsRunning);
             announce.SetJawsDetected(jawsRunning);
 
+            // The window's DataContext was bound before this detection completed,
+            // so the status bar's JAWS/Dragon indicators are still showing their
+            // stale initial (not-detected) values — refresh them now.
+            if (window.DataContext is MainViewModel vm)
+                vm.RefreshAssistiveTechnologyStatus();
+
             if (!jawsRunning)
             {
                 // Step 3: Prime and speak startup announcement for non-JAWS users.

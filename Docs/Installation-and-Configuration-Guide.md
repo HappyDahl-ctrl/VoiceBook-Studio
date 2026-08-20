@@ -12,7 +12,7 @@ For a PC that already has Dragon NaturallySpeaking Professional, JAWS, and JSay 
 4. Getting Your Anthropic API Key
 5. Configuring JAWS
 6. Configuring Dragon — App Settings
-7. Configuring Dragon — MyCommands Setup (205 commands)
+7. Configuring Dragon — MyCommands Setup (205 commands, optional)
 8. Configuring JSay
 9. Windows System Settings
 10. Verifying Everything Works
@@ -157,14 +157,17 @@ Dragon should accept dictation in the editor exactly as in Word. If dictation do
 When Dragon is running, VoiceBook's built-in voice recogniser is automatically disabled. Dragon owns the microphone. The startup announcement will say "Dragon detected — using Dragon for voice input."
 
 App voice commands are issued by:
-- Using Dragon MyCommands (the 205 commands you set up in Section 7)
-- Pressing Ctrl+Shift+Space to open the command bar, then dictating a command
+- **ScrollLock — fastest, no setup.** Press ScrollLock once and the app mutes Dragon and activates its own recogniser for you (it does this itself, via COM automation — nothing to configure). Say a command. Press ScrollLock again to hand the mic back to Dragon for dictation. Works anywhere in the app, including the tutorial.
+- Pressing Ctrl+Shift+Space to open the command bar, then dictating a command and saying "press Enter"
+- Using Dragon MyCommands (the 205 commands you can optionally set up in Section 7)
+
+**Do not bind Dragon's own "Microphone on/off" hotkey to ScrollLock.** VoiceBook Studio already mutes and restores Dragon's mic for you on every ScrollLock press — that's what the COM automation above does. Dragon's hotkeys are typically global, system-wide hooks, so binding the same key on Dragon's side risks a real conflict: either a double-toggle that leaves the mic in the wrong state, or Dragon's global hook intercepting the keypress before VoiceBook Studio ever sees it, breaking ScrollLock in the app entirely. Leave Dragon's own microphone hotkey at its default — there's nothing to configure on Dragon's side for this to work.
 
 ---
 
 ## 7. Configuring Dragon — MyCommands Setup
 
-This is the main setup task. You will create 205 Dragon MyCommands that cover every VoiceBook Studio feature.
+This section is optional. ScrollLock plus the app's own voice commands (see Section 6) already covers every VoiceBook Studio feature with no setup at all. Come back to this section later if you want single-phrase hands-free commands without the ScrollLock toggle — it walks through creating 205 Dragon MyCommands that cover every VoiceBook Studio feature.
 
 ### Before You Start
 

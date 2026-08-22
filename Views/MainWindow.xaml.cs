@@ -136,14 +136,23 @@ namespace VoiceBookStudio.Views
 
                 // When app mic turns on, mute Dragon so it doesn't steal the audio.
                 // When app mic turns off, restore Dragon so dictation works again.
-                if (error == null)
-                    _dragonMic.SetMicrophoneOn(!actual);
+                // Only claim Dragon's state changed if the COM call actually succeeded —
+                // otherwise Dragon keeps listening the whole time and ScrollLock silently
+                // does nothing on the Dragon side while the app confidently (and wrongly)
+                // announces that it worked.
+                bool dragonMuteSucceeded = error == null && _dragonMic.SetMicrophoneOn(!actual);
 
-                string? customMsg = error == null && _dragonMic.IsDragonAvailable
-                    ? (actual
-                        ? "App microphone on. Dragon muted. Say a command."
-                        : "App microphone off. Dragon listening.")
-                    : null;
+                string? customMsg = error != null
+                    ? null
+                    : dragonMuteSucceeded
+                        ? (actual
+                            ? "App microphone on. Dragon muted. Say a command."
+                            : "App microphone off. Dragon listening.")
+                        : _dragonMic.IsDragonAvailable
+                            ? (actual
+                                ? "App microphone on. Could not mute Dragon automatically — mute it manually to avoid conflicts."
+                                : "App microphone off. Could not restore Dragon automatically — unmute it manually.")
+                            : null;
 
                 ViewModel.SetMicListening(actual, error, customMsg);
             };

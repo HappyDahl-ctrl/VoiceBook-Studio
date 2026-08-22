@@ -36,19 +36,26 @@ namespace VoiceBookStudio.Services
 
         /// <summary>
         /// Turns Dragon's microphone on or off.
-        /// No-op when Dragon is unavailable.
+        /// Returns true only if the COM call completed without throwing — callers must
+        /// not tell the user Dragon's mic state changed unless this returns true, since
+        /// a caught exception here means Dragon's mic is still in whatever state it was
+        /// in before the call (e.g. still listening while the app claims it was muted).
+        /// Returns false without attempting anything when Dragon is unavailable.
         /// </summary>
-        public void SetMicrophoneOn(bool on)
+        public bool SetMicrophoneOn(bool on)
         {
-            if (_dragon == null) return;
+            if (_dragon == null) return false;
             try
             {
                 // Dragon 15+ Professional Individual exposes a bool Microphone property.
                 ((dynamic)_dragon).Microphone = on;
+                return true;
             }
             catch
             {
-                // Property name mismatch or Dragon COM call failed — ignore.
+                // Property name mismatch or Dragon COM call failed — report failure so
+                // the caller doesn't announce a mic state change that didn't happen.
+                return false;
             }
         }
     }

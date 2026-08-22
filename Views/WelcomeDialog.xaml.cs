@@ -1,4 +1,5 @@
 using System.Windows;
+using VoiceBookStudio.Helpers;
 using VoiceBookStudio.Utils;
 using VoiceBookStudio.ViewModels;
 
@@ -54,7 +55,20 @@ namespace VoiceBookStudio.Views
                 _ => Dispatcher.BeginInvoke(() =>
                 {
                     AnnouncementText.Text = msg;
-                    vm.AnnounceIntro(msg);
+
+                    // Under JAWS, the live-region TextBlock above is not reliable here:
+                    // WPF only raises LiveRegionChanged if an automation peer already
+                    // exists for the element, and nothing has touched this dialog's
+                    // automation tree yet (no hover, no Tab) at this point in startup.
+                    // UiaAnnouncer force-creates a peer before raising the notification,
+                    // so JAWS hears the welcome message immediately instead of only after
+                    // the user manually tabs or hovers the mouse. AnnounceIntro (SAPI)
+                    // already no-ops under JAWS by design, so without this branch JAWS
+                    // users would hear nothing at all until they moved focus themselves.
+                    if (VoiceBookStudio.Utils.AppSettings.IsJawsDetected)
+                        UiaAnnouncer.Announce(this, msg, isUrgent: true);
+                    else
+                        vm.AnnounceIntro(msg);
                 }));
         }
     }

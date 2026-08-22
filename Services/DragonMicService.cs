@@ -6,9 +6,30 @@ namespace VoiceBookStudio.Services
     /// Controls Dragon NaturallySpeaking's microphone via COM automation.
     /// Uses late-binding (dynamic) so no Dragon SDK reference is required at build time.
     /// Fails silently when Dragon is not installed or the COM object is unavailable.
+    ///
+    /// Dragon's automation surface does not expose a boolean "Microphone" property —
+    /// mic state is a MicState property (IDgnMicBtn / IDgnMicrophone) taking one of the
+    /// DgnMicStateConstants values below. A prior version of this class targeted a
+    /// "NaturallySpeaking.Application.Microphone" property that doesn't exist on real
+    /// Dragon installs, so SetMicrophoneOn silently no-opped on every real machine it
+    /// ran on. Initialize() now tries the known ProgIDs for the mic-control object in
+    /// order of likelihood; if Dragon's actual registered ProgID differs from all of
+    /// these, it still degrades to the same safe no-op as before.
     /// </summary>
     public sealed class DragonMicService
     {
+        // DgnMicStateConstants, from Dragon's COM type library.
+        private const int DgnMicOff = 1;
+        private const int DgnMicOn  = 2;
+
+        // Tried in order; the first ProgID that resolves is used.
+        private static readonly string[] MicObjectProgIds =
+        {
+            "DgnMicBtn.DgnMicBtn",
+            "DgnMicBtn",
+            "Dragon.DgnMicBtn",
+        };
+
         private object? _dragon;
 
         /// <summary>True when Dragon's COM object was found and is responding.</summary>
@@ -20,18 +41,25 @@ namespace VoiceBookStudio.Services
         /// </summary>
         public void Initialize()
         {
-            try
+            foreach (string progId in MicObjectProgIds)
             {
-                var t = Type.GetTypeFromProgID("NaturallySpeaking.Application");
-                if (t == null) return;
-                _dragon = Activator.CreateInstance(t);
-                IsDragonAvailable = _dragon != null;
+                try
+                {
+                    var t = Type.GetTypeFromProgID(progId);
+                    if (t == null) continue;
+                    _dragon = Activator.CreateInstance(t);
+                    if (_dragon != null)
+                    {
+                        IsDragonAvailable = true;
+                        return;
+                    }
+                }
+                catch
+                {
+                    // This ProgID isn't registered on this machine — try the next one.
+                }
             }
-            catch
-            {
-                // Dragon not installed, COM object not registered, or Dragon not running.
-                IsDragonAvailable = false;
-            }
+            IsDragonAvailable = false;
         }
 
         /// <summary>
@@ -43,8 +71,7 @@ namespace VoiceBookStudio.Services
             if (_dragon == null) return;
             try
             {
-                // Dragon 15+ Professional Individual exposes a bool Microphone property.
-                ((dynamic)_dragon).Microphone = on;
+                ((dynamic)_dragon).MicState = on ? DgnMicOn : DgnMicOff;
             }
             catch
             {

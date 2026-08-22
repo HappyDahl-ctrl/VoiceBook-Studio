@@ -41,6 +41,16 @@ namespace VoiceBookStudio.Services
         private bool _disposed;
         private bool _jawsDetected;
 
+        /// <summary>
+        /// True after the user explicitly turns app voice off (the "toggle voice" /
+        /// "voice off" command, or the Settings toggle). Distinct from
+        /// <see cref="_jawsDetected"/> — this is a deliberate user choice rather than
+        /// an auto-detection result, and it is checked by every ambient/status
+        /// announcement method below (but not <see cref="SpeakOnDemandAsync"/>, which
+        /// stays available for content the user explicitly asks to hear regardless).
+        /// </summary>
+        public bool IsMuted { get; private set; }
+
         // True once the SAPI audio pipeline has been exercised at least once.
         private bool _sapiPrimed;
 
@@ -65,6 +75,13 @@ namespace VoiceBookStudio.Services
         /// via UIA live regions and UiaAnnouncer.RaiseNotificationEvent instead.
         /// </summary>
         public void SetJawsDetected(bool detected) => _jawsDetected = detected;
+
+        /// <summary>
+        /// Called when the user explicitly toggles app voice on/off (see
+        /// <see cref="IsMuted"/>). When muted, ambient/status announcements become
+        /// no-ops, same as when JAWS is detected.
+        /// </summary>
+        public void SetMuted(bool muted) => IsMuted = muted;
 
         /// <summary>
         /// Primes the SAPI audio pipeline by speaking a silent phrase.
@@ -96,7 +113,7 @@ namespace VoiceBookStudio.Services
         /// </summary>
         public void Speak(string text)
         {
-            if (_jawsDetected || _disposed || string.IsNullOrWhiteSpace(text)) return;
+            if (_jawsDetected || IsMuted || _disposed || string.IsNullOrWhiteSpace(text)) return;
             text = SpeechTextUtils.SanitizeForSpeech(text);
             StopSpeaking();
             ActuallySpeak(text);
@@ -112,7 +129,7 @@ namespace VoiceBookStudio.Services
         public void AnnounceWithPriority(string message, AnnouncementPriority priority)
         {
             if (priority == AnnouncementPriority.Silent) return;
-            if (_jawsDetected || _disposed || string.IsNullOrWhiteSpace(message)) return;
+            if (_jawsDetected || IsMuted || _disposed || string.IsNullOrWhiteSpace(message)) return;
             message = SpeechTextUtils.SanitizeForSpeech(message);
             if (priority == AnnouncementPriority.Critical)
                 StopSpeaking();
@@ -129,7 +146,7 @@ namespace VoiceBookStudio.Services
         /// </summary>
         public void SpeakSync(string text)
         {
-            if (_jawsDetected || _disposed || string.IsNullOrWhiteSpace(text)) return;
+            if (_jawsDetected || IsMuted || _disposed || string.IsNullOrWhiteSpace(text)) return;
             text = SpeechTextUtils.SanitizeForSpeech(text);
             if (_azure.IsConfigured)
             {
@@ -164,7 +181,7 @@ namespace VoiceBookStudio.Services
         /// </summary>
         public async Task SpeakAndWaitAsync(string text)
         {
-            if (_jawsDetected) return;
+            if (_jawsDetected || IsMuted) return;
             await SpeakAndWaitCoreAsync(text);
         }
 

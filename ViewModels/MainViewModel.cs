@@ -2156,12 +2156,18 @@ namespace VoiceBookStudio.ViewModels
             if (!AppTtsEnabled)
             {
                 // Temporarily re-enable to speak the "off" announcement, then silence.
+                // Mute _systemAnnouncements too — it's what the tutorial's automatic
+                // step narration actually speaks through (see TutorialViewModel.
+                // AnnounceTutorialText), so without this, "voice off" silenced
+                // AudioFeedbackService only and the tutorial kept talking anyway.
                 _audio.IsEnabled = true;
                 LiveAnnounce("App voice off. JAWS will handle all audio.");
                 _audio.IsEnabled = false;
+                _systemAnnouncements.SetMuted(true);
             }
             else
             {
+                _systemAnnouncements.SetMuted(false);
                 _audio.IsEnabled = true;
                 LiveAnnounce("App voice on.");
             }

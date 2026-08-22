@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,7 +9,12 @@ namespace VoiceBookStudio.Services
 {
     public class PromptLibraryService
     {
-        private const string DefaultPromptsPath = "Data/PromptLibrary/prompts.json";
+        // Anchored to the app's install directory (not the process's current working
+        // directory, which can differ — e.g. a voice command or shortcut that launches
+        // the app with a different "Start in" folder) so the shipped prompts are found
+        // wherever VoiceBook Studio is started from.
+        private static readonly string DefaultPromptsPath = Path.Combine(
+            AppContext.BaseDirectory, "Data", "PromptLibrary", "prompts.json");
 
         public List<PromptItem> LoadPrompts(string? path = null)
         {

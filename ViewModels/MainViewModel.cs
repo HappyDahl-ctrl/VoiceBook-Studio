@@ -1970,8 +1970,13 @@ namespace VoiceBookStudio.ViewModels
                 Category = dlg.CategoryName,
                 Content  = AiFeedbackText
             };
-            ResponseCardVM.AddCard(card);
+            // Switch tabs (which moves keyboard/JAWS focus onto the Cards tab)
+            // BEFORE adding the card, so the "Card saved" announcement AddCard
+            // raises is the most recent UIA event and isn't immediately stepped
+            // on by the focus-changed event from the tab switch. Matches the
+            // focus-then-announce order used everywhere else in this file.
             SwitchAiTabRequested?.Invoke(this, "Cards");
+            ResponseCardVM.AddCard(card);
             SetStatus($"Card saved: {dlg.CardTitle}");
             _tutorialActionSink?.Invoke("savecard");
         }

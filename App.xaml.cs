@@ -55,6 +55,35 @@ namespace VoiceBookStudio
             _ = Dispatcher.InvokeAsync(
                 async () => await RunStartupSequenceAsync(mainWindow, systemAnnounce, audio),
                 DispatcherPriority.Normal);
+
+            StartJawsWatcher(systemAnnounce, audio);
+        }
+
+        /// <summary>
+        /// Re-checks JAWS's running state every 15 seconds for the life of the app and
+        /// keeps both TTS services in sync with it.
+        ///
+        /// Startup-only detection (<see cref="RunStartupSequenceAsync"/>) has a narrow
+        /// window: JAWS 2026 can take well over the retry budget to appear (Vispero
+        /// account sign-in on first run), so a JAWS instance that finishes starting late
+        /// is never noticed — the app keeps speaking with its own voice for the rest of
+        /// the session, overlapping JAWS's own reading. This watcher catches that case
+        /// (and the reverse — JAWS closed mid-session) by re-evaluating on a timer
+        /// instead of trusting the one-time startup snapshot.
+        /// </summary>
+        private void StartJawsWatcher(SystemAnnouncementService announce, AudioFeedbackService audio)
+        {
+            var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(15) };
+            timer.Tick += (_, _) =>
+            {
+                bool jawsRunning = AssistiveTechnologyDetector.IsJawsRunning();
+                if (jawsRunning == AppSettings.IsJawsDetected) return;
+
+                AppSettings.IsJawsDetected = jawsRunning;
+                audio.SetJawsDetected(jawsRunning);
+                announce.SetJawsDetected(jawsRunning);
+            };
+            timer.Start();
         }
 
         private static async Task RunStartupSequenceAsync(

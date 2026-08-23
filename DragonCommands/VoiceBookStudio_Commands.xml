@@ -383,6 +383,86 @@ End Sub
       </Command>
 
       <!-- ==============================================================
+           MICROPHONE AND VOICE COMMANDS
+           ==============================================================
+           Deliberately named "app mic" / "app voice" rather than bare
+           "microphone" / "voice" so they can never be confused with Dragon's
+           own built-in mic commands ("microphone off", "go to sleep",
+           "wake up"). Each does exactly one thing and nothing else:
+             - "app mic on" / "app mic off"     — toggles ONLY the app's own
+               mic. Unlike ScrollLock, these never mute or unmute Dragon.
+             - "app voice on" / "app voice off" — toggles ONLY the app's own
+               TTS voice. Never touches mic state.
+           Use these (instead of ScrollLock) when you want the app's mic and
+           Dragon's mic running at the same time and are handing off between
+           them yourself (e.g. via Dragon's own "go to sleep" / "wake up").
+      -->
+
+      <Command>
+        <CmdName>app mic on</CmdName>
+        <CmdType>script</CmdType>
+        <Script><![CDATA[
+Sub Main
+  AppBringUp "VoiceBook Studio"
+  Wait 100
+  SendKeys "^3"
+  Wait 200
+  SendKeys "app mic on{ENTER}"
+End Sub
+        ]]></Script>
+        <Enabled>1</Enabled>
+        <Description>Turn on the app's own mic only — does not touch Dragon. VoiceCommandRouter → TryAppMicOn()</Description>
+      </Command>
+
+      <Command>
+        <CmdName>app mic off</CmdName>
+        <CmdType>script</CmdType>
+        <Script><![CDATA[
+Sub Main
+  AppBringUp "VoiceBook Studio"
+  Wait 100
+  SendKeys "^3"
+  Wait 200
+  SendKeys "app mic off{ENTER}"
+End Sub
+        ]]></Script>
+        <Enabled>1</Enabled>
+        <Description>Turn off the app's own mic only — does not touch Dragon. VoiceCommandRouter → TryAppMicOff()</Description>
+      </Command>
+
+      <Command>
+        <CmdName>app voice on</CmdName>
+        <CmdType>script</CmdType>
+        <Script><![CDATA[
+Sub Main
+  AppBringUp "VoiceBook Studio"
+  Wait 100
+  SendKeys "^3"
+  Wait 200
+  SendKeys "app voice on{ENTER}"
+End Sub
+        ]]></Script>
+        <Enabled>1</Enabled>
+        <Description>Turn on the app's own TTS voice only — does not touch mic state. VoiceCommandRouter → TryAppVoiceOn()</Description>
+      </Command>
+
+      <Command>
+        <CmdName>app voice off</CmdName>
+        <CmdType>script</CmdType>
+        <Script><![CDATA[
+Sub Main
+  AppBringUp "VoiceBook Studio"
+  Wait 100
+  SendKeys "^3"
+  Wait 200
+  SendKeys "app voice off{ENTER}"
+End Sub
+        ]]></Script>
+        <Enabled>1</Enabled>
+        <Description>Turn off the app's own TTS voice only — does not touch mic state. VoiceCommandRouter → TryAppVoiceOff()</Description>
+      </Command>
+
+      <!-- ==============================================================
            APPLICATION COMMANDS
            ============================================================== -->
 

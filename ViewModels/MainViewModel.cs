@@ -773,7 +773,7 @@ namespace VoiceBookStudio.ViewModels
             if (!dragonOn)
             {
                 _startupMicToggle = true;
-                MicToggleRequested?.Invoke(this, true);
+                MicToggleRequested?.Invoke(this, (true, true));
                 _startupMicToggle = false;
                 await Task.Delay(300);
             }
@@ -2116,17 +2116,50 @@ namespace VoiceBookStudio.ViewModels
 
         /// <summary>
         /// Fired when the user requests the microphone to be toggled on or off.
-        /// The bool argument is the <em>desired</em> new state (true = start listening).
-        /// MainWindow handles this event, attempts to start/stop the recogniser,
-        /// and calls <see cref="SetMicListening"/> with the actual result.
+        /// Desired is the <em>desired</em> new state (true = start listening).
+        /// CoupleDragon is true only for the ScrollLock hand-off toggle, which is
+        /// meant to mute/unmute Dragon as part of the same action; the "app mic
+        /// on"/"app mic off" voice commands (<see cref="TryAppMicOn"/>,
+        /// <see cref="TryAppMicOff"/>) pass false so they touch only the app's own
+        /// mic and never Dragon's, per the user's request that those commands do
+        /// exactly one thing. MainWindow handles this event, attempts to start/stop
+        /// the recogniser, and calls <see cref="SetMicListening"/> with the actual result.
         /// </summary>
-        public event EventHandler<bool>? MicToggleRequested;
+        public event EventHandler<(bool Desired, bool CoupleDragon)>? MicToggleRequested;
 
         [RelayCommand]
         private void ToggleMic()
         {
             bool desired = !IsMicListening;
-            MicToggleRequested?.Invoke(this, desired);
+            MicToggleRequested?.Invoke(this, (desired, true));
+        }
+
+        /// <summary>
+        /// "App mic on" voice command — turns on the app's own mic only. Never touches
+        /// Dragon's mic state. A no-op announcement if the app mic is already on.
+        /// </summary>
+        public void TryAppMicOn()
+        {
+            if (IsMicListening)
+            {
+                LiveAnnounce("App mic is already on.");
+                return;
+            }
+            MicToggleRequested?.Invoke(this, (true, false));
+        }
+
+        /// <summary>
+        /// "App mic off" voice command — turns off the app's own mic only. Never touches
+        /// Dragon's mic state. A no-op announcement if the app mic is already off.
+        /// </summary>
+        public void TryAppMicOff()
+        {
+            if (!IsMicListening)
+            {
+                LiveAnnounce("App mic is already off.");
+                return;
+            }
+            MicToggleRequested?.Invoke(this, (false, false));
         }
 
         // True while the startup sequence is enabling the mic — step 4 already
@@ -2542,6 +2575,34 @@ namespace VoiceBookStudio.ViewModels
 
         public void TryToggleAppTts()
         {
+            ToggleAppTtsCommand.Execute(null);
+        }
+
+        /// <summary>
+        /// "App voice on" voice command — turns on the app's own TTS voice only. Never
+        /// touches mic state. A no-op announcement if the app voice is already on.
+        /// </summary>
+        public void TryAppVoiceOn()
+        {
+            if (AppTtsEnabled)
+            {
+                LiveAnnounce("App voice is already on.");
+                return;
+            }
+            ToggleAppTtsCommand.Execute(null);
+        }
+
+        /// <summary>
+        /// "App voice off" voice command — turns off the app's own TTS voice only. Never
+        /// touches mic state. A no-op announcement if the app voice is already off.
+        /// </summary>
+        public void TryAppVoiceOff()
+        {
+            if (!AppTtsEnabled)
+            {
+                LiveAnnounce("App voice is already off.");
+                return;
+            }
             ToggleAppTtsCommand.Execute(null);
         }
 

@@ -97,6 +97,15 @@ it's always clear which voice is talking. A slow AI request gets a periodic
 "what can I say here" — hear commands for the current panel ·
 "application status" · "start tutorial"
 
+**Mic & voice — distinct on/off commands**
+"app mic on" / "app mic off" — toggles only the app's own mic, never
+Dragon's · "app voice on" / "app voice off" — toggles only the app's own
+TTS voice, never the mic. Neither command does anything else. Unlike
+ScrollLock (which couples the app mic to muting/unmuting Dragon), these
+are for running the app mic and Dragon's mic at the same time and handing
+off between them yourself — e.g. with Dragon's own "go to sleep" / "wake
+up" — see the Dragon section below.
+
 ---
 
 ## Dragon NaturallySpeaking

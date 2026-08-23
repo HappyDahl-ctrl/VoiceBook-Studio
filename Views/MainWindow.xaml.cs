@@ -125,8 +125,9 @@ namespace VoiceBookStudio.Views
                 });
             };
 
-            ViewModel.MicToggleRequested += (_, desired) =>
+            ViewModel.MicToggleRequested += (_, args) =>
             {
+                bool desired = args.Desired;
                 bool actual = desired && _speechListener.StartListening();
                 if (!desired) { _speechListener.StopListening(); actual = false; }
 
@@ -134,12 +135,14 @@ namespace VoiceBookStudio.Views
                     ? "Could not start microphone. Check that a microphone is connected and Windows Speech Recognition is set up."
                     : null;
 
-                // When app mic turns on, mute Dragon so it doesn't steal the audio.
-                // When app mic turns off, restore Dragon so dictation works again.
-                if (error == null)
+                // Only the ScrollLock hand-off toggle couples Dragon's mic to the app's.
+                // The "app mic on"/"app mic off" voice commands set CoupleDragon false so
+                // they do exactly one thing — toggle the app's own mic — and never touch
+                // Dragon, even if Dragon happens to be running at the time.
+                if (error == null && args.CoupleDragon)
                     _dragonMic.SetMicrophoneOn(!actual);
 
-                string? customMsg = error == null && _dragonMic.IsDragonAvailable
+                string? customMsg = error == null && args.CoupleDragon && _dragonMic.IsDragonAvailable
                     ? (actual
                         ? "App microphone on. Dragon muted. Say a command."
                         : "App microphone off. Dragon listening.")

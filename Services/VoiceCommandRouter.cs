@@ -506,8 +506,38 @@ namespace VoiceBookStudio.Services
             // Settings
             // ----------------------------------------------------------------
 
-            if (cmd is "toggle voice" or "voice on" or "voice off"
-                     or "mute app" or "unmute app" or "toggle app voice")
+            // Distinct, unambiguous on/off commands — deliberately worded "app mic"/
+            // "app voice" rather than bare "microphone"/"voice" so they can't be
+            // confused with Dragon's own native mic commands ("microphone off",
+            // "go to sleep", "wake up"). Each does exactly one thing: it never
+            // triggers the other (mic commands never touch app voice; voice
+            // commands never touch mic state), and never mutes/unmutes Dragon —
+            // that coupling is ScrollLock's job alone (see MicToggleRequested).
+            if (cmd is "app mic on" or "mic on")
+            {
+                _vm.TryAppMicOn();
+                return true;
+            }
+
+            if (cmd is "app mic off" or "mic off")
+            {
+                _vm.TryAppMicOff();
+                return true;
+            }
+
+            if (cmd is "app voice on" or "voice on" or "unmute app" or "unmute voice")
+            {
+                _vm.TryAppVoiceOn();
+                return true;
+            }
+
+            if (cmd is "app voice off" or "voice off" or "mute app" or "mute voice")
+            {
+                _vm.TryAppVoiceOff();
+                return true;
+            }
+
+            if (cmd is "toggle voice" or "toggle app voice")
             {
                 _vm.TryToggleAppTts();
                 return true;

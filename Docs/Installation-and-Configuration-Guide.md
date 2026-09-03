@@ -12,7 +12,7 @@ For a PC that already has Dragon NaturallySpeaking Professional, JAWS, and JSay 
 4. Getting Your Anthropic API Key
 5. Configuring JAWS
 6. Configuring Dragon — App Settings
-7. Configuring Dragon — MyCommands Setup (205 commands, optional)
+7. Configuring Dragon — MyCommands Setup (208 commands, optional)
 8. Configuring JSay
 9. Windows System Settings
 10. Verifying Everything Works
@@ -159,7 +159,8 @@ When Dragon is running, VoiceBook's built-in voice recogniser is automatically d
 App voice commands are issued by:
 - **ScrollLock — fastest, no setup.** Press ScrollLock once and the app mutes Dragon and activates its own recogniser for you (it does this itself, via COM automation — nothing to configure). Say a command. Press ScrollLock again to hand the mic back to Dragon for dictation. Works anywhere in the app, including the tutorial.
 - Pressing Ctrl+Shift+Space to open the command bar, then dictating a command and saying "press Enter"
-- Using Dragon MyCommands (the 205 commands you can optionally set up in Section 7)
+- Using Dragon MyCommands (the 208 commands you can optionally set up in Section 7)
+- **"App mic on" / "App mic off"** — if you'd rather run VoiceBook's mic and Dragon's mic at the same time and hand off between them yourself (for example with Dragon's own "go to sleep" / "wake up"), these two commands toggle only VoiceBook's own mic and never touch Dragon's, unlike ScrollLock. See Section 7, Section S.
 
 **Do not bind Dragon's own "Microphone on/off" hotkey to ScrollLock.** VoiceBook Studio already mutes and restores Dragon's mic for you on every ScrollLock press — that's what the COM automation above does. Dragon's hotkeys are typically global, system-wide hooks, so binding the same key on Dragon's side risks a real conflict: either a double-toggle that leaves the mic in the wrong state, or Dragon's global hook intercepting the keypress before VoiceBook Studio ever sees it, breaking ScrollLock in the app entirely. Leave Dragon's own microphone hotkey at its default — there's nothing to configure on Dragon's side for this to work.
 
@@ -167,7 +168,7 @@ App voice commands are issued by:
 
 ## 7. Configuring Dragon — MyCommands Setup
 
-This section is optional. ScrollLock plus the app's own voice commands (see Section 6) already covers every VoiceBook Studio feature with no setup at all. Come back to this section later if you want single-phrase hands-free commands without the ScrollLock toggle — it walks through creating 205 Dragon MyCommands that cover every VoiceBook Studio feature.
+This section is optional. ScrollLock plus the app's own voice commands (see Section 6) already covers every VoiceBook Studio feature with no setup at all. Come back to this section later if you want single-phrase hands-free commands without the ScrollLock toggle — it walks through creating 208 Dragon MyCommands that cover every VoiceBook Studio feature.
 
 ### Before You Start
 
@@ -528,7 +529,6 @@ Both "insert card" and "delete card" accept any number one through twenty — th
 | Open settings | open settings |
 | Set project folder | set project folder |
 | Toggle app voice | toggle voice |
-| Mute VoiceBook | toggle voice |
 | Application status | status |
 | What is the status | status |
 | Start tutorial | start tutorial |
@@ -561,6 +561,31 @@ Only needed during the guided tutorial.
 
 ---
 
+### Section S — App Mic and App Voice, Distinct On/Off (Type B — Step-by-Step)
+
+These are deliberately named "app mic" / "app voice" rather than bare
+"microphone" / "voice" so Dragon can never confuse them with its own
+built-in mic commands ("microphone off," "go to sleep," "wake up"). Each
+one does exactly one thing and nothing else — no ScrollLock-style coupling:
+
+- **App mic on / off** toggles only VoiceBook's own mic. It never mutes or
+  unmutes Dragon, so use it when you want to run VoiceBook's mic and
+  Dragon's mic at the same time and hand off between them yourself — for
+  example with Dragon's own "go to sleep" and "wake up."
+- **App voice on / off** toggles only VoiceBook's own spoken voice. It
+  never touches mic state, so you can silence VoiceBook's voice (e.g. to
+  let JAWS or Dragon's own readback be the only thing you hear) without
+  affecting which mic is listening, and turn it back on the same way.
+
+| Command Name | Text in Step 3 |
+|---|---|
+| App mic on | app mic on |
+| App mic off | app mic off |
+| App voice on | app voice on |
+| App voice off | app voice off |
+
+---
+
 ### Total Command Count
 
 | Section | Commands |
@@ -580,10 +605,11 @@ Only needed during the guided tutorial.
 | M — Use prompt | 61 |
 | N — Response cards | 19 |
 | O — Feedback library | 10 |
-| P — Settings | 10 |
+| P — Settings | 9 |
 | Q — Close app | 3 |
 | R — Tutorial | 6 |
-| **Total** | **205** |
+| S — App mic and app voice | 4 |
+| **Total** | **208** |
 
 ---
 

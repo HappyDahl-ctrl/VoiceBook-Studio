@@ -310,13 +310,19 @@ namespace VoiceBookStudio.ViewModels
         /// Routes tutorial narration through the correct speech channel.
         /// Speak() is a no-op when JAWS is detected, so JAWS users hear nothing.
         /// SpeakOnDemandAsync() bypasses that rule and is the correct channel
-        /// for deliberate tutorial narration regardless of AT state.
+        /// for deliberate tutorial narration regardless of AT state — except when
+        /// the user has explicitly muted app voice (IsMuted), which SpeakOnDemandAsync
+        /// itself does not check since it also serves genuinely on-demand reads
+        /// (AI response, chapter, paragraph) that should stay available regardless.
+        /// Checking IsMuted here specifically is what makes "the user prefers JAWS
+        /// only, they can disable app TTS in Settings" (see AnnounceCurrentStep)
+        /// actually true.
         /// Fire-and-forget here matches the existing Speak() pattern; StopSpeaking()
         /// called from Next/Previous/Exit cancels any in-flight utterance correctly.
         /// </summary>
         private void AnnounceTutorialText(string text)
         {
-            if (string.IsNullOrWhiteSpace(text)) return;
+            if (string.IsNullOrWhiteSpace(text) || _announcer.IsMuted) return;
             if (_jawsDetected)
                 _ = _announcer.SpeakOnDemandAsync(text);
             else

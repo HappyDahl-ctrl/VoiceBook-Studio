@@ -181,8 +181,13 @@ namespace VoiceBookStudio.Views
                 case Key.F3: FocusMainPanel(3); e.Handled = true; break;
 
                 // ScrollLock toggles Dragon / app mic even while the tutorial has focus.
+                // Normally handled by MainWindow's global hotkey (see MainWindow.
+                // OnSourceInitialized) so it works no matter which window has focus;
+                // only handle it here as a fallback if that registration failed, to
+                // avoid toggling the mic twice on one press.
                 case Key.Scroll:
-                    ForwardToMain(mvm => mvm.ToggleMicCommand.Execute(null));
+                    if (!(Owner is MainWindow main && main.IsScrollLockHotkeyActive))
+                        ForwardToMain(mvm => mvm.ToggleMicCommand.Execute(null));
                     e.Handled = true;
                     break;
             }

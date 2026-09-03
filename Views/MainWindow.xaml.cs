@@ -1,7 +1,9 @@
 using System;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Interop;
 using VoiceBookStudio.Helpers;
 using VoiceBookStudio.Services;
 using VoiceBookStudio.ViewModels;
@@ -38,9 +40,75 @@ namespace VoiceBookStudio.Views
 
             Loaded += Window_Loaded;
             Closing += MainWindow_Closing;
-            Closed  += (_, _) => _speechListener?.Dispose();
+            Closed  += (_, _) =>
+            {
+                _speechListener?.Dispose();
+                if (IsScrollLockHotkeyActive)
+                    UnregisterHotKey(new WindowInteropHelper(this).Handle, ScrollLockHotkeyId);
+                _hwndSource?.RemoveHook(HwndHotkeyHook);
+            };
 
             PreviewKeyDown += MainWindow_PreviewKeyDown;
+        }
+
+        // ----------------------------------------------------------------
+        // ScrollLock global hotkey
+        //
+        // A plain WPF/WinForms KeyDown handler only fires when this specific
+        // window (or its hosted WinForms editor) currently owns real OS keyboard
+        // focus. In a live JAWS + Dragon session, focus routinely lands elsewhere
+        // for a moment — a Dragon dictation popup, a JAWS panel, the non-modal
+        // Tutorial dialog not being the currently-active window — and ScrollLock
+        // then silently does nothing even though the per-window handlers below
+        // are wired correctly. RegisterHotKey delivers WM_HOTKEY to this window's
+        // message queue regardless of which window currently has focus, so
+        // ScrollLock keeps working no matter what the user was just interacting
+        // with. Falls back to the old per-window KeyDown handling (see
+        // MainWindow_PreviewKeyDown, EditorRtb_KeyDown, and
+        // TutorialDialog.Window_KeyDown) if registration fails — e.g. because
+        // another running application already claimed ScrollLock as its own
+        // global hotkey.
+        // ----------------------------------------------------------------
+
+        private const int  ScrollLockHotkeyId = 0x0001;
+        private const uint VkScroll           = 0x91;
+        private const int  WM_HOTKEY          = 0x0312;
+
+        private HwndSource? _hwndSource;
+
+        /// <summary>
+        /// True once the system-wide ScrollLock hotkey is registered and active.
+        /// Checked by the per-window KeyDown fallbacks so a ScrollLock press is
+        /// never handled twice (which would toggle the mic on then immediately
+        /// back off).
+        /// </summary>
+        public bool IsScrollLockHotkeyActive { get; private set; }
+
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
+
+        protected override void OnSourceInitialized(EventArgs e)
+        {
+            base.OnSourceInitialized(e);
+
+            IntPtr handle = new WindowInteropHelper(this).Handle;
+            _hwndSource = HwndSource.FromHwnd(handle);
+            _hwndSource?.AddHook(HwndHotkeyHook);
+
+            IsScrollLockHotkeyActive = RegisterHotKey(handle, ScrollLockHotkeyId, 0, VkScroll);
+        }
+
+        private IntPtr HwndHotkeyHook(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            if (msg == WM_HOTKEY && wParam.ToInt32() == ScrollLockHotkeyId)
+            {
+                ViewModel.ToggleMicCommand.Execute(null);
+                handled = true;
+            }
+            return IntPtr.Zero;
         }
 
         // ----------------------------------------------------------------
@@ -139,14 +207,24 @@ namespace VoiceBookStudio.Views
                 // The "app mic on"/"app mic off" voice commands set CoupleDragon false so
                 // they do exactly one thing — toggle the app's own mic — and never touch
                 // Dragon, even if Dragon happens to be running at the time.
-                if (error == null && args.CoupleDragon)
-                    _dragonMic.SetMicrophoneOn(!actual);
+                //
+                // When coupled, only claim Dragon's state changed if the COM call actually
+                // succeeded — otherwise Dragon keeps listening the whole time and ScrollLock
+                // silently does nothing on the Dragon side while the app confidently (and
+                // wrongly) announces that it worked.
+                bool dragonMuteSucceeded = error == null && args.CoupleDragon && _dragonMic.SetMicrophoneOn(!actual);
 
-                string? customMsg = error == null && args.CoupleDragon && _dragonMic.IsDragonAvailable
-                    ? (actual
-                        ? "App microphone on. Dragon muted. Say a command."
-                        : "App microphone off. Dragon listening.")
-                    : null;
+                string? customMsg = error != null || !args.CoupleDragon
+                    ? null
+                    : dragonMuteSucceeded
+                        ? (actual
+                            ? "App microphone on. Dragon muted. Say a command."
+                            : "App microphone off. Dragon listening.")
+                        : _dragonMic.IsDragonAvailable
+                            ? (actual
+                                ? "App microphone on. Could not mute Dragon automatically — mute it manually to avoid conflicts."
+                                : "App microphone off. Could not restore Dragon automatically — unmute it manually.")
+                            : null;
 
                 ViewModel.SetMicListening(actual, error, customMsg);
             };
@@ -213,8 +291,12 @@ namespace VoiceBookStudio.Views
                         e.Handled = e.SuppressKeyPress = true;
                         return;
                     // ScrollLock: toggle app mic on/off. Simultaneously mutes/unmutes Dragon.
+                    // Normally handled by the global hotkey (see OnSourceInitialized) so it
+                    // works regardless of focus; only handle it here as a fallback if that
+                    // registration failed, to avoid toggling the mic twice on one press.
                     case WinForms.Keys.Scroll:
-                        Dispatcher.Invoke(() => ViewModel.ToggleMicCommand.Execute(null));
+                        if (!IsScrollLockHotkeyActive)
+                            Dispatcher.Invoke(() => ViewModel.ToggleMicCommand.Execute(null));
                         e.Handled = e.SuppressKeyPress = true;
                         return;
                     case WinForms.Keys.Escape:
@@ -408,7 +490,16 @@ namespace VoiceBookStudio.Views
                 if (e.Key == Key.F9)     { ViewModel.TryAnnounceApplicationStatus(); e.Handled = true; return; }
                 if (e.Key == Key.F11)    { ViewModel.FocusPanel4();                  e.Handled = true; return; }
                 // ScrollLock: toggle app mic on/off. Simultaneously mutes/unmutes Dragon.
-                if (e.Key == Key.Scroll) { ViewModel.ToggleMicCommand.Execute(null); e.Handled = true; return; }
+                // Normally handled by the global hotkey (see OnSourceInitialized) so it
+                // works regardless of focus; only handle it here as a fallback if that
+                // registration failed, to avoid toggling the mic twice on one press.
+                if (e.Key == Key.Scroll)
+                {
+                    if (!IsScrollLockHotkeyActive)
+                        ViewModel.ToggleMicCommand.Execute(null);
+                    e.Handled = true;
+                    return;
+                }
             }
 
             if (ctrl)

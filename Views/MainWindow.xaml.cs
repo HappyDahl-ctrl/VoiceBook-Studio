@@ -193,8 +193,9 @@ namespace VoiceBookStudio.Views
                 });
             };
 
-            ViewModel.MicToggleRequested += (_, desired) =>
+            ViewModel.MicToggleRequested += (_, args) =>
             {
+                bool desired = args.Desired;
                 bool actual = desired && _speechListener.StartListening();
                 if (!desired) { _speechListener.StopListening(); actual = false; }
 
@@ -202,15 +203,18 @@ namespace VoiceBookStudio.Views
                     ? "Could not start microphone. Check that a microphone is connected and Windows Speech Recognition is set up."
                     : null;
 
-                // When app mic turns on, mute Dragon so it doesn't steal the audio.
-                // When app mic turns off, restore Dragon so dictation works again.
-                // Only claim Dragon's state changed if the COM call actually succeeded —
-                // otherwise Dragon keeps listening the whole time and ScrollLock silently
-                // does nothing on the Dragon side while the app confidently (and wrongly)
-                // announces that it worked.
-                bool dragonMuteSucceeded = error == null && _dragonMic.SetMicrophoneOn(!actual);
+                // Only the ScrollLock hand-off toggle couples Dragon's mic to the app's.
+                // The "app mic on"/"app mic off" voice commands set CoupleDragon false so
+                // they do exactly one thing — toggle the app's own mic — and never touch
+                // Dragon, even if Dragon happens to be running at the time.
+                //
+                // When coupled, only claim Dragon's state changed if the COM call actually
+                // succeeded — otherwise Dragon keeps listening the whole time and ScrollLock
+                // silently does nothing on the Dragon side while the app confidently (and
+                // wrongly) announces that it worked.
+                bool dragonMuteSucceeded = error == null && args.CoupleDragon && _dragonMic.SetMicrophoneOn(!actual);
 
-                string? customMsg = error != null
+                string? customMsg = error != null || !args.CoupleDragon
                     ? null
                     : dragonMuteSucceeded
                         ? (actual

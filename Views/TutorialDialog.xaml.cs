@@ -38,6 +38,12 @@ namespace VoiceBookStudio.Views
                 vm.PropertyChanged += OnVmPropertyChanged;
                 vm.RepeatRequested += () => AnnounceCurrentStepToJaws(vm);
 
+                // One-off narration (skip confirmation, action success message) that has
+                // no live-region or CurrentTitle-change coverage of its own — route it to
+                // JAWS via UiaAnnouncer instead. Non-urgent so it does not cut off whatever
+                // JAWS is already reading; ViewModel only raises this when JAWS is detected.
+                vm.JawsAnnouncementRequested += message => UiaAnnouncer.Announce(this, message, isUrgent: false);
+
                 // Reclaim window focus every time a step advances.
                 // Action-detected steps (e.g. "switch to any panel") route through
                 // MainViewModel, which sets Win32 keyboard focus on the main window —

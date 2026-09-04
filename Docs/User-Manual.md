@@ -509,7 +509,7 @@ No Dragon configuration is needed for dictation.
 
 ### App commands with Dragon
 
-When Dragon is running, it owns the microphone and the app's built-in voice recogniser is disabled. For app-level commands (panel switching, save, chapter management, AI requests) you have three options:
+When Dragon is running, it owns the microphone and the app's built-in voice recogniser is disabled. For app-level commands (panel switching, save, chapter management, AI requests) you have four options:
 
 ---
 
@@ -546,6 +546,12 @@ This works for every command in the voice command list. It is slower than Scroll
 Create Dragon MyCommands that map spoken phrases to keyboard shortcuts or command bar sequences. After setup, you can say commands like "pacing feedback" or "panel two" directly without pressing ScrollLock or using the command bar.
 
 **Button clicking with Dragon:** WPF buttons in VoiceBook Studio are not standard Win32 controls, so Dragon's built-in "click [button name]" requires the app's `AutomationProperties.Name` to be set correctly — which it is, on every button — but still benefits from a one-time Dragon MyCommands setup for the smoothest experience. To click buttons by voice in Dragon, either rely on Dragon's own UI Automation "click" support against the named control, or create MyCommands that send the corresponding keyboard shortcut or command bar sequence. See `Dragon-Commands-Setup-Guide.md` and `Docs/Dragon_Commands_VoiceBook.xml` for the full list of commands and setup instructions.
+
+---
+
+**Option 4 — "App mic on" / "App mic off" (run both mics at once, no setup)**
+
+Unlike ScrollLock, these two commands touch only VoiceBook's own mic — they never mute or unmute Dragon. Say or type "App mic on" / "App mic off" into the command bar (Option 2) at any time. Use this instead of ScrollLock when you'd rather leave Dragon listening continuously and hand off between VoiceBook's mic and Dragon's dictation yourself — for example with Dragon's own "go to sleep" / "wake up." "App voice on" / "App voice off" is the equivalent pair for VoiceBook's own spoken voice, independent of mic state.
 
 ---
 

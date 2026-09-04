@@ -44,6 +44,19 @@ namespace VoiceBookStudio.Views
                 // JAWS is already reading; ViewModel only raises this when JAWS is detected.
                 vm.JawsAnnouncementRequested += message => UiaAnnouncer.Announce(this, message, isUrgent: false);
 
+                // Hide before the import flow's Yes/No prompt and file picker open —
+                // fired by MainViewModel.TryImportDocument() regardless of how import
+                // was triggered (Ctrl+I, the Command box, or an actual spoken voice
+                // command), so this always happens exactly once. The file picker and
+                // chapter-confirmation dialogs are modal and conflict with this
+                // non-modal window sharing the same owner; we restore in the
+                // StepAdvanced handler once projectopened fires.
+                vm.ImportFlowStarting += () =>
+                {
+                    _hiddenForImport = true;
+                    Hide();
+                };
+
                 // Reclaim window focus every time a step advances.
                 // Action-detected steps (e.g. "switch to any panel") route through
                 // MainViewModel, which sets Win32 keyboard focus on the main window —
@@ -141,12 +154,9 @@ namespace VoiceBookStudio.Views
 
                     case Key.I:
                         vm.HandleAction("newproject_or_import");
-                        // Hide this dialog before opening the file browser.
-                        // The file picker and chapter-confirmation dialogs are modal and
-                        // conflict with a non-modal WPF window sharing the same owner.
-                        // We restore in the StepAdvanced handler once projectopened fires.
-                        _hiddenForImport = true;
-                        this.Hide();
+                        // TryImportDocument() itself raises ImportFlowStarting, which
+                        // hides this dialog before the file browser opens — see the
+                        // Window_Loaded subscription.
                         ForwardToMain(mvm => mvm.TryImportDocument());
                         e.Handled = true;
                         return;
@@ -308,14 +318,12 @@ namespace VoiceBookStudio.Views
                     ForwardToMain(mvm => mvm.TryCreateNewProject());
                     break;
 
-                // Import shortcut — hide dialog before opening file browser to avoid
-                // WPF modal ownership conflict with the file picker and confirmation dialogs.
+                // Import shortcut — TryImportDocument() raises ImportFlowStarting,
+                // which hides this dialog before the file browser opens.
                 case "import":
                 case "import document":
                 case "import word":
                     vm.HandleAction("newproject_or_import");
-                    _hiddenForImport = true;
-                    this.Hide();
                     ForwardToMain(mvm => mvm.TryImportDocument());
                     break;
 

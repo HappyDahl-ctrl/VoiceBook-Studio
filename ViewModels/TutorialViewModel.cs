@@ -172,6 +172,26 @@ namespace VoiceBookStudio.ViewModels
         /// </summary>
         public event Action<string>? JawsAnnouncementRequested;
 
+        /// <summary>
+        /// Fired right before the import-document flow opens its Yes/No prompt and
+        /// file picker. TutorialDialog hides itself on this so those dialogs — and
+        /// focus — don't get fought over by this non-modal window; see
+        /// <see cref="NotifyImportFlowStarting"/>.
+        /// </summary>
+        public event Action? ImportFlowStarting;
+
+        /// <summary>
+        /// Called by MainViewModel.TryImportDocument() — regardless of whether import
+        /// was triggered by the Ctrl+I shortcut, a typed/dictated Command box entry, or
+        /// an actual spoken voice command routed straight through VoiceCommandRouter —
+        /// so every entry point hides the tutorial dialog the same way before the
+        /// import dialogs open. Previously only the Ctrl+I and Command box paths did
+        /// this themselves; a spoken "import document" skipped it entirely, leaving the
+        /// tutorial window visible and stealing focus back from the Yes/No prompt and
+        /// file picker that opened behind it.
+        /// </summary>
+        public void NotifyImportFlowStarting() => ImportFlowStarting?.Invoke();
+
         // ----------------------------------------------------------------
         // Public navigation methods
         // ----------------------------------------------------------------

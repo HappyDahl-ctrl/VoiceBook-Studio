@@ -399,6 +399,11 @@ namespace VoiceBookStudio.ViewModels
         // Null when no tutorial is running, so the invocation is always safe.
         private Action<string>? _tutorialActionSink;
 
+        // Notifies the active tutorial dialog that the import-document flow is about
+        // to open its Yes/No prompt and file picker, so it can hide itself first.
+        // Null when no tutorial is running, so the invocation is always safe.
+        private Action? _tutorialImportStartingSink;
+
         // ----------------------------------------------------------------
         // Library reading controller
         // ----------------------------------------------------------------
@@ -799,7 +804,8 @@ namespace VoiceBookStudio.ViewModels
                 jawsDetected:   VoiceBookStudio.Utils.AppSettings.IsJawsDetected,
                 dragonDetected: VoiceBookStudio.Utils.AppSettings.IsDragonRunning);
 
-            _tutorialActionSink = _tutorial.HandleAction;
+            _tutorialActionSink         = _tutorial.HandleAction;
+            _tutorialImportStartingSink = _tutorial.NotifyImportFlowStarting;
 
             var dlg = new Views.TutorialDialog
             {
@@ -809,8 +815,9 @@ namespace VoiceBookStudio.ViewModels
 
             _tutorial.TutorialCompleted += () =>
             {
-                _tutorialActionSink = null;
-                _tutorial           = null;
+                _tutorialActionSink         = null;
+                _tutorialImportStartingSink = null;
+                _tutorial                   = null;
 
                 // Mark both FirstLaunchComplete (JSON) and TutorialCompleted (Registry)
                 // through the shared service so the auto-start gate is only cleared
@@ -1058,6 +1065,7 @@ namespace VoiceBookStudio.ViewModels
             {
                 LiveAnnounce("No project is open. A dialog is asking whether to create a new project from your document — Yes or No.");
                 var create = MessageBox.Show(
+                    Application.Current.MainWindow,
                     "No project is open. A new project will be created from your document.\n\n" +
                     "Continue?",
                     "Import Document",
@@ -1072,7 +1080,7 @@ namespace VoiceBookStudio.ViewModels
                 Filter     = "Word Documents (*.docx)|*.docx|All Files (*.*)|*.*",
                 DefaultExt = ".docx"
             };
-            if (picker.ShowDialog() != true) return;
+            if (picker.ShowDialog(Application.Current.MainWindow) != true) return;
 
             string filePath      = picker.FileName;
             string suggestedName = Path.GetFileNameWithoutExtension(filePath);
@@ -2464,6 +2472,13 @@ namespace VoiceBookStudio.ViewModels
 
         public void TryImportDocument()
         {
+            // Hide the tutorial dialog (if running) before the Yes/No prompt and file
+            // picker below open. Without this, a spoken "import document" — unlike the
+            // tutorial's own Ctrl+I and Command box handling — left the non-modal
+            // tutorial window on screen, and WPF handed focus back to it instead of the
+            // newly opened dialog, forcing the user to manually refocus before they
+            // could answer Yes/No or pick a file.
+            _tutorialImportStartingSink?.Invoke();
             // Signal tutorial that the user chose the import path (step 5.2 detection).
             _tutorialActionSink?.Invoke("newproject_or_import");
             if (ImportDocumentCommand.CanExecute(null))

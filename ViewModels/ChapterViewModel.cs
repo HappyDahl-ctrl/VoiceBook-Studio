@@ -18,6 +18,7 @@ namespace VoiceBookStudio.ViewModels
         public BookChapter Model => _chapter;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(ChapterListLabel))]
         private string _title = string.Empty;
 
         [ObservableProperty]

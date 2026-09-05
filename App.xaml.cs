@@ -76,6 +76,12 @@ namespace VoiceBookStudio
             var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(15) };
             timer.Tick += (_, _) =>
             {
+                // A manual "JAWS is running" / "JAWS is not running" override takes
+                // precedence — otherwise this timer would silently revert it on its next
+                // tick, which is exactly the wrong behavior for a user who just corrected
+                // a wrong auto-detection.
+                if (AppSettings.IsJawsDetectionOverridden) return;
+
                 bool jawsRunning = AssistiveTechnologyDetector.IsJawsRunning();
                 if (jawsRunning == AppSettings.IsJawsDetected) return;
 

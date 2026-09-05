@@ -29,6 +29,15 @@ namespace VoiceBookStudio.Utils
         /// <summary>True when JAWS is running at the moment the app started.</summary>
         public static bool IsJawsDetected { get; set; } = false;
 
+        /// <summary>
+        /// True once the user has manually forced JAWS detection on or off (the "JAWS
+        /// is running" / "JAWS is not running" voice commands). App.xaml.cs's periodic
+        /// re-detection watcher checks this and stops auto-correcting IsJawsDetected
+        /// once set, so a manual override sticks instead of being silently reverted by
+        /// the next 15-second process check.
+        /// </summary>
+        public static bool IsJawsDetectionOverridden { get; set; } = false;
+
         /// <summary>True when Dragon NaturallySpeaking (natspeak.exe) is running at startup.</summary>
         public static bool IsDragonRunning { get; set; } = false;
 

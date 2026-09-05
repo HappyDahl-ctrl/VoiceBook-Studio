@@ -58,6 +58,14 @@ Save the contents below as `VoiceBookStudio.jsy` and import via
 "panel 3"          = {f3}
 "go to panel 3"    = {f3}
 
+"library panel"    = {f11}
+"panel four"       = {f11}
+"go to panel four" = {f11}
+"panel 4"          = {f11}
+"go to panel 4"    = {f11}
+"go to library"    = {f11}
+"open library"     = {f11}
+
 // =========================================
 // File operations
 // =========================================

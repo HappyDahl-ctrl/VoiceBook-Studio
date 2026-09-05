@@ -24,12 +24,22 @@
 "chapter panel"               {ctrl+1}
 "chapters"                    {ctrl+1}
 "go to chapters"              {ctrl+1}
+"panel one"                   {ctrl+1}
+"panel 1"                     {ctrl+1}
 "editor panel"                {f2}
 "writing editor"              {f2}
 "go to editor"                {f2}
+"panel two"                   {f2}
+"panel 2"                     {f2}
 "A I panel"                   {f3}
 "assistant panel"             {f3}
 "go to assistant"             {f3}
+"panel three"                 {f3}
+"panel 3"                     {f3}
+"library panel"               {f11}
+"go to library"               {f11}
+"panel four"                  {f11}
+"panel 4"                     {f11}
 
 ; ---- FILE OPERATIONS -----------------------------------------
 "save project"                {ctrl+s}

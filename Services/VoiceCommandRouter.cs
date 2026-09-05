@@ -543,6 +543,22 @@ namespace VoiceBookStudio.Services
                 return true;
             }
 
+            // Manual override for when JAWS is genuinely running but auto-detection at
+            // startup missed it — the app then narrates over JAWS's own reading with no
+            // other way to correct it mid-session. Type or dictate this into the Command
+            // box (reachable without Dragon MyCommands setup) to force the correct state.
+            if (cmd is "jaws is running" or "jaws detected" or "force jaws on" or "jaws on")
+            {
+                _vm.TryForceJawsOn();
+                return true;
+            }
+
+            if (cmd is "jaws is not running" or "jaws not detected" or "force jaws off" or "jaws off")
+            {
+                _vm.TryForceJawsOff();
+                return true;
+            }
+
             if (cmd is "set api key" or "configure api" or "add api key" or "api key"
                      or "configure ai" or "set up ai" or "enter api key" or "add key")
             {

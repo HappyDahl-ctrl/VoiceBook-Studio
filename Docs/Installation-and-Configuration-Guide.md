@@ -12,7 +12,7 @@ For a PC that already has Dragon NaturallySpeaking Professional, JAWS, and JSay 
 4. Getting Your Anthropic API Key
 5. Configuring JAWS
 6. Configuring Dragon — App Settings
-7. Configuring Dragon — MyCommands Setup (208 commands, optional)
+7. Configuring Dragon — MyCommands Setup (213 commands, optional)
 8. Configuring JSay
 9. Windows System Settings
 10. Verifying Everything Works
@@ -159,7 +159,7 @@ When Dragon is running, VoiceBook's built-in voice recogniser is automatically d
 App voice commands are issued by:
 - **ScrollLock — fastest, no setup.** Press ScrollLock once and the app mutes Dragon and activates its own recogniser for you (it does this itself, via COM automation — nothing to configure). Say a command. Press ScrollLock again to hand the mic back to Dragon for dictation. Works anywhere in the app, including the tutorial.
 - Pressing Ctrl+Shift+Space to open the command bar, then dictating a command and saying "press Enter"
-- Using Dragon MyCommands (the 208 commands you can optionally set up in Section 7)
+- Using Dragon MyCommands (the 213 commands you can optionally set up in Section 7)
 - **"App mic on" / "App mic off"** — if you'd rather run VoiceBook's mic and Dragon's mic at the same time and hand off between them yourself (for example with Dragon's own "go to sleep" / "wake up"), these two commands toggle only VoiceBook's own mic and never touch Dragon's, unlike ScrollLock. See Section 7, Section S.
 
 **Do not bind Dragon's own "Microphone on/off" hotkey to ScrollLock.** VoiceBook Studio already mutes and restores Dragon's mic for you on every ScrollLock press — that's what the COM automation above does. Dragon's hotkeys are typically global, system-wide hooks, so binding the same key on Dragon's side risks a real conflict: either a double-toggle that leaves the mic in the wrong state, or Dragon's global hook intercepting the keypress before VoiceBook Studio ever sees it, breaking ScrollLock in the app entirely. Leave Dragon's own microphone hotkey at its default — there's nothing to configure on Dragon's side for this to work.
@@ -168,7 +168,7 @@ App voice commands are issued by:
 
 ## 7. Configuring Dragon — MyCommands Setup
 
-This section is optional. ScrollLock plus the app's own voice commands (see Section 6) already covers every VoiceBook Studio feature with no setup at all. Come back to this section later if you want single-phrase hands-free commands without the ScrollLock toggle — it walks through creating 208 Dragon MyCommands that cover every VoiceBook Studio feature.
+This section is optional. ScrollLock plus the app's own voice commands (see Section 6) already covers every VoiceBook Studio feature with no setup at all. Come back to this section later if you want single-phrase hands-free commands without the ScrollLock toggle — it walks through creating 213 Dragon MyCommands that cover every VoiceBook Studio feature.
 
 ### Before You Start
 
@@ -227,6 +227,9 @@ Manual).
 | Go to assistant | F3 |
 | Open AI assistant | F3 |
 | Panel three | F3 |
+| Go to library | F11 |
+| Open library | F11 |
+| Panel four | F11 |
 
 ---
 
@@ -596,11 +599,27 @@ one does exactly one thing and nothing else — no ScrollLock-style coupling:
 
 ---
 
+### Section T — JAWS Detection Override (Type B — Step-by-Step)
+
+VoiceBook detects JAWS automatically at startup and stays in sync with it
+afterward, but a JAWS release using a process name the app doesn't
+recognise yet would go undetected with no obvious symptom beyond the app's
+own voice narrating over JAWS's own reading. These two commands manually
+force the correct state without restarting the app, and take precedence
+over auto-detection until you say the other one or restart:
+
+| Command Name | Text in Step 3 |
+|---|---|
+| JAWS is running | jaws is running |
+| JAWS is not running | jaws is not running |
+
+---
+
 ### Total Command Count
 
 | Section | Commands |
 |---|---|
-| A — Panel navigation | 9 |
+| A — Panel navigation | 12 |
 | B — Project | 10 |
 | C — Chapter management | 11 |
 | D — AI feedback keystroke | 3 |
@@ -619,7 +638,8 @@ one does exactly one thing and nothing else — no ScrollLock-style coupling:
 | Q — Close app | 3 |
 | R — Tutorial | 6 |
 | S — App mic and app voice | 4 |
-| **Total** | **208** |
+| T — JAWS detection override | 2 |
+| **Total** | **213** |
 
 ---
 

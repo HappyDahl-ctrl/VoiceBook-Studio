@@ -1111,9 +1111,16 @@ namespace VoiceBookStudio.ViewModels
                 // Detect chapters before prompting for a project title, so that
                 // dialog never pops up silently — the user hears what was found first.
                 // Try heuristic detection first (fast, free, works offline).
+                // A real book essentially never has more than 100 chapters — a heuristic
+                // hit count above that means the patterns are matching ordinary body text
+                // (a stray numbered sentence, an ALL-CAPS exclamation), not real headings.
+                // Distrust it and fall through to AI detection rather than importing
+                // hundreds of garbage "chapters".
+                const int maxPlausibleHeuristicHits = 100;
+
                 var detector       = new VoiceBookStudio.Services.ChapterDetectionService();
                 var heuristicHits  = detector.DetectByPatterns(paragraphs);
-                if (heuristicHits.Count >= 2)
+                if (heuristicHits.Count >= 2 && heuristicHits.Count <= maxPlausibleHeuristicHits)
                 {
                     detected = SplitByHeuristicBreaks(paragraphs, heuristicHits);
                     SetStatus($"Detected {detected.Count} chapters from headings.");
@@ -1222,42 +1229,28 @@ namespace VoiceBookStudio.ViewModels
             return result;
         }
 
+        /// <summary>
+        /// Imports every detected chapter directly, using its detected title as-is.
+        /// "Accept All" in the confirmation dialog already means the user reviewed and
+        /// approved the list — re-prompting for each chapter's title one at a time here
+        /// used to force a blind user through one modal dialog per chapter (hundreds, if
+        /// detection over-matched) after they had already said yes to all of them. Any
+        /// chapter whose title needs fixing can be renamed afterward like any other.
+        /// </summary>
         private void ImportAsMultipleChapters(List<DetectedChapter> detected)
         {
-            int created = 0;
-            int total   = detected.Count;
-
-            for (int i = 0; i < total; i++)
+            foreach (var ch in detected)
             {
-                var ch = detected[i];
-
-                string? title = PromptText(
-                    $"Import Chapter {i + 1} of {total}",
-                    "Claude suggests this title. Edit it or click OK to accept:",
-                    ch.Title);
-
-                if (title == null)
-                {
-                    // User pressed Cancel — offer to skip this chapter or stop entirely
-                    LiveAnnounce($"Skip chapter {i + 1} of {total} and continue with the remaining chapters — Yes or No.");
-                    var skip = MessageBox.Show(
-                        $"Skip chapter {i + 1} of {total} and continue with the remaining chapters?",
-                        "Import Document",
-                        MessageBoxButton.YesNo, MessageBoxImage.Question);
-                    if (skip == MessageBoxResult.Yes) continue;
-                    break;
-                }
-
+                string title = string.IsNullOrWhiteSpace(ch.Title) ? "Untitled Chapter" : ch.Title;
                 AddImportedChapter(title, ch.Content);
-                created++;
             }
 
-            string msg = created == 1
+            string msg = detected.Count == 1
                 ? "1 chapter imported from document."
-                : $"{created} of {total} chapters imported from document.";
+                : $"{detected.Count} chapters imported from document.";
             SetStatus(msg);
             LiveAnnounce(msg);
-            if (created > 0) MarkDirty();
+            if (detected.Count > 0) MarkDirty();
         }
 
         private void ImportAsSingleChapter(string content, string suggestedTitle)
@@ -2630,6 +2623,40 @@ namespace VoiceBookStudio.ViewModels
         public void TrySetApiKey()
         {
             SetApiKeyCommand.Execute(null);
+        }
+
+        /// <summary>
+        /// "JAWS is running" voice command — a manual override for when JAWS is
+        /// genuinely running but startup auto-detection missed it (e.g. a JAWS release
+        /// using a process name this app doesn't yet recognise). Without this there is
+        /// no way to correct a wrong detection mid-session short of restarting — the app
+        /// keeps narrating over JAWS's own reading for the rest of the session. Also
+        /// marks detection as manually overridden so App.xaml.cs's periodic re-detection
+        /// watcher stops fighting the override.
+        /// </summary>
+        public void TryForceJawsOn()
+        {
+            VoiceBookStudio.Utils.AppSettings.IsJawsDetected           = true;
+            VoiceBookStudio.Utils.AppSettings.IsJawsDetectionOverridden = true;
+            _audio.SetJawsDetected(true);
+            _systemAnnouncements.SetJawsDetected(true);
+            SetStatus("JAWS mode forced on.");
+            LiveAnnounce("JAWS mode forced on.");
+        }
+
+        /// <summary>
+        /// "JAWS is not running" voice command — the reverse override, for when JAWS was
+        /// wrongly detected as running (or has since been closed) and the app should go
+        /// back to narrating with its own voice.
+        /// </summary>
+        public void TryForceJawsOff()
+        {
+            VoiceBookStudio.Utils.AppSettings.IsJawsDetected           = false;
+            VoiceBookStudio.Utils.AppSettings.IsJawsDetectionOverridden = true;
+            _audio.SetJawsDetected(false);
+            _systemAnnouncements.SetJawsDetected(false);
+            SetStatus("JAWS mode forced off.");
+            LiveAnnounce("JAWS mode forced off. VoiceBook's own voice will handle announcements.");
         }
 
         // ----------------------------------------------------------------

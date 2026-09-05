@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -16,8 +17,34 @@ namespace VoiceBookStudio.Services
         {
             try
             {
-                return Process.GetProcessesByName("jfw").Length  > 0
-                    || Process.GetProcessesByName("jaws").Length > 0;
+                if (Process.GetProcessesByName("jfw").Length   > 0
+                    || Process.GetProcessesByName("jaws").Length > 0
+                    || Process.GetProcessesByName("jfw64").Length > 0
+                    || Process.GetProcessesByName("fsjaws").Length > 0)
+                    return true;
+
+                // Fallback: scan all running process names for anything containing
+                // "jaws" or starting with "jfw". Exact-name checks above cover every
+                // JAWS release this app has been tested against, but a future or
+                // regional build using a process name we haven't seen would otherwise
+                // go completely undetected — with no visible symptom beyond the app
+                // quietly narrating over JAWS's own reading. This scan is the backstop
+                // for that case; it never throws even if a process exits mid-enumeration.
+                foreach (var p in Process.GetProcesses())
+                {
+                    using (p)
+                    {
+                        try
+                        {
+                            string name = p.ProcessName;
+                            if (name.StartsWith("jfw", StringComparison.OrdinalIgnoreCase) ||
+                                name.Contains("jaws", StringComparison.OrdinalIgnoreCase))
+                                return true;
+                        }
+                        catch { /* process exited or is inaccessible — skip it */ }
+                    }
+                }
+                return false;
             }
             catch { return false; }
         }

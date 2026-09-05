@@ -676,6 +676,8 @@ Unlike ScrollLock, these two commands touch only VoiceBook's own mic — they ne
 | Set project folder | Choose default project folder |
 | Set export folder | Choose default folder for exported Word/PDF files |
 | Toggle voice | Toggle app TTS on or off (not relevant when JAWS is running) |
+| JAWS is running | Manually force JAWS mode on, if auto-detection at startup missed a running JAWS |
+| JAWS is not running | Manually force JAWS mode off, if JAWS was wrongly detected or has since closed |
 | Configure voice | Open the Configure Voice (Azure TTS) dialog |
 | Start tutorial | Open the 17-step guided tutorial |
 | Open welcome | Reopen the Welcome dialog (Start Guided Tour / Skip Tour) |

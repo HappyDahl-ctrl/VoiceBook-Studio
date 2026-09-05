@@ -106,6 +106,11 @@ are for running the app mic and Dragon's mic at the same time and handing
 off between them yourself — e.g. with Dragon's own "go to sleep" / "wake
 up" — see the Dragon section below.
 
+**JAWS detection override**
+"jaws is running" / "jaws is not running" — manually force JAWS mode on
+or off if startup auto-detection ever gets it wrong. Overrides auto-
+detection until you say the other one or restart.
+
 ---
 
 ## Dragon NaturallySpeaking

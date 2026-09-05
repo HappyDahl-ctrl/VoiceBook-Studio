@@ -37,20 +37,26 @@ Save the contents below as `VoiceBookStudio.jsy` and import via
 "panel 1"          = {ctrl+1}
 "go to panel 1"    = {ctrl+1}
 
-"editor panel"     = {ctrl+2}
-"writing panel"    = {ctrl+2}
-"panel two"        = {ctrl+2}
-"go to panel two"  = {ctrl+2}
-"panel 2"          = {ctrl+2}
-"go to panel 2"    = {ctrl+2}
+// Panel two and three use F2/F3, not Ctrl+2/Ctrl+3: Ctrl+1 through Ctrl+4
+// only work when focus is outside the Writing Editor, so a script built on
+// Ctrl+2/Ctrl+3 does nothing when triggered while you're still dictating
+// there. F2/F3 work everywhere, editor included. Panel one keeps Ctrl+1 —
+// there's no safe equivalent (F1 is reserved for JAWS); press Escape
+// instead to reach Panel 1 from inside the editor.
+"editor panel"     = {f2}
+"writing panel"    = {f2}
+"panel two"        = {f2}
+"go to panel two"  = {f2}
+"panel 2"          = {f2}
+"go to panel 2"    = {f2}
 
-"AI panel"         = {ctrl+3}
-"assistant panel"  = {ctrl+3}
-"feedback panel"   = {ctrl+3}
-"panel three"      = {ctrl+3}
-"go to panel three" = {ctrl+3}
-"panel 3"          = {ctrl+3}
-"go to panel 3"    = {ctrl+3}
+"AI panel"         = {f3}
+"assistant panel"  = {f3}
+"feedback panel"   = {f3}
+"panel three"      = {f3}
+"go to panel three" = {f3}
+"panel 3"          = {f3}
+"go to panel 3"    = {f3}
 
 // =========================================
 // File operations
@@ -103,14 +109,14 @@ These macros navigate to a specific tab then focus the input:
 
 ```
 // Switch to Chat tab and focus chat input
-"open chat"   = {ctrl+3}{delay 200}{tab}{tab}{tab}{tab}{tab}{tab}
+"open chat"   = {f3}{delay 200}{tab}{tab}{tab}{tab}{tab}{tab}
 // (tab count depends on your exact UI — adjust as needed)
 
 // Switch to Prompts tab
-"open prompts" = {ctrl+3}{delay 200}{ctrl+tab}
+"open prompts" = {f3}{delay 200}{ctrl+tab}
 
 // Switch to Cards tab
-"open cards"   = {ctrl+3}{delay 200}{ctrl+tab}{ctrl+tab}
+"open cards"   = {f3}{delay 200}{ctrl+tab}{ctrl+tab}
 ```
 
 > **Tip:** Rather than counting tabs, use VoiceBook's voice commands.

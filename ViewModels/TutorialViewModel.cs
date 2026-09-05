@@ -162,6 +162,36 @@ namespace VoiceBookStudio.ViewModels
         /// </summary>
         public event Action? RepeatRequested;
 
+        /// <summary>
+        /// Fired for one-off narration (a skip confirmation, an action's success
+        /// message) that has no other JAWS channel of its own — unlike full step
+        /// narration, which JAWS already receives from TutorialDialog's CurrentTitle
+        /// handler. Only raised when JAWS is detected; TutorialDialog routes it
+        /// through UiaAnnouncer so it reaches JAWS without the app's own voice
+        /// ever competing with it.
+        /// </summary>
+        public event Action<string>? JawsAnnouncementRequested;
+
+        /// <summary>
+        /// Fired right before the import-document flow opens its Yes/No prompt and
+        /// file picker. TutorialDialog hides itself on this so those dialogs — and
+        /// focus — don't get fought over by this non-modal window; see
+        /// <see cref="NotifyImportFlowStarting"/>.
+        /// </summary>
+        public event Action? ImportFlowStarting;
+
+        /// <summary>
+        /// Called by MainViewModel.TryImportDocument() — regardless of whether import
+        /// was triggered by the Ctrl+I shortcut, a typed/dictated Command box entry, or
+        /// an actual spoken voice command routed straight through VoiceCommandRouter —
+        /// so every entry point hides the tutorial dialog the same way before the
+        /// import dialogs open. Previously only the Ctrl+I and Command box paths did
+        /// this themselves; a spoken "import document" skipped it entirely, leaving the
+        /// tutorial window visible and stealing focus back from the Yes/No prompt and
+        /// file picker that opened behind it.
+        /// </summary>
+        public void NotifyImportFlowStarting() => ImportFlowStarting?.Invoke();
+
         // ----------------------------------------------------------------
         // Public navigation methods
         // ----------------------------------------------------------------
@@ -226,7 +256,7 @@ namespace VoiceBookStudio.ViewModels
         {
             _announcer.StopSpeaking();
             if (!CanSkip()) return;
-            AnnounceTutorialText("Step skipped.");
+            AnnounceEphemeral("Step skipped.");
             CancelTimeout();
             IsWaitingForAction = false;
             if (_currentIndex < _steps.Length - 1)
@@ -285,8 +315,24 @@ namespace VoiceBookStudio.ViewModels
             {
                 // Let the app's own focus-change announcement finish before we speak over it.
                 await _audio.WaitForCurrentSpeechAsync().ConfigureAwait(false);
-                // Speak the success message and wait for it to complete before advancing.
-                await _announcer.SpeakOnDemandAsync(confirmation).ConfigureAwait(false);
+
+                if (_jawsDetected)
+                {
+                    // Route through JAWS (UiaAnnouncer) instead of the app's own voice —
+                    // see JawsAnnouncementRequested's doc comment. There is no completion
+                    // callback for a screen reader's own speech the way there is for our
+                    // SAPI/Azure voice, so approximate how long JAWS needs to read the
+                    // confirmation before advancing to the next step's (urgent) announcement.
+                    var jawsApp = System.Windows.Application.Current;
+                    if (jawsApp != null)
+                        await jawsApp.Dispatcher.InvokeAsync(() => JawsAnnouncementRequested?.Invoke(confirmation));
+                    await Task.Delay(EstimateSpeechDelayMs(confirmation)).ConfigureAwait(false);
+                }
+                else
+                {
+                    // Speak the success message and wait for it to complete before advancing.
+                    await _announcer.SpeakAndWaitAsync(confirmation).ConfigureAwait(false);
+                }
             }
             catch
             {
@@ -307,26 +353,50 @@ namespace VoiceBookStudio.ViewModels
         private bool CanSkip()     => IsWaitingForAction && _steps[_currentIndex].IsSkippable;
 
         /// <summary>
-        /// Routes tutorial narration through the correct speech channel.
-        /// Speak() is a no-op when JAWS is detected, so JAWS users hear nothing.
-        /// SpeakOnDemandAsync() bypasses that rule and is the correct channel
-        /// for deliberate tutorial narration regardless of AT state — except when
-        /// the user has explicitly muted app voice (IsMuted), which SpeakOnDemandAsync
-        /// itself does not check since it also serves genuinely on-demand reads
-        /// (AI response, chapter, paragraph) that should stay available regardless.
-        /// Checking IsMuted here specifically is what makes "the user prefers JAWS
-        /// only, they can disable app TTS in Settings" (see AnnounceCurrentStep)
-        /// actually true.
-        /// Fire-and-forget here matches the existing Speak() pattern; StopSpeaking()
-        /// called from Next/Previous/Exit cancels any in-flight utterance correctly.
+        /// Speaks full step narration (title + content + prompt) via the app's own
+        /// voice. Silent when JAWS is detected — TutorialDialog already gives JAWS
+        /// the same information itself (CurrentTitle/CurrentContent live regions plus
+        /// an explicit UiaAnnouncer push on every step change; see
+        /// TutorialDialog.AnnounceCurrentStepToJaws). Speaking it again here as well
+        /// would mean JAWS and the app's own voice reading the same words over each
+        /// other. Also silent when the user has explicitly muted app voice (IsMuted).
+        /// Fire-and-forget matches Speak()'s own pattern; StopSpeaking() called from
+        /// Next/Previous/Exit cancels any in-flight utterance correctly.
         /// </summary>
         private void AnnounceTutorialText(string text)
         {
-            if (string.IsNullOrWhiteSpace(text) || _announcer.IsMuted) return;
+            if (string.IsNullOrWhiteSpace(text) || _jawsDetected || _announcer.IsMuted) return;
+            _announcer.Speak(text);
+        }
+
+        /// <summary>
+        /// Speaks a one-off confirmation (a skip notice, an action's success message)
+        /// that — unlike full step narration — has no other channel reaching JAWS.
+        /// Under JAWS this is routed through JawsAnnouncementRequested (UiaAnnouncer)
+        /// instead of the app's own voice, so it never competes with JAWS the way
+        /// routing it through SpeakOnDemandAsync used to.
+        /// </summary>
+        private void AnnounceEphemeral(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text)) return;
             if (_jawsDetected)
-                _ = _announcer.SpeakOnDemandAsync(text);
+                JawsAnnouncementRequested?.Invoke(text);
             else
                 _announcer.Speak(text);
+        }
+
+        /// <summary>
+        /// Rough estimate of how long JAWS needs to finish reading <paramref name="text"/>
+        /// aloud, so HandleActionAsync can wait before advancing to the next step's
+        /// urgent (interrupting) announcement. There is no real completion signal for
+        /// another process's screen-reader speech, so this assumes a conservative
+        /// ~180 words per minute and clamps to a sane range.
+        /// </summary>
+        private static int EstimateSpeechDelayMs(string text)
+        {
+            int words = text.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries).Length;
+            int ms = 400 + words * 330;
+            return Math.Clamp(ms, 900, 6000);
         }
 
         private void OnIndexChanged()
@@ -363,10 +433,10 @@ namespace VoiceBookStudio.ViewModels
         {
             _sounds?.Play(AppSound.TutorialStep);
 
-            // Always speak tutorial steps via SystemAnnouncementService regardless of JAWS.
-            // SystemAnnouncementService already adds a 500 ms pre-delay when JAWS is present
-            // to avoid clashing with JAWS speech. UIA live regions on StepHeader / ActionStatusText
-            // still fire in parallel; if the user prefers JAWS only, they can disable app TTS in Settings.
+            // AnnounceTutorialText() below speaks via the app's own voice only when JAWS
+            // is not present. When JAWS is detected, TutorialDialog's CurrentTitle handler
+            // (AnnounceCurrentStepToJaws) already pushes this same title + content to JAWS
+            // via UiaAnnouncer, so staying silent here is what avoids double-reading.
             var step = _steps[_currentIndex];
 
             if (IsWaitingForAction)
@@ -467,13 +537,19 @@ namespace VoiceBookStudio.ViewModels
 
             string voiceCommandRoute = dragonDetected
                 ? "GIVING COMMANDS WITH DRAGON\n\n" +
-                  "Dragon owns the microphone for dictation. For VoiceBook app commands you have two options.\n\n" +
-                  "SCROLL LOCK — fastest option\n" +
+                  "Dragon owns the microphone for dictation. For VoiceBook app commands you have a few options.\n\n" +
+                  "SCROLL LOCK — fastest, no setup\n" +
                   "Press ScrollLock once. Dragon mutes, the VoiceBook mic activates. " +
                   "Say a command. Press ScrollLock again to restore Dragon. " +
                   "The ScrollLock key works at any time, including right now during this tutorial.\n\n" +
+                  "APP MIC ON / APP MIC OFF — run both mics at once\n" +
+                  "If you'd rather leave Dragon listening the whole time and switch VoiceBook's own mic " +
+                  "on its own, say or type App mic on / App mic off into the Command box below. " +
+                  "Unlike ScrollLock, these never mute or unmute Dragon — hand off between the two " +
+                  "mics yourself, for example with Dragon's own Go to sleep / Wake up.\n\n" +
                   "COMMAND BAR — works without any setup\n" +
-                  "Type or dictate a command into the Command box at the bottom of this window and press Enter.\n\n" +
+                  "Type or dictate any command — including App mic on/off above — into the Command box " +
+                  "at the bottom of this window and press Enter.\n\n" +
                   "BUTTON CLICKS — requires Dragon MyCommands setup\n" +
                   "WPF buttons require a one-time Dragon MyCommands configuration before voice-clicking works. " +
                   "See the Dragon Commands Setup Guide in the Docs folder for instructions."
@@ -630,8 +706,9 @@ namespace VoiceBookStudio.ViewModels
                         "right there — the fastest way to explore without checking the manual.\n\n" +
                         (dragonDetected
                             ? "GIVING COMMANDS WITH DRAGON\n" +
-                              "Use ScrollLock (fastest) or the Command box to send app commands while Dragon owns the mic.\n" +
-                              "ScrollLock works right now — press it, say a command, press it again to restore Dragon.\n\n" +
+                              "Use ScrollLock (fastest — press it, say a command, press it again to restore " +
+                              "Dragon), say or type App mic on / App mic off to switch mics without muting " +
+                              "Dragon, or use the Command box. All three work right now, no setup needed.\n\n" +
                               "To click buttons by voice with Dragon, set up Dragon MyCommands once. " +
                               "See the Dragon Commands Setup Guide in the Docs folder."
                             : "The app microphone is on. Just say any of these commands out loud — " +

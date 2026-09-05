@@ -18,9 +18,12 @@
 
   ROUTING NOTE
     Commands marked "VoiceCommandRouter" work by scripting Dragon to press
-    Ctrl+3 (which focuses the AI assistant panel and its chat input box),
-    type the command text, then press Enter.  VoiceBookStudio intercepts the
-    text in ChatInputBox_KeyDown and routes it through VoiceCommandRouter.
+    F3 (which focuses the AI assistant panel and its chat input box — F3
+    is used instead of Ctrl+3 because Ctrl+1 through Ctrl+4 do nothing when
+    focus is still in the Writing Editor, the most common place to be when
+    triggering one of these), type the command text, then press Enter.
+    VoiceBookStudio intercepts the text in ChatInputBox_KeyDown and routes
+    it through VoiceCommandRouter.
 -->
 <NaturallySpeaking>
   <CommandSet name="VoiceBook Studio"
@@ -61,43 +64,53 @@
 
       <!--
         "go to editor" / "open writing editor"
-        Focuses the writing editor panel (centre, F2 / Ctrl+2).
+        Focuses the writing editor panel (centre, F2).
+        Uses F2 rather than Ctrl+2: Ctrl+1 through Ctrl+4 are only handled
+        by MainWindow's WPF-level KeyDown, which the WinForms editor's own
+        Win32 focus does not reach — pressing Ctrl+2 (or a Dragon command
+        sending it) while already dictating in the editor silently does
+        nothing. F2 is wired at both the WPF and editor level, so it works
+        regardless of where focus currently is.
       -->
       <Command>
         <CmdName>go to editor</CmdName>
         <CmdType>keystroke</CmdType>
-        <KeyString>^2</KeyString>
+        <KeyString>{F2}</KeyString>
         <Enabled>1</Enabled>
-        <Description>Focus the writing editor panel (Ctrl+2)</Description>
+        <Description>Focus the writing editor panel (F2)</Description>
       </Command>
 
       <Command>
         <CmdName>open writing editor</CmdName>
         <CmdType>keystroke</CmdType>
-        <KeyString>^2</KeyString>
+        <KeyString>{F2}</KeyString>
         <Enabled>1</Enabled>
-        <Description>Focus the writing editor panel (Ctrl+2)</Description>
+        <Description>Focus the writing editor panel (F2)</Description>
       </Command>
 
       <!--
         "go to assistant" / "open assistant panel"
-        Focuses the AI assistant panel (right panel, F3 / Ctrl+3).
+        Focuses the AI assistant panel (right panel, F3).
         Also moves focus to the chat input box so text commands can be typed.
+        Uses F3 rather than Ctrl+3 for the same reason as "go to editor"
+        above — Ctrl+3 does nothing when triggered while focus is still in
+        the Writing Editor (the most common moment to want this command),
+        while F3 works from anywhere, editor included.
       -->
       <Command>
         <CmdName>go to assistant</CmdName>
         <CmdType>keystroke</CmdType>
-        <KeyString>^3</KeyString>
+        <KeyString>{F3}</KeyString>
         <Enabled>1</Enabled>
-        <Description>Focus the AI assistant panel (Ctrl+3)</Description>
+        <Description>Focus the AI assistant panel (F3)</Description>
       </Command>
 
       <Command>
         <CmdName>open assistant panel</CmdName>
         <CmdType>keystroke</CmdType>
-        <KeyString>^3</KeyString>
+        <KeyString>{F3}</KeyString>
         <Enabled>1</Enabled>
-        <Description>Focus the AI assistant panel (Ctrl+3)</Description>
+        <Description>Focus the AI assistant panel (F3)</Description>
       </Command>
 
       <!-- ==============================================================
@@ -132,7 +145,7 @@
 Sub Main
   AppBringUp "VoiceBook Studio"
   Wait 100
-  SendKeys "^3"
+  SendKeys "{F3}"
   Wait 200
   SendKeys "open chapter{ENTER}"
 End Sub
@@ -276,7 +289,7 @@ End Sub
         "ask assistant <dictation>"
         Sends dictated text directly to the AI assistant.
         Dragon captures the words after "ask assistant" as the <dictation> variable.
-        The script focuses the chat box (Ctrl+3), types the dictated text, and presses Enter.
+        The script focuses the chat box (F3), types the dictated text, and presses Enter.
         Example: say "ask assistant how do I write a strong opening chapter"
       -->
       <Command>
@@ -289,7 +302,7 @@ Sub Main
   If Len(Trim(sText)) = 0 Then Exit Sub
   AppBringUp "VoiceBook Studio"
   Wait 100
-  SendKeys "^3"
+  SendKeys "{F3}"
   Wait 200
   SendKeys sText & "{ENTER}"
 End Sub
@@ -310,7 +323,7 @@ End Sub
 Sub Main
   AppBringUp "VoiceBook Studio"
   Wait 100
-  SendKeys "^3"
+  SendKeys "{F3}"
   Wait 200
   SendKeys "read response{ENTER}"
 End Sub
@@ -331,7 +344,7 @@ End Sub
 Sub Main
   AppBringUp "VoiceBook Studio"
   Wait 100
-  SendKeys "^3"
+  SendKeys "{F3}"
   Wait 200
   SendKeys "keep response{ENTER}"
 End Sub
@@ -352,7 +365,7 @@ End Sub
 Sub Main
   AppBringUp "VoiceBook Studio"
   Wait 100
-  SendKeys "^3"
+  SendKeys "{F3}"
   Wait 200
   SendKeys "discard response{ENTER}"
 End Sub
@@ -373,7 +386,7 @@ End Sub
 Sub Main
   AppBringUp "VoiceBook Studio"
   Wait 100
-  SendKeys "^3"
+  SendKeys "{F3}"
   Wait 200
   SendKeys "save as prompt{ENTER}"
 End Sub
@@ -405,7 +418,7 @@ End Sub
 Sub Main
   AppBringUp "VoiceBook Studio"
   Wait 100
-  SendKeys "^3"
+  SendKeys "{F3}"
   Wait 200
   SendKeys "app mic on{ENTER}"
 End Sub
@@ -421,7 +434,7 @@ End Sub
 Sub Main
   AppBringUp "VoiceBook Studio"
   Wait 100
-  SendKeys "^3"
+  SendKeys "{F3}"
   Wait 200
   SendKeys "app mic off{ENTER}"
 End Sub
@@ -437,7 +450,7 @@ End Sub
 Sub Main
   AppBringUp "VoiceBook Studio"
   Wait 100
-  SendKeys "^3"
+  SendKeys "{F3}"
   Wait 200
   SendKeys "app voice on{ENTER}"
 End Sub
@@ -453,7 +466,7 @@ End Sub
 Sub Main
   AppBringUp "VoiceBook Studio"
   Wait 100
-  SendKeys "^3"
+  SendKeys "{F3}"
   Wait 200
   SendKeys "app voice off{ENTER}"
 End Sub
@@ -478,7 +491,7 @@ End Sub
 Sub Main
   AppBringUp "VoiceBook Studio"
   Wait 100
-  SendKeys "^3"
+  SendKeys "{F3}"
   Wait 200
   SendKeys "list commands{ENTER}"
 End Sub
@@ -494,7 +507,7 @@ End Sub
 Sub Main
   AppBringUp "VoiceBook Studio"
   Wait 100
-  SendKeys "^3"
+  SendKeys "{F3}"
   Wait 200
   SendKeys "what can I say{ENTER}"
 End Sub
@@ -569,7 +582,7 @@ End Sub
 Sub Main
   AppBringUp "VoiceBook Studio"
   Wait 100
-  SendKeys "^3"
+  SendKeys "{F3}"
   Wait 200
   SendKeys "close application{ENTER}"
 End Sub

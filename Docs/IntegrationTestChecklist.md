@@ -64,6 +64,11 @@ exercised:
 - [ ] Step 13–16: New Project or Import Document — do **both** across two
       test runs; the tutorial detects `projectopened` and `addchapter`
       either way and advances
+- [ ] Import Document specifically: trigger it by an actual spoken voice
+      command (not Ctrl+I, not typed/dictated into the Command box) —
+      confirm the tutorial dialog hides itself and the Yes/No prompt and
+      file picker come up focused, with no need to manually click back
+      into the right window first
 - [ ] Step 17: "Getting Help From Claude" explains Insert vs. Replace
       correctly
 - [ ] Step 18: asking Claude a question in the chat box and sending it is

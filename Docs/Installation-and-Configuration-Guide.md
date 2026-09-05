@@ -206,17 +206,27 @@ This section is optional. ScrollLock plus the app's own voice commands (see Sect
 
 ### Section A — Panel Navigation (Type A — Keystroke)
 
+Panel two and Panel three use F2 / F3 rather than Ctrl+2 / Ctrl+3: Ctrl+1
+through Ctrl+4 are only recognised when focus is *outside* the Writing
+Editor, so a command built on Ctrl+2/Ctrl+3 silently does nothing when
+triggered while you're still dictating in the editor — normally the exact
+moment you'd want to jump to another panel. F2 and F3 work everywhere,
+editor included. Panel one has no such alternative (F1 is reserved for
+JAWS), so it still uses Ctrl+1 — press **Escape** instead to reach Panel 1
+from inside the editor (see the note at the end of Section 3 in the User
+Manual).
+
 | Command Name | Keystroke |
 |---|---|
 | Go to chapters | Ctrl+1 |
 | Go to chapter list | Ctrl+1 |
 | Panel one | Ctrl+1 |
-| Go to editor | Ctrl+2 |
-| Open writing editor | Ctrl+2 |
-| Panel two | Ctrl+2 |
-| Go to assistant | Ctrl+3 |
-| Open AI assistant | Ctrl+3 |
-| Panel three | Ctrl+3 |
+| Go to editor | F2 |
+| Open writing editor | F2 |
+| Panel two | F2 |
+| Go to assistant | F3 |
+| Open AI assistant | F3 |
+| Panel three | F3 |
 
 ---
 

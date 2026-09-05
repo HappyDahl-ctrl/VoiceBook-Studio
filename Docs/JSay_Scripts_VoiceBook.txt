@@ -15,15 +15,21 @@
 ; ============================================================
 
 ; ---- PANEL NAVIGATION ----------------------------------------
+; Editor and assistant use F2/F3, not Ctrl+2/Ctrl+3: Ctrl+1 through Ctrl+4
+; only work when focus is outside the Writing Editor, so a script built on
+; Ctrl+2/Ctrl+3 does nothing when triggered while still dictating there.
+; F2/F3 work everywhere, editor included. "chapter panel" keeps Ctrl+1 —
+; there's no safe equivalent (F1 is reserved for JAWS); press Escape
+; instead to reach the chapter panel from inside the editor.
 "chapter panel"               {ctrl+1}
 "chapters"                    {ctrl+1}
 "go to chapters"              {ctrl+1}
-"editor panel"                {ctrl+2}
-"writing editor"              {ctrl+2}
-"go to editor"                {ctrl+2}
-"A I panel"                   {ctrl+3}
-"assistant panel"             {ctrl+3}
-"go to assistant"             {ctrl+3}
+"editor panel"                {f2}
+"writing editor"              {f2}
+"go to editor"                {f2}
+"A I panel"                   {f3}
+"assistant panel"             {f3}
+"go to assistant"             {f3}
 
 ; ---- FILE OPERATIONS -----------------------------------------
 "save project"                {ctrl+s}
@@ -83,8 +89,8 @@
 ;  c) Add JSay multi-step commands if your JSay version
 ;     supports TypeText actions:
 ;
-;     "insert at cursor"  {ctrl+3} TypeText "insert at cursor" {enter}
-;     "export manuscript" {ctrl+3} TypeText "export word" {enter}
-;     "save card"         {ctrl+3} TypeText "save card" {enter}
+;     "insert at cursor"  {f3} TypeText "insert at cursor" {enter}
+;     "export manuscript" {f3} TypeText "export word" {enter}
+;     "save card"         {f3} TypeText "save card" {enter}
 ;
 ; ============================================================

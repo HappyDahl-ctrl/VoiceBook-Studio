@@ -33,11 +33,17 @@
     </steps>
   </Command>
 
+  <!--
+    Panel 2 and Panel 3 use F2 / F3, not Ctrl+2 / Ctrl+3: Ctrl+1 through
+    Ctrl+4 only work when focus is outside the Writing Editor, so triggering
+    this command while still dictating there — the most likely moment —
+    would silently do nothing. F2 / F3 work everywhere, editor included.
+  -->
   <Command>
     <name>editor panel</name>
     <description>Focus the Writing editor (Panel 2)</description>
     <steps>
-      <step>PressKey Ctrl+2</step>
+      <step>PressKey F2</step>
     </steps>
   </Command>
 
@@ -45,7 +51,7 @@
     <name>A I panel</name>
     <description>Focus the AI Assistant (Panel 3)</description>
     <steps>
-      <step>PressKey Ctrl+3</step>
+      <step>PressKey F3</step>
     </steps>
   </Command>
 
@@ -242,7 +248,7 @@
     <name>insert at cursor</name>
     <description>Insert AI response at cursor position in the editor</description>
     <steps>
-      <step>PressKey Ctrl+3</step>
+      <step>PressKey F3</step>
       <step>TypeKeys insert at cursor{ENTER}</step>
     </steps>
   </Command>
@@ -251,7 +257,7 @@
     <name>replace in chapter</name>
     <description>Ask Claude to find the passage the AI response replaces and swap it in</description>
     <steps>
-      <step>PressKey Ctrl+3</step>
+      <step>PressKey F3</step>
       <step>TypeKeys replace{ENTER}</step>
     </steps>
   </Command>
@@ -260,7 +266,7 @@
     <name>insert at start</name>
     <description>Insert AI response at start of chapter</description>
     <steps>
-      <step>PressKey Ctrl+3</step>
+      <step>PressKey F3</step>
       <step>TypeKeys insert at start{ENTER}</step>
     </steps>
   </Command>
@@ -269,7 +275,7 @@
     <name>insert at end</name>
     <description>Insert AI response at end of chapter</description>
     <steps>
-      <step>PressKey Ctrl+3</step>
+      <step>PressKey F3</step>
       <step>TypeKeys insert at end{ENTER}</step>
     </steps>
   </Command>
@@ -278,7 +284,7 @@
     <name>save card</name>
     <description>Save the current AI response as a Response Card</description>
     <steps>
-      <step>PressKey Ctrl+3</step>
+      <step>PressKey F3</step>
       <step>TypeKeys save card{ENTER}</step>
     </steps>
   </Command>
@@ -287,7 +293,7 @@
     <name>read response</name>
     <description>Read the current AI response aloud</description>
     <steps>
-      <step>PressKey Ctrl+3</step>
+      <step>PressKey F3</step>
       <step>TypeKeys read response{ENTER}</step>
     </steps>
   </Command>
@@ -296,7 +302,7 @@
     <name>export manuscript</name>
     <description>Export the book as a Word .docx file</description>
     <steps>
-      <step>PressKey Ctrl+3</step>
+      <step>PressKey F3</step>
       <step>TypeKeys export word{ENTER}</step>
     </steps>
   </Command>
@@ -305,7 +311,7 @@
     <name>export PDF</name>
     <description>Export the book as a PDF</description>
     <steps>
-      <step>PressKey Ctrl+3</step>
+      <step>PressKey F3</step>
       <step>TypeKeys export pdf{ENTER}</step>
     </steps>
   </Command>
@@ -314,7 +320,7 @@
     <name>open settings</name>
     <description>Open the Settings dialog</description>
     <steps>
-      <step>PressKey Ctrl+3</step>
+      <step>PressKey F3</step>
       <step>TypeKeys settings{ENTER}</step>
     </steps>
   </Command>
@@ -323,7 +329,7 @@
     <name>voice off</name>
     <description>Turn off VoiceBook text-to-speech</description>
     <steps>
-      <step>PressKey Ctrl+3</step>
+      <step>PressKey F3</step>
       <step>TypeKeys voice off{ENTER}</step>
     </steps>
   </Command>
@@ -332,7 +338,7 @@
     <name>voice on</name>
     <description>Turn on VoiceBook text-to-speech</description>
     <steps>
-      <step>PressKey Ctrl+3</step>
+      <step>PressKey F3</step>
       <step>TypeKeys voice on{ENTER}</step>
     </steps>
   </Command>
@@ -345,7 +351,7 @@
     <name>pacing feedback</name>
     <description>Run pacing feedback on current chapter</description>
     <steps>
-      <step>PressKey Ctrl+3</step>
+      <step>PressKey F3</step>
       <step>TypeKeys pacing{ENTER}</step>
     </steps>
   </Command>
@@ -354,7 +360,7 @@
     <name>dialogue feedback</name>
     <description>Run dialogue feedback on current chapter</description>
     <steps>
-      <step>PressKey Ctrl+3</step>
+      <step>PressKey F3</step>
       <step>TypeKeys dialogue{ENTER}</step>
     </steps>
   </Command>
@@ -363,7 +369,7 @@
     <name>style feedback</name>
     <description>Run style feedback on current chapter</description>
     <steps>
-      <step>PressKey Ctrl+3</step>
+      <step>PressKey F3</step>
       <step>TypeKeys style{ENTER}</step>
     </steps>
   </Command>
@@ -372,7 +378,7 @@
     <name>structure feedback</name>
     <description>Run structure feedback on current chapter</description>
     <steps>
-      <step>PressKey Ctrl+3</step>
+      <step>PressKey F3</step>
       <step>TypeKeys structure{ENTER}</step>
     </steps>
   </Command>
@@ -381,7 +387,7 @@
     <name>book feedback</name>
     <description>Run full-book AI analysis</description>
     <steps>
-      <step>PressKey Ctrl+3</step>
+      <step>PressKey F3</step>
       <step>TypeKeys analyse book{ENTER}</step>
     </steps>
   </Command>
@@ -395,7 +401,7 @@
     <name>use prompt A one</name>
     <description>Load prompt A1 — Proofread for grammar and spelling</description>
     <steps>
-      <step>PressKey Ctrl+3</step>
+      <step>PressKey F3</step>
       <step>TypeKeys use prompt a1{ENTER}</step>
     </steps>
   </Command>
@@ -404,7 +410,7 @@
     <name>use prompt A two</name>
     <description>Load prompt A2 — Tighten prose without losing voice</description>
     <steps>
-      <step>PressKey Ctrl+3</step>
+      <step>PressKey F3</step>
       <step>TypeKeys use prompt a2{ENTER}</step>
     </steps>
   </Command>
@@ -413,7 +419,7 @@
     <name>use prompt B one</name>
     <description>Load prompt B1 — Strengthen character voice</description>
     <steps>
-      <step>PressKey Ctrl+3</step>
+      <step>PressKey F3</step>
       <step>TypeKeys use prompt b1{ENTER}</step>
     </steps>
   </Command>
@@ -422,7 +428,7 @@
     <name>use prompt F three</name>
     <description>Load prompt F3 — Add metaphors and similes</description>
     <steps>
-      <step>PressKey Ctrl+3</step>
+      <step>PressKey F3</step>
       <step>TypeKeys use prompt f3{ENTER}</step>
     </steps>
   </Command>
@@ -431,7 +437,7 @@
     <name>use prompt J one</name>
     <description>Load prompt J1 — Write a compelling opening line</description>
     <steps>
-      <step>PressKey Ctrl+3</step>
+      <step>PressKey F3</step>
       <step>TypeKeys use prompt j1{ENTER}</step>
     </steps>
   </Command>

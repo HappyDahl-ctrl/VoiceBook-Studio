@@ -113,6 +113,95 @@
         <Description>Focus the AI assistant panel (F3)</Description>
       </Command>
 
+      <!--
+        "panel one" / "panel 1" / "panel two" / "panel 2" / "panel three" / "panel 3" /
+        "panel four" / "panel 4" / "go to library" / "open library"
+        These are the exact phrases the built-in tutorial and User Manual teach for
+        panel navigation — distinct from the "go to chapters"/"go to editor"/
+        "go to assistant" phrasing above, which is Dragon-specific wording. Without
+        these, a user who says "panel three" (as instructed) has no Dragon command
+        matching that phrase at all, even though "go to assistant" does the same thing.
+      -->
+      <Command>
+        <CmdName>panel one</CmdName>
+        <CmdType>keystroke</CmdType>
+        <KeyString>^1</KeyString>
+        <Enabled>1</Enabled>
+        <Description>Focus the chapter list panel (Ctrl+1)</Description>
+      </Command>
+
+      <Command>
+        <CmdName>panel 1</CmdName>
+        <CmdType>keystroke</CmdType>
+        <KeyString>^1</KeyString>
+        <Enabled>1</Enabled>
+        <Description>Focus the chapter list panel (Ctrl+1)</Description>
+      </Command>
+
+      <Command>
+        <CmdName>panel two</CmdName>
+        <CmdType>keystroke</CmdType>
+        <KeyString>{F2}</KeyString>
+        <Enabled>1</Enabled>
+        <Description>Focus the writing editor panel (F2)</Description>
+      </Command>
+
+      <Command>
+        <CmdName>panel 2</CmdName>
+        <CmdType>keystroke</CmdType>
+        <KeyString>{F2}</KeyString>
+        <Enabled>1</Enabled>
+        <Description>Focus the writing editor panel (F2)</Description>
+      </Command>
+
+      <Command>
+        <CmdName>panel three</CmdName>
+        <CmdType>keystroke</CmdType>
+        <KeyString>{F3}</KeyString>
+        <Enabled>1</Enabled>
+        <Description>Focus the AI assistant panel (F3)</Description>
+      </Command>
+
+      <Command>
+        <CmdName>panel 3</CmdName>
+        <CmdType>keystroke</CmdType>
+        <KeyString>{F3}</KeyString>
+        <Enabled>1</Enabled>
+        <Description>Focus the AI assistant panel (F3)</Description>
+      </Command>
+
+      <Command>
+        <CmdName>panel four</CmdName>
+        <CmdType>keystroke</CmdType>
+        <KeyString>{F11}</KeyString>
+        <Enabled>1</Enabled>
+        <Description>Focus the library panel (F11)</Description>
+      </Command>
+
+      <Command>
+        <CmdName>panel 4</CmdName>
+        <CmdType>keystroke</CmdType>
+        <KeyString>{F11}</KeyString>
+        <Enabled>1</Enabled>
+        <Description>Focus the library panel (F11)</Description>
+      </Command>
+
+      <Command>
+        <CmdName>go to library</CmdName>
+        <CmdType>keystroke</CmdType>
+        <KeyString>{F11}</KeyString>
+        <Enabled>1</Enabled>
+        <Description>Focus the library panel (F11)</Description>
+      </Command>
+
+      <Command>
+        <CmdName>open library</CmdName>
+        <CmdType>keystroke</CmdType>
+        <KeyString>{F11}</KeyString>
+        <Enabled>1</Enabled>
+        <Description>Focus the library panel (F11)</Description>
+      </Command>
+
       <!-- ==============================================================
            CHAPTER COMMANDS
            ============================================================== -->

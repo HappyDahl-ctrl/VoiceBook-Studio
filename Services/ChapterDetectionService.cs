@@ -12,17 +12,31 @@ namespace VoiceBookStudio.Services
     /// </summary>
     public class ChapterDetectionService
     {
+        // Chapter headings are short titles, never full paragraphs of prose — every
+        // pattern below is anchored to a title-length line (see the length guard in
+        // DetectByPatterns) specifically so an ordinary sentence that happens to start
+        // with a number ("2020 was a strange year.") or an ALL-CAPS exclamation
+        // ("STOP RIGHT THERE!") can't masquerade as a chapter break. Real manuscripts
+        // triggered exactly that on the unguarded, un-anchored versions of these
+        // patterns, producing hundreds of false "chapters" from ordinary body text.
+        private const int MaxHeadingLength = 80;
+
         private static readonly Regex[] ChapterPatterns = new Regex[]
         {
             // Matches: Chapter 1, CHAPTER 1, Chapter One
             new(@"^\s*chapter\s+\d+\b", RegexOptions.IgnoreCase | RegexOptions.Compiled),
             new(@"^\s*chapter\s+\w+\b", RegexOptions.IgnoreCase | RegexOptions.Compiled),
-            // Matches: Ch. 1, Ch 1, Part 1
-            new(@"^\s*(ch\.?|part)\s+\d+\b", RegexOptions.IgnoreCase | RegexOptions.Compiled),
-            // Standalone uppercase lines (e.g. "THE JOURNEY")
-            new(@"^[A-Z ]{3,}$", RegexOptions.Compiled),
-            // Lines that are a number followed by text: "1. The Beginning"
-            new(@"^\s*\d+\.?\s+\S.+$", RegexOptions.Compiled),
+            // Matches: Ch. 1, Ch 1, Part 1 — followed by nothing or a short title,
+            // never a full sentence ("Part of my plan was to move to Paris" must not match).
+            new(@"^\s*(ch\.?|part)\s+\d{1,3}\b\s*[:.\-]?\s*[^.!?]{0,40}$", RegexOptions.IgnoreCase | RegexOptions.Compiled),
+            // Standalone all-caps titles (e.g. "THE JOURNEY BEGINS") — requires at
+            // least two words so a single shouted word ("STOP", "NO") isn't mistaken
+            // for a title; a real heading is virtually never a lone word.
+            new(@"^[A-Z]+(?:\s[A-Z]+){1,7}$", RegexOptions.Compiled),
+            // Lines that are a short number followed by a short title: "1. The Beginning".
+            // The 1-3 digit cap excludes years ("2020 was..."); excluding . ! ? from the
+            // rest of the line excludes full sentences that merely start with a numeral.
+            new(@"^\s*\d{1,3}\.?\s+[^.!?]{2,60}$", RegexOptions.Compiled),
         };
 
         /// <summary>
@@ -49,6 +63,12 @@ namespace VoiceBookStudio.Services
                         continue;
                     }
                 }
+
+                // Pattern matching below is for un-styled text, where a chapter heading
+                // is only distinguishable from body text by looking title-like. Ordinary
+                // paragraphs of prose run far longer than this, so skip them outright
+                // rather than risk a pattern matching partway into one.
+                if (text.Length > MaxHeadingLength) continue;
 
                 foreach (var rx in ChapterPatterns)
                 {

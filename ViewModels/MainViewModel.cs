@@ -1131,12 +1131,15 @@ namespace VoiceBookStudio.ViewModels
                     SetStatus("Asking Claude to detect chapter breaks…");
                     LiveAnnounce("Asking Claude to detect chapter breaks. This may take a moment.");
 
+                    Exception? detectionError = null;
                     try   { detected = await RunWithStillWorkingCueAsync(() => _aiService.DetectChaptersAsync(fullText)); }
-                    catch { detected = null; }
+                    catch (Exception ex) { detected = null; detectionError = ex; }
 
                     LiveAnnounce(detected != null && detected.Count > 1
                         ? $"Claude detected {detected.Count} chapters in your document."
-                        : "Could not detect separate chapters. Importing as a single chapter.");
+                        : detectionError != null
+                            ? $"Chapter detection failed: {detectionError.Message}. Importing as a single chapter."
+                            : "Could not detect separate chapters. Importing as a single chapter.");
                 }
                 else
                 {

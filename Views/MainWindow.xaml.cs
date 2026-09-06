@@ -529,7 +529,7 @@ namespace VoiceBookStudio.Views
                 case 1: ChapterListBox.Focus();   break;
                 case 2: _editorRtb?.Focus();     break;
                 case 3: ChatInputBox.Focus();     break;
-                case 4: LibraryTabControl.Focus(); break;
+                case 4: FocusSelectedTabHeader(); break;
             }
         }
 
@@ -554,6 +554,28 @@ namespace VoiceBookStudio.Views
                 // switch the tab visually but leave keyboard/JAWS focus wherever it was
                 // (e.g. the chat box) — a hands-free user would hear nothing change and
                 // Tab would still walk the old panel. Matches FocusPanel4's own behavior.
+                FocusSelectedTabHeader();
+            }
+        }
+
+        /// <summary>
+        /// Focuses the header of the currently selected TabItem, not just the TabControl
+        /// itself. Calling Focus() on the TabControl directly leaves keyboard focus on the
+        /// control's outer chrome rather than on a TabItem header, so WPF's built-in
+        /// Left/Right-arrow tab-switching (and the same shortcut JAWS announces for any
+        /// native tab control) silently does nothing — the announced hint was true for a
+        /// standard TabControl but not for how this app was actually placing focus.
+        /// </summary>
+        private void FocusSelectedTabHeader()
+        {
+            LibraryTabControl.UpdateLayout();
+            if (LibraryTabControl.ItemContainerGenerator.ContainerFromIndex(LibraryTabControl.SelectedIndex)
+                is TabItem selectedTab)
+            {
+                selectedTab.Focus();
+            }
+            else
+            {
                 LibraryTabControl.Focus();
             }
         }

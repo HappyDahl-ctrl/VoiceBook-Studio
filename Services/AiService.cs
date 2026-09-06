@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace VoiceBookStudio.Services
@@ -229,8 +230,17 @@ namespace VoiceBookStudio.Services
         {
             string prompt = $$"""
                 You are helping import a Word document into a book editor.
-                Analyze this document and identify natural chapter breaks.
-                Look for scene changes, time jumps, perspective shifts, and topic changes.
+                Analyze this document and identify its real chapter divisions — the
+                author's own major structural breaks, typically marked by a "Chapter"
+                heading, a chapter number, or an unmistakable full-section break.
+
+                Do NOT report a break for every scene change, time jump, point-of-view
+                shift, or topic change — those happen constantly within a single chapter
+                and are not chapter boundaries. Only report a break where a reader would
+                expect the book to visibly start a new chapter. If you are unsure whether
+                something is a new chapter, do not report it as one. When the document has
+                few or no clear chapter markers, prefer returning a single chapter over
+                guessing at many small ones.
 
                 Return ONLY valid JSON with no explanation, no markdown code fences, in exactly this format:
                 [
@@ -240,6 +250,11 @@ namespace VoiceBookStudio.Services
                 Rules:
                 - If the text is best left as a single chapter, return a single-item array.
                 - Titles should be concise (3-8 words).
+                - startText must be copied EXACTLY, character-for-character, from the
+                  document — the same words, spelling, punctuation, and quotation marks.
+                  Do not paraphrase, summarize, correct, or normalize it in any way; it is
+                  used to locate the chapter in the original text and the chapter will be
+                  lost if it doesn't match exactly.
                 - startText should contain the opening ~120 characters of the chapter.
                 - reason should be a short justification (one sentence).
 
@@ -266,6 +281,13 @@ namespace VoiceBookStudio.Services
                 if (list == null || list.Count == 0)
                     return SingleChapterFallback(fullText);
 
+                // A real book essentially never has more than 100 chapters. Getting far
+                // more than that back means Claude ignored the "not every scene" guidance
+                // in the prompt and split on scene/paragraph breaks instead — trust a
+                // single chapter over importing hundreds of garbage fragments.
+                if (list.Count > MaxPlausibleAiChapters)
+                    return SingleChapterFallback(fullText);
+
                 // Use startText as a positional marker to slice real content out of fullText.
                 // This avoids the bug where Content would only be the opening ~120 chars.
                 var positioned = new List<(string Title, int Pos)>();
@@ -274,7 +296,7 @@ namespace VoiceBookStudio.Services
                     string marker = d.StartText?.Trim() ?? string.Empty;
                     int pos = string.IsNullOrWhiteSpace(marker)
                         ? -1
-                        : fullText.IndexOf(marker, StringComparison.OrdinalIgnoreCase);
+                        : FindMarkerPosition(fullText, marker);
                     positioned.Add((
                         string.IsNullOrWhiteSpace(d.Title) ? "Untitled Chapter" : d.Title,
                         pos));
@@ -306,6 +328,58 @@ namespace VoiceBookStudio.Services
 
         private static List<DetectedChapter> SingleChapterFallback(string text) =>
             new() { new DetectedChapter { Title = "Imported Chapter", Content = text } };
+
+        private const int MaxPlausibleAiChapters = 100;
+
+        /// <summary>
+        /// Locates a Claude-provided startText excerpt inside the original document text.
+        /// Despite being told to copy it verbatim, Claude will sometimes still normalize
+        /// smart quotes/dashes or collapse whitespace when "quoting" a passage, which would
+        /// otherwise make an exact IndexOf miss and silently drop that whole chapter. Falls
+        /// back to a tolerant regex (quote/dash/whitespace variants) and, failing that, to
+        /// progressively shorter prefixes of the marker in case the tail drifted further.
+        /// </summary>
+        private static int FindMarkerPosition(string fullText, string marker)
+        {
+            marker = marker.Trim();
+            if (marker.Length == 0) return -1;
+
+            int pos = fullText.IndexOf(marker, StringComparison.OrdinalIgnoreCase);
+            if (pos >= 0) return pos;
+
+            var pattern = new StringBuilder();
+            bool lastWasSpace = false;
+            foreach (char c in marker)
+            {
+                if (char.IsWhiteSpace(c))
+                {
+                    if (!lastWasSpace) pattern.Append(@"\s+");
+                    lastWasSpace = true;
+                }
+                else
+                {
+                    lastWasSpace = false;
+                    if ("\"'‘’“”".IndexOf(c) >= 0)
+                        pattern.Append("[\"'‘’“”]");
+                    else if ("-–—".IndexOf(c) >= 0)
+                        pattern.Append("[-–—]");
+                    else
+                        pattern.Append(Regex.Escape(c.ToString()));
+                }
+            }
+
+            var match = Regex.Match(fullText, pattern.ToString(), RegexOptions.IgnoreCase);
+            if (match.Success) return match.Index;
+
+            foreach (int len in new[] { 80, 60, 40, 25 })
+            {
+                if (marker.Length <= len) continue;
+                int shortPos = FindMarkerPosition(fullText, marker[..len]);
+                if (shortPos >= 0) return shortPos;
+            }
+
+            return -1;
+        }
 
         // ----------------------------------------------------------------
         // HTTP layer
